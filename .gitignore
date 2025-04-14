@@ -1,0 +1,11 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Distribution / packaging
+KCT/
+
+# VS Code
+.vscode/
+
+ideas.txt
+tests/
