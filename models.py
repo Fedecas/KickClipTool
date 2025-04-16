@@ -45,13 +45,15 @@ class Clip:
 
     @classmethod
     def from_dict(cls, data):
+        channel = data.get('channel', {}).get('slug', '')
+        c_id = data.get('id', '')
         return cls(
             creator=data.get('creator', {}).get('username', ''),
             date=data.get('created_at', ''),
             duration=data.get('duration', 0),
             thumbnail=data.get('thumbnail_url', ''),
             title=data.get('title', ''),
-            url=data.get('clip_url', ''),
+            url=f'https://kick.com/{channel}/clips/{c_id}',  # data.get('clip_url', ''),
             views=data.get('views', 0)
         )
 

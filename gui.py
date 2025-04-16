@@ -4,6 +4,8 @@ from dateutil.relativedelta import relativedelta
 
 from nicegui import ui
 
+from log import log
+
 MAIN_PAGE = ('', 'w-full h-screen')
 HEADER_IMAGE = ('', 'w-64 mt-32 self-center transition-all flex-shrink-0')
 HEADER_LABEL = ('', 'self-center text-3xl font-medium mb-2 transition-all flex-shrink-0')
@@ -133,18 +135,19 @@ class Gui:
     def _show_clips(self, clips):
         def _on_click_card(e):
             url = self._cards.get(e.sender.id, -1)
-            print(url)
+            log.debug('clicked %s', url)
 
         def _build_card(clip):
-            creator, date, duration, thumbnail, title, _, views = clip
+            creator, date, duration, thumbnail, title, url, views = clip
             card = ui.card().props(RESULT_CARD[0]).classes(RESULT_CARD[1] + ' flex flex-shrink-0') \
                 .on('click', _on_click_card)
             with card:
-                with ui.image(thumbnail).props(CLIP_IMAGE[0]).classes(CLIP_IMAGE[1]):
-                    mins, secs = str(duration // 60).rjust(2, '0'), str(duration % 60).rjust(2, '0')
-                    ui.label(f'{mins}:{secs}').classes(DURATION_LABEL[1]).style('padding: 5px;')
-                    with ui.label(f'{views}').classes(VIEWS_LABEL[1]).style('padding: 5px;'):
-                        ui.icon('visibility').classes(VIEWS_ICON[1])
+                with ui.link(target=url).classes('w-full'):
+                    with ui.image(thumbnail).props(CLIP_IMAGE[0]).classes(CLIP_IMAGE[1]):
+                        mins, secs = str(duration // 60).rjust(2, '0'), str(duration % 60).rjust(2, '0')
+                        ui.label(f'{mins}:{secs}').classes(DURATION_LABEL[1]).style('padding: 5px;')
+                        with ui.label(f'{views}').classes(VIEWS_LABEL[1]).style('padding: 5px;'):
+                            ui.icon('visibility').classes(VIEWS_ICON[1])
                 ui.label(title).classes(CLIP_LABEL[1])
                 ui.label(creator).classes(CREATOR_LABEL[1])
                 with ui.row().props(DATE_ROW[0]):
