@@ -12,24 +12,30 @@ HEADER_LABEL = ('', 'self-center text-3xl font-medium mb-2 transition-all flex-s
 SEARCH_INPUT = ('placeholder="Search channel" input-class="ml-3" autofocus outlined item-aligned',
                 'w-96 self-center transition-all font-bold text-lg text-gray-600 flex-shrink-0 my-16')
 SEARCH_ICON = ('', 'self-center text-2xl text-secondary font-bold mr-2 flex-shrink-0')
-RESULTS_ROW = ('', 'self-center gap-2')
+RESULTS_AREA = ('', 'w-full h-full p-2 border')
+RESULTS_ROW = ('', 'p-2 gap-1 h-full border')
 RESULT_CARD = ('flat bordered',
-               'border-gray-600 w-64 min-h-64 rounded-md gap-1 p-2 hover:bg-black hover:border-gray-400')
+               'border-gray-600 w-64 min-h-64 rounded-md gap-1 p-2 flex flex-shrink-0 hover:bg-black hover:border-gray-400')
 CHANNEL_IMAGE = ('bordered spinner-color="primary"',
                  'h-56 object-cover rounded-md border-2 border-gray-400 hover:border-[--q-primary]')
 CHANNEL_LABEL = ('', 'self-center text-xl font-medium mt-2')
 CHANNEL_ICON = ('', 'ml-1 mb-1 text-xl text-primary')
 FOLLOWERS_LABEL = ('', 'self-center text-bold text-secondary')
+CLIP_LINK = ('', 'size-full')
 CLIP_IMAGE = ('bordered spinner-color="primary"',
               'w-full object-cover rounded-md border-2 border-gray-400 hover:border-[--q-primary]')
-DURATION_LABEL = ('', 'top-1 left-1 rounded-sm p-1')
-VIEWS_LABEL = ('', 'font-bold right-1 bottom-1 rounded-sm')
+DURATION_LABEL = ('', 'top-1 left-1 rounded-sm p-1',
+                  'padding: 5px;')
+VIEWS_LABEL = ('', 'font-bold right-1 bottom-1 rounded-sm',
+               'padding: 5px;')
 VIEWS_ICON = ('', 'ml-1')
 CLIP_LABEL = ('', 'text-xl/4 font-medium leading-none line-clamp-2 min-h-12')
 CREATOR_LABEL = ('', 'text-primary')
 DATE_ROW = ('', 'gap-1')
 DATE_ICON = ('', 'text-xl text-secondary mt-1')
 DATE_LABEL = ('', 'italic text-secondary mt-1')
+MESSAGE_ELEMENT = ('', 'self-center text-secondary')
+MESSAGE_LABEL = ('', 'text-2xl font-lg bold')
 
 
 LOGO_URL = 'https://kick.com/img/kick-logo.svg'
@@ -39,6 +45,45 @@ COLOR_SECONDARY = '#667'
 MIN_CARDS = 21
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
+
+
+def build_element(e, opts):
+    if not e:
+        e = ui.element()
+    p, c, *s = opts
+    return e.props(p).classes(c).style(s[0] if s else '')
+
+
+def build_label(text, opts):
+    return build_element(ui.label(text), opts)
+
+
+def build_image(source, opts):
+    return build_element(ui.image(source), opts)
+
+
+def build_input(opts):
+    return build_element(ui.input(), opts)
+
+
+def build_icon(name, opts):
+    return build_element(ui.icon(name), opts)
+
+
+def build_scroll_area(opts):
+    return build_element(ui.scroll_area(), opts)
+
+
+def build_row(opts):
+    return build_element(ui.row(), opts)
+
+
+def build_card(opts):
+    return build_element(ui.card(), opts)
+
+
+def build_link(target, opts):
+    return build_element(ui.link(target), opts)
 
 
 class Gui:
@@ -60,16 +105,17 @@ class Gui:
             </style>
         """)
 
-        with ui.column().classes(MAIN_PAGE[1]):
-            self.logo = ui.image(LOGO_URL).classes(HEADER_IMAGE[1])
-            ui.label('Clip Tool').classes(HEADER_LABEL[1])
-            self.search_field = ui.input().props(SEARCH_INPUT[0]).classes(SEARCH_INPUT[1])
+        with build_element(None, MAIN_PAGE):
+            self.logo = build_image(LOGO_URL, HEADER_IMAGE)
+            build_label('Clip Tool', HEADER_LABEL)
+            self.search_field = build_input(SEARCH_INPUT)
             with self.search_field:
-                self.search_icon = ui.icon('search').classes(SEARCH_ICON[1])
-            with ui.scroll_area(on_scroll=self._scroll_handler).classes('w-full h-full p-2 border') as sa:
-                self.results = ui.row().classes('p-2 gap-1 h-full border')
-                sa.bind_visibility_from(self.results)
-            self.msg = ui.element().classes('self-center text-secondary')
+                self.search_icon = build_icon('search', SEARCH_ICON)
+            with build_scroll_area(RESULTS_AREA) as scroll_area:
+                self.results = build_row(RESULTS_ROW)
+                scroll_area.on_scroll(self._scroll_handler)
+                scroll_area.bind_visibility_from(self.results)
+            self.msg = build_element(None, MESSAGE_ELEMENT)
         self.results.set_visibility(False)
 
     def set_search_handler(self, handler):
@@ -106,7 +152,7 @@ class Gui:
     def show_message(self, msg):
         self.msg.clear()
         with self.msg:
-            ui.label(msg).classes('text-2xl font-lg bold')
+            build_label(msg, MESSAGE_LABEL)
         self.msg.set_visibility(True)
 
     def _show_channels(self, channels, handler):
@@ -117,15 +163,15 @@ class Gui:
 
         def _build_card(channel, handler):
             avatar, followers, name, _, verified = channel
-            card = ui.card().props(RESULT_CARD[0]).classes(RESULT_CARD[1]) \
-                .on('click', lambda e: _on_click_card(e, handler))
+            card = build_card(RESULT_CARD)
+            card.on('click', lambda e: _on_click_card(e, handler))
             with card:
-                ui.image(avatar).props(CHANNEL_IMAGE[0]).classes(CHANNEL_IMAGE[1])
-                channel_label = ui.label(name).classes(CHANNEL_LABEL[1])
+                build_image(avatar, CHANNEL_IMAGE)
+                channel_label = build_label(name, CHANNEL_LABEL)
                 if verified:
                     with channel_label:
-                        ui.icon('verified').classes(CHANNEL_ICON[1])
-                ui.label(f'{followers} followers').classes(FOLLOWERS_LABEL[1])
+                        build_icon('verified', CHANNEL_ICON)
+                build_label(f'{followers} followers', FOLLOWERS_LABEL)
             return card.id
 
         for c in channels:
@@ -137,35 +183,50 @@ class Gui:
             url = self._cards.get(e.sender.id, -1)
             log.debug('clicked %s', url)
 
+        def _build_views(views):
+            with build_label(f'{views}', VIEWS_LABEL):
+                build_icon('visibility', VIEWS_ICON)
+
+        def _build_duration(duration):
+            mins, secs = duration // 60, duration % 60
+            build_label(f'{mins:0>2}:{secs:0>2}', DURATION_LABEL)
+
+        def _build_card_image(url, thumbnail, duration, views):
+            with build_link(url, CLIP_LINK):
+                with build_image(thumbnail, CLIP_IMAGE):
+                    _build_duration(duration)
+                    _build_views(views)
+
+        def _build_date_label(date):
+            now, created_at = dt.now(UTC), dt.strptime(date, DATE_FORMAT)
+            delta = relativedelta(now, created_at)
+            v, u = delta.seconds, 'seconds'
+            if delta.years > 0:
+                v, u = delta.years, 'years'
+            elif delta.months > 0:
+                v, u = delta.months, 'months'
+            elif delta.days > 0:
+                v, u = delta.days, 'days'
+            elif delta.hours > 0:
+                v, u = delta.hours, 'hours'
+            elif delta.minutes > 0:
+                v, u = delta.minutes, 'minutes'
+            build_label(f'{v} {u} ago', DATE_LABEL)
+
+        def _build_card_date(date):
+            with build_row(DATE_ROW):
+                build_icon('date_range', DATE_ICON)
+                _build_date_label(date)
+
         def _build_card(clip):
             creator, date, duration, thumbnail, title, url, views = clip
-            card = ui.card().props(RESULT_CARD[0]).classes(RESULT_CARD[1] + ' flex flex-shrink-0') \
-                .on('click', _on_click_card)
+            card = build_card(RESULT_CARD)
+            card.on('click', _on_click_card)
             with card:
-                with ui.link(target=url).classes('w-full'):
-                    with ui.image(thumbnail).props(CLIP_IMAGE[0]).classes(CLIP_IMAGE[1]):
-                        mins, secs = str(duration // 60).rjust(2, '0'), str(duration % 60).rjust(2, '0')
-                        ui.label(f'{mins}:{secs}').classes(DURATION_LABEL[1]).style('padding: 5px;')
-                        with ui.label(f'{views}').classes(VIEWS_LABEL[1]).style('padding: 5px;'):
-                            ui.icon('visibility').classes(VIEWS_ICON[1])
-                ui.label(title).classes(CLIP_LABEL[1])
-                ui.label(creator).classes(CREATOR_LABEL[1])
-                with ui.row().props(DATE_ROW[0]):
-                    ui.icon('date_range').classes(DATE_ICON[1])
-                    now, created_at = dt.now(UTC), dt.strptime(date, DATE_FORMAT)
-                    delta = relativedelta(now, created_at)
-                    v, u = delta.seconds, 'seconds'
-                    if delta.years > 0:
-                        v, u = delta.years, 'years'
-                    elif delta.months > 0:
-                        v, u = delta.months, 'months'
-                    elif delta.days > 0:
-                        v, u = delta.days, 'days'
-                    elif delta.hours > 0:
-                        v, u = delta.hours, 'hours'
-                    elif delta.minutes > 0:
-                        v, u = delta.minutes, 'minutes'
-                    ui.label(f'{v} {u} ago').classes(DATE_LABEL[1])
+                _build_card_image(url, thumbnail, duration, views)
+                build_label(title, CLIP_LABEL)
+                build_label(creator, CREATOR_LABEL)
+                _build_card_date(date)
             return card.id
 
         for c in clips:
