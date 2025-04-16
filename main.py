@@ -54,7 +54,7 @@ class App:
             await self.gui.show_clips(clips)
 
     def run(self):
-        ui.run()
+        ui.run(uvicorn_reload_excludes='__pycache__/*')
 
 
 if __name__ in {"__main__", "__mp_main__"}:
