@@ -83,43 +83,107 @@ def build_card(opts):
 
 
 def build_link(target, opts):
-    return build_element(ui.link(target), opts)
+    return build_element(ui.link(target=target), opts)
+
+
+def build_column(opts):
+    return build_element(ui.column(), opts)
+
+
+def build_config(title):
+    ui.page_title(title)
+    ui.dark_mode(True)
+    ui.colors(primary=COLOR_PRIMARY, secondary=COLOR_SECONDARY)
+    ui.add_head_html("""
+        <style>
+            :root {
+                --nicegui-default-padding: 0;
+                --nicegui-default-gap: 0;
+            }
+        </style>
+    """)
+
+
+class GuiMessage:
+    def __init__(self):
+        self.msg = build_element(None, MESSAGE_ELEMENT)
+
+    def clear(self):
+        self.msg.set_visibility(False)
+        self.msg.clear()
+
+    def write(self, msg):
+        self.msg.clear()
+        with self.msg:
+            build_label(msg, MESSAGE_LABEL)
+        self.msg.set_visibility(True)
+
+
+class GuiResults:
+    def __init__(self, scroll_handler):
+        with build_scroll_area(RESULTS_AREA) as scroll_area:
+            self.results = build_row(RESULTS_ROW)
+            scroll_area.on_scroll(scroll_handler)
+            scroll_area.bind_visibility_from(self.results)
+        self.results.set_visibility(False)
+
+    def set_loading(self, loading):
+        if loading:
+            self.results.set_visibility(False)
+            self.results.clear()
+        else:
+            self.results.set_visibility(True)
+
+    def __enter__(self):
+        return self.results.__enter__()
+
+    def __exit__(self, *_):
+        return self.results.__exit__(*_)
+
+
+class GuiHeader:
+    def __init__(self):
+        self.logo = build_image(LOGO_URL, HEADER_IMAGE)
+        build_label('Clip Tool', HEADER_LABEL)
+        self.search_field = build_input(SEARCH_INPUT)
+        with self.search_field:
+            self.search_icon = build_icon('search', SEARCH_ICON)
+
+    def set_search_handler(self, handler):
+        self.search_field.on_value_change(handler)
+
+    def set_loading(self, loading, found_results=False):
+        if loading:
+            self.logo.classes(add='mt-32', remove='mt-8')
+            self.search_field.props(add='loading')
+            self.search_field.classes(add='my-16', remove='my-4')
+            self.search_icon.set_visibility(False)
+        else:
+            self.search_field.props(remove='loading')
+            self.search_icon.set_visibility(True)
+            if found_results:
+                self.logo.classes(add='mt-8', remove='mt-32')
+                self.search_field.classes(add='my-4', remove='my-16')
+
+    def set_search_value(self, value):
+        self.search_field.props(f'value="{value}"')
 
 
 class Gui:
     def __init__(self, title):
-        ui.page_title(title)
-        ui.dark_mode(True)
-        ui.colors(primary=COLOR_PRIMARY, secondary=COLOR_SECONDARY)
+        build_config(title)
+
+        with build_column(MAIN_PAGE):
+            self.header = GuiHeader()
+            self.results = GuiResults(self._scroll_handler)
+            self.message = GuiMessage()
 
         self._cards = {}
         self._showing_clips = False
         self._get_more_clips = None
 
-        ui.add_head_html("""
-            <style>
-                :root {
-                    --nicegui-default-padding: 0;
-                    --nicegui-default-gap: 0;
-                }
-            </style>
-        """)
-
-        with build_element(None, MAIN_PAGE):
-            self.logo = build_image(LOGO_URL, HEADER_IMAGE)
-            build_label('Clip Tool', HEADER_LABEL)
-            self.search_field = build_input(SEARCH_INPUT)
-            with self.search_field:
-                self.search_icon = build_icon('search', SEARCH_ICON)
-            with build_scroll_area(RESULTS_AREA) as scroll_area:
-                self.results = build_row(RESULTS_ROW)
-                scroll_area.on_scroll(self._scroll_handler)
-                scroll_area.bind_visibility_from(self.results)
-            self.msg = build_element(None, MESSAGE_ELEMENT)
-        self.results.set_visibility(False)
-
     def set_search_handler(self, handler):
-        self.search_field.on_value_change(handler)
+        self.header.set_search_handler(handler)
 
     def set_more_clips(self, handler):
         self._get_more_clips = handler
@@ -130,35 +194,26 @@ class Gui:
                 await self._get_more_clips()
 
     def begin_search(self):
-        self.logo.classes(add='mt-32', remove='mt-8')
-        self.search_field.classes(add='my-16', remove='my-4')
-        self.search_icon.set_visibility(False)
-        self.search_field.props(add='loading')
-        self.results.set_visibility(False)
-        self.results.clear()
+        self.header.set_loading(True)
+        self.results.set_loading(True)
+        self.message.clear()
+
         self._cards.clear()
-        self.msg.set_visibility(False)
-        self.msg.clear()
         self._showing_clips = False
 
     def end_search(self):
-        self.search_field.props(remove='loading')
-        self.search_icon.set_visibility(True)
-        if self._cards:
-            self.results.set_visibility(True)
-            self.logo.classes(add='mt-8', remove='mt-32')
-            self.search_field.classes(add='my-4', remove='my-16')
+        found_results = len(self._cards) > 0
+        self.header.set_loading(False, found_results)
+        if found_results:
+            self.results.set_loading(False)
 
     def show_message(self, msg):
-        self.msg.clear()
-        with self.msg:
-            build_label(msg, MESSAGE_LABEL)
-        self.msg.set_visibility(True)
+        self.message.write(msg)
 
     def _show_channels(self, channels, handler):
         async def _on_click_card(e, handler):
-            slug, name = self._cards.get(e.sender.id, -1)
-            self.search_field.props(f'value="{name}"')
+            slug, name = self._cards.get(e.sender.id, ('', ''))
+            self.header.set_search_value(name)
             await handler(slug)
 
         def _build_card(channel, handler):
@@ -180,7 +235,7 @@ class Gui:
 
     def _show_clips(self, clips):
         def _on_click_card(e):
-            url = self._cards.get(e.sender.id, -1)
+            url = self._cards.get(e.sender.id, '')
             log.debug('clicked %s', url)
 
         def _build_views(views):
