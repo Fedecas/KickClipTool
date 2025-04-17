@@ -1,7 +1,7 @@
 from nicegui import ui
 
 from api import Api
-from gui import Gui
+from gui.gui import Gui
 from log import log
 
 TITLE = 'Kick Clip Tool'
