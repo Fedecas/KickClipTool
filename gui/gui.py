@@ -7,7 +7,7 @@ from gui.constants import (
     CHANNEL_IMAGE, CHANNEL_LABEL, CHANNEL_ICON, FOLLOWERS_LABEL, CLIP_LINK,
     CLIP_IMAGE, DURATION_LABEL, VIEWS_LABEL, VIEWS_ICON, CLIP_LABEL,
     CREATOR_LABEL, DATE_ROW, DATE_ICON, DATE_LABEL, RESULT_CARD, SEARCH_INPUT,
-    SEARCH_ICON, HEADER_IMAGE, HEADER_LABEL, MAIN_PAGE, MIN_CARDS, DATE_FORMAT
+    SEARCH_ICON, HEADER_IMAGE, HEADER_LABEL, MAIN_PAGE, MIN_CARDS
 )
 from gui.utils import (
     build_card, build_column, build_config, build_element, build_icon,
@@ -166,7 +166,7 @@ class Gui:
                     _build_views(views)
 
         def _build_date_label(date):
-            now, created_at = dt.now(UTC), dt.strptime(date, DATE_FORMAT)
+            now, created_at = dt.now(UTC), dt.fromisoformat(date)
             delta = relativedelta(now, created_at)
             v, u = delta.seconds, 'seconds'
             if delta.years > 0:

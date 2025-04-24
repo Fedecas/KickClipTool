@@ -38,4 +38,3 @@ COLOR_SECONDARY = '#667'
 
 # Aux constants
 MIN_CARDS = 21
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
