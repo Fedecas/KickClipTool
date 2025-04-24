@@ -32,14 +32,13 @@ class Api:
     async def _debounced_search(self,
                                 url: str,
                                 headers: Optional[Dict[str, str]] = None,
-                                params: Optional[Dict[str, str]] = None) -> Response:
+                                params: Optional[Dict[str, str]] = None) -> Optional[Response]:
         headers = headers or {}
         params = params or {}
         await sleep(DEBOUNCE_TIME)
         result = None
-        response = self.session.get(url, headers=headers, params=params, impersonate='chrome')
         try:
-            result = await response
+            result = await self.session.get(url, headers=headers, params=params, impersonate='chrome')
         except Timeout:
             log.warning('timeout for %s', (url, headers, params))
             raise
@@ -71,11 +70,14 @@ class Api:
         finally:
             self.running_query = None
 
-        if response.status_code in range(200, 300):
-            content = response.json()
+        if response:
+            if response.status_code in range(200, 300):
+                content = response.json()
+            else:
+                log.error('Response code %d: %s', response.status_code, str(response.content)[:100])
+                msg = str(response.status_code)
         else:
-            log.error('Response code %d: %s', response.status_code, str(response.content)[:100])
-            msg = str(response.status_code)
+            msg = 'no response'
 
         return content, msg
 
