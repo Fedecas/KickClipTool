@@ -1,7 +1,9 @@
 from asyncio import create_task, sleep
 from asyncio.exceptions import CancelledError
+from typing import Tuple, Optional, Dict, List
 
 from curl_cffi import AsyncSession
+from curl_cffi.requests.models import Response
 from curl_cffi.requests.exceptions import Timeout, DNSError
 
 from api.constants import SEARCH_ENDPOINT, CLIPS_ENDPOINT, DEBOUNCE_TIME
@@ -11,13 +13,13 @@ from log import log
 
 
 class Api:
-    def __init__(self):
+    def __init__(self) -> None:
         self.session = AsyncSession()
         self.running_query = None
         self.last_channel = ''
         self.next_cursor = ''
 
-    async def _clean_current_task(self):
+    async def _clean_current_task(self) -> None:
         current = self.running_query
         if current and not current.done():
             current.cancel()
@@ -26,12 +28,32 @@ class Api:
             except CancelledError:
                 log.debug('cancelling %s...', current.get_name())
 
-    async def _debounced_search(self, url, headers=None, params=None):
+    async def _debounced_search(self,
+                                url: str,
+                                headers: Optional[Dict[str, str]] = None,
+                                params: Optional[Dict[str, str]] = None) -> Response:
+        headers = headers or {}
+        params = params or {}
         await sleep(DEBOUNCE_TIME)
-        result = await self.session.get(url, headers=headers, params=params, impersonate='chrome')
+        result = None
+        response = self.session.get(url, headers=headers, params=params, impersonate='chrome')
+        try:
+            result = await response
+        except Timeout:
+            log.warning('timeout for %s', (url, headers, params))
+            raise
+        except DNSError:
+            log.warning('could not resolve host for %s', (url, headers, params))
+            raise
+        except Exception as exc:
+            log.error('unhandled exception "%s" in request %s', str(exc), (url, headers, params))
+            raise
         return result
 
-    async def _get_content(self, url, headers=None, params=None):
+    async def _get_content(self,
+                           url: str,
+                           headers: Optional[Dict[str, str]] = None,
+                           params: Optional[Dict[str, str]] = None) -> Tuple[Dict, str]:
         await self._clean_current_task()
         content, msg = {}, ''
         self.running_query = create_task(self._debounced_search(url, headers=headers, params=params))
@@ -41,12 +63,6 @@ class Api:
             log.debug('successfully request for %s', (url, headers, params))
         except CancelledError:
             log.warning('request %s was cancelled', (url, headers, params))
-            raise
-        except Timeout:
-            log.warning('timeout for %s', (url, headers, params))
-            raise
-        except DNSError:
-            log.warning('Could not resolve host for %s', (url, headers, params))
             raise
         except Exception as exc:
             log.error('unhandled exception "%s" in request %s', str(exc), (url, headers, params))
@@ -62,7 +78,7 @@ class Api:
 
         return content, msg
 
-    async def get_channels(self, word):
+    async def get_channels(self, word) -> Tuple[List[Channel], str]:
         url = SEARCH_ENDPOINT
         params = {'searched_word': word}
         results, msg = await self._get_content(url, params=params)
@@ -71,7 +87,7 @@ class Api:
             channels = [Channel.from_dict(c) for c in results.get('channels', [])]
         return channels, msg
 
-    async def get_clips(self, channel):
+    async def get_clips(self, channel) -> Tuple[List[Clip], str]:
         do_request = True
         clips, msg = [], ''
         url = f'{CLIPS_ENDPOINT}/{channel}/clips'
