@@ -17,6 +17,7 @@ class Api:
         self.session = AsyncSession()
         self.running_query = None
         self.last_channel = ''
+        self.last_cursor = ''
         self.next_cursor = ''
 
     async def _clean_current_task(self) -> None:
@@ -94,7 +95,11 @@ class Api:
         params = {'sort': 'date', 'range': 'all'}
         if channel == self.last_channel:
             if self.next_cursor:
-                params.update({'cursor': self.next_cursor})
+                if self.last_cursor == self.next_cursor:
+                    do_request = False
+                    log.debug('same query from last time, skipping...')
+                else:
+                    params.update({'cursor': self.next_cursor})
             else:
                 do_request = False
                 # msg = 'end of chain'
@@ -103,6 +108,7 @@ class Api:
             self.last_channel = channel
 
         if do_request:
+            self.last_cursor = self.next_cursor
             results, msg = await self._get_content(url, params=params)
             if not msg:
                 clips = [clip_from_dict(c) for c in results.get('clips', [])]
