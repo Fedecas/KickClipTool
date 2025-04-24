@@ -2,13 +2,14 @@ from nicegui import ui
 
 from api.api import Api
 from gui.gui import Gui
+from gui.events import ValueChangeEvent
 from log import log
 
 TITLE = 'Kick Clip Tool'
 
 
 class App:
-    def __init__(self):
+    def __init__(self) -> None:
         self.api = Api()
         self.gui = Gui(TITLE)
         self.gui.set_search_handler(self.search_channel)
@@ -16,7 +17,7 @@ class App:
 
         self.last_channel = ''
 
-    async def search_channel(self, e):
+    async def search_channel(self, e: ValueChangeEvent) -> None:
         self.gui.begin_search()
         word = e.value.strip()
         if word:
@@ -32,7 +33,7 @@ class App:
                 log.debug('no results found')
         self.gui.end_search()
 
-    async def search_clips(self, channel):
+    async def search_clips(self, channel: str) -> None:
         self.last_channel = channel
         self.gui.begin_search()
         log.debug('searching clips for "%s"...', channel)
@@ -45,7 +46,7 @@ class App:
             self.gui.show_message('no results found')
         self.gui.end_search()
 
-    async def more_clips(self):
+    async def more_clips(self) -> None:
         log.debug('more clips for "%s"...', self.last_channel)
         clips, msg = await self.api.get_clips(self.last_channel)
         if msg:
@@ -53,7 +54,7 @@ class App:
         elif clips:
             await self.gui.show_clips(clips)
 
-    def run(self):
+    def run(self) -> None:
         ui.run(uvicorn_reload_excludes='__pycache__/*')
 
 
