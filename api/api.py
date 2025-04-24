@@ -8,7 +8,7 @@ from curl_cffi.requests.exceptions import Timeout, DNSError
 
 from api.constants import SEARCH_ENDPOINT, CLIPS_ENDPOINT, DEBOUNCE_TIME
 
-from models import Channel, Clip
+from models import Channel, Clip, channel_from_dict, clip_from_dict
 from log import log
 
 
@@ -78,16 +78,16 @@ class Api:
 
         return content, msg
 
-    async def get_channels(self, word) -> Tuple[List[Channel], str]:
+    async def get_channels(self, word: str) -> Tuple[List[Channel], str]:
         url = SEARCH_ENDPOINT
         params = {'searched_word': word}
         results, msg = await self._get_content(url, params=params)
         channels = []
         if not msg:
-            channels = [Channel.from_dict(c) for c in results.get('channels', [])]
+            channels = [channel_from_dict(c) for c in results.get('channels', [])]
         return channels, msg
 
-    async def get_clips(self, channel) -> Tuple[List[Clip], str]:
+    async def get_clips(self, channel: str) -> Tuple[List[Clip], str]:
         do_request = True
         clips, msg = [], ''
         url = f'{CLIPS_ENDPOINT}/{channel}/clips'
@@ -97,7 +97,7 @@ class Api:
                 params.update({'cursor': self.next_cursor})
             else:
                 do_request = False
-                msg = 'end of chain'
+                # msg = 'end of chain'
                 log.debug('there is no more clips for "%s"', channel)
         else:
             self.last_channel = channel
@@ -105,6 +105,6 @@ class Api:
         if do_request:
             results, msg = await self._get_content(url, params=params)
             if not msg:
-                clips = [Clip.from_dict(c) for c in results.get('clips', [])]
+                clips = [clip_from_dict(c) for c in results.get('clips', [])]
                 self.next_cursor = results.get('nextCursor', '')
         return clips, msg

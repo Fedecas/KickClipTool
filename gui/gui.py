@@ -1,6 +1,8 @@
 from datetime import datetime as dt
-from dateutil.tz import UTC
+from typing import Callable, List
+
 from dateutil.relativedelta import relativedelta
+from dateutil.tz import UTC
 
 from gui.constants import (
     MESSAGE_ELEMENT, MESSAGE_LABEL, RESULTS_AREA, RESULTS_ROW, LOGO_URL,
@@ -10,22 +12,25 @@ from gui.constants import (
     SEARCH_ICON, HEADER_IMAGE, HEADER_LABEL, MAIN_PAGE, MIN_CARDS
 )
 from gui.utils import (
+    Row,
     build_card, build_column, build_config, build_element, build_icon,
     build_image, build_input, build_label, build_link, build_row, build_scroll_area
 )
+from gui.events import ScrollEvent, GenericEvent
+from models import Channel, Clip
 
 from log import log
 
 
 class GuiMessage:
-    def __init__(self):
-        self.msg = build_element(None, MESSAGE_ELEMENT)
+    def __init__(self) -> None:
+        self.msg = build_element(MESSAGE_ELEMENT)
 
-    def clear(self):
+    def clear(self) -> None:
         self.msg.set_visibility(False)
         self.msg.clear()
 
-    def write(self, msg):
+    def write(self, msg: str) -> None:
         self.msg.clear()
         with self.msg:
             build_label(msg, MESSAGE_LABEL)
@@ -33,39 +38,39 @@ class GuiMessage:
 
 
 class GuiResults:
-    def __init__(self, scroll_handler):
+    def __init__(self, scroll_handler: Callable) -> None:
         with build_scroll_area(RESULTS_AREA) as scroll_area:
             self.results = build_row(RESULTS_ROW)
             scroll_area.on_scroll(scroll_handler)
             scroll_area.bind_visibility_from(self.results)
         self.results.set_visibility(False)
 
-    def set_loading(self, loading):
+    def set_loading(self, loading) -> None:
         if loading:
             self.results.set_visibility(False)
             self.results.clear()
         else:
             self.results.set_visibility(True)
 
-    def __enter__(self):
+    def __enter__(self) -> Row:
         return self.results.__enter__()
 
-    def __exit__(self, *_):
+    def __exit__(self, *_) -> None:
         return self.results.__exit__(*_)
 
 
 class GuiHeader:
-    def __init__(self):
+    def __init__(self) -> None:
         self.logo = build_image(LOGO_URL, HEADER_IMAGE)
         build_label('Clip Tool', HEADER_LABEL)
         self.search_field = build_input(SEARCH_INPUT)
         with self.search_field:
             self.search_icon = build_icon('search', SEARCH_ICON)
 
-    def set_search_handler(self, handler):
+    def set_search_handler(self, handler: Callable) -> None:
         self.search_field.on_value_change(handler)
 
-    def set_loading(self, loading, found_results=False):
+    def set_loading(self, loading: bool, found_results: bool = False) -> None:
         if loading:
             self.logo.classes(add='mt-32', remove='mt-8')
             self.search_field.props(add='loading')
@@ -78,12 +83,12 @@ class GuiHeader:
                 self.logo.classes(add='mt-8', remove='mt-32')
                 self.search_field.classes(add='my-4', remove='my-16')
 
-    def set_search_value(self, value):
+    def set_search_value(self, value: str) -> None:
         self.search_field.props(f'value="{value}"')
 
 
 class Gui:
-    def __init__(self, title):
+    def __init__(self, title: str) -> None:
         build_config(title)
 
         with build_column(MAIN_PAGE):
@@ -91,45 +96,45 @@ class Gui:
             self.results = GuiResults(self._scroll_handler)
             self.message = GuiMessage()
 
-        self._cards = {}
-        self._showing_clips = False
+        self.cards = {}
+        self.showing_clips = False
         self._get_more_clips = None
 
-    def set_search_handler(self, handler):
+    def set_search_handler(self, handler: Callable) -> None:
         self.header.set_search_handler(handler)
 
-    def set_more_clips(self, handler):
+    def set_more_clips(self, handler: Callable) -> None:
         self._get_more_clips = handler
 
-    async def _scroll_handler(self, e):
-        if self._showing_clips and e.vertical_percentage == 1:
+    async def _scroll_handler(self, e: ScrollEvent) -> None:
+        if self.showing_clips and e.vertical_percentage == 1:
             if self._get_more_clips:
                 await self._get_more_clips()
 
-    def begin_search(self):
+    def begin_search(self) -> None:
         self.header.set_loading(True)
         self.results.set_loading(True)
         self.message.clear()
 
-        self._cards.clear()
-        self._showing_clips = False
+        self.cards.clear()
+        self.showing_clips = False
 
-    def end_search(self):
-        found_results = len(self._cards) > 0
+    def end_search(self) -> None:
+        found_results = len(self.cards) > 0
         self.header.set_loading(False, found_results)
         if found_results:
             self.results.set_loading(False)
 
-    def show_message(self, msg):
+    def show_message(self, msg: str) -> None:
         self.message.write(msg)
 
-    def _show_channels(self, channels, handler):
-        async def _on_click_card(e, handler):
-            slug, name = self._cards.get(e.sender.id, ('', ''))
+    def _show_channels(self, channels: List[Channel], handler: Callable) -> None:
+        async def _on_click_card(e: GenericEvent, handler: Callable) -> None:
+            slug, name = self.cards.get(e.sender.id, ('', ''))
             self.header.set_search_value(name)
             await handler(slug)
 
-        def _build_card(channel, handler):
+        def _build_card(channel: Channel, handler: Callable) -> int:
             avatar, followers, name, _, verified = channel
             card = build_card(RESULT_CARD)
             card.on('click', lambda e: _on_click_card(e, handler))
@@ -144,28 +149,28 @@ class Gui:
 
         for c in channels:
             card_id = _build_card(c, handler)
-            self._cards.update({card_id: (c.slug, c.name)})
+            self.cards.update({card_id: (c.slug, c.name)})
 
-    def _show_clips(self, clips):
-        def _on_click_card(e):
-            url = self._cards.get(e.sender.id, '')
+    def _show_clips(self, clips: List[Clip]) -> None:
+        def _on_click_card(e: GenericEvent) -> None:
+            url = self.cards.get(e.sender.id, '')
             log.debug('clicked %s', url)
 
-        def _build_views(views):
+        def _build_views(views: int) -> None:
             with build_label(f'{views}', VIEWS_LABEL):
                 build_icon('visibility', VIEWS_ICON)
 
-        def _build_duration(duration):
+        def _build_duration(duration: int) -> None:
             mins, secs = duration // 60, duration % 60
             build_label(f'{mins:0>2}:{secs:0>2}', DURATION_LABEL)
 
-        def _build_card_image(url, thumbnail, duration, views):
+        def _build_card_image(url: str, thumbnail: str, duration: int, views: int) -> None:
             with build_link(url, CLIP_LINK):
                 with build_image(thumbnail, CLIP_IMAGE):
                     _build_duration(duration)
                     _build_views(views)
 
-        def _build_date_label(date):
+        def _build_date_label(date: str) -> None:
             now, created_at = dt.now(UTC), dt.fromisoformat(date)
             delta = relativedelta(now, created_at)
             v, u = delta.seconds, 'seconds'
@@ -181,12 +186,12 @@ class Gui:
                 v, u = delta.minutes, 'minutes'
             build_label(f'{v} {u} ago', DATE_LABEL)
 
-        def _build_card_date(date):
+        def _build_card_date(date: str) -> None:
             with build_row(DATE_ROW):
                 build_icon('date_range', DATE_ICON)
                 _build_date_label(date)
 
-        def _build_card(clip):
+        def _build_card(clip: Clip) -> int:
             creator, date, duration, thumbnail, title, url, views = clip
             card = build_card(RESULT_CARD)
             card.on('click', _on_click_card)
@@ -199,16 +204,16 @@ class Gui:
 
         for c in clips:
             card_id = _build_card(c)
-            self._cards.update({card_id: c.url})
+            self.cards.update({card_id: c.url})
 
-    def show_channels(self, values, handler):
+    def show_channels(self, values: List[Channel], handler: Callable) -> None:
         with self.results:
             self._show_channels(values, handler)
 
-    async def show_clips(self, values):
-        self._showing_clips = True
+    async def show_clips(self, values: List[Clip]) -> None:
+        self.showing_clips = True
         with self.results:
             self._show_clips(values)
-        if len(self._cards) < MIN_CARDS:
+        if len(self.cards) < MIN_CARDS:
             if self._get_more_clips:
                 await self._get_more_clips()
