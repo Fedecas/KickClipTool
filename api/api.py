@@ -4,13 +4,10 @@ from asyncio.exceptions import CancelledError
 from curl_cffi import AsyncSession
 from curl_cffi.requests.exceptions import Timeout, DNSError
 
+from api.constants import SEARCH_ENDPOINT, CLIPS_ENDPOINT, DEBOUNCE_TIME
+
 from models import Channel, Clip
 from log import log
-
-
-SEARCH_ENDPOINT = 'https://kick.com/api/search'
-CLIPS_ENDPOINT = 'https://kick.com/api/v2/channels'
-DEBOUNCE_TIME = 0.5
 
 
 class Api:

@@ -1,6 +1,6 @@
 from nicegui import ui
 
-from api import Api
+from api.api import Api
 from gui.gui import Gui
 from log import log
 
