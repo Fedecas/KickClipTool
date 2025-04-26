@@ -62,7 +62,7 @@ class Api:
             response = await self.running_query
             log.debug('successfully request for %s', (url, headers, params))
         except CancelledError:
-            log.warning('request %s was cancelled', (url, headers, params))
+            log.debug('request %s was cancelled', (url, headers, params))
             raise
         except Exception as exc:
             log.error('unhandled exception "%s" in request %s', str(exc), (url, headers, params))
