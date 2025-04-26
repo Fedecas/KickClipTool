@@ -3,6 +3,8 @@ __pycache__/
 
 # Distribution / packaging
 KCT/
+venv/
+env/
 
 # VS Code
 .vscode/
