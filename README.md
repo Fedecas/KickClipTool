@@ -20,7 +20,7 @@ A simple tool for searching channels and clips on kick.com
     ```bash
     python -m venv venv
     source venv/bin/activate
-    (on Windows, run: venv/Scripts/activate.bat)
+    (on Windows, run: venv/Scripts/activate)
     ```
 4. Install dependencies:
     ```bash
@@ -29,14 +29,7 @@ A simple tool for searching channels and clips on kick.com
 
 ## Usage
 
-* Activate the virtual environment (if it isn't already) active):
-    ```bash
-    source venv/bin/activate
-    ```
-    Or on Windows, run:
-    ```bash
-    venv/Scripts/activate.bat
-    ```
+* Activate the virtual environment (if it isn't already active):
 
 * Run the application using:
     ```bash
