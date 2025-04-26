@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from nicegui import ui
 
 from api.api import Api
@@ -57,7 +55,10 @@ class App:
             await self.gui.show_clips(clips)
 
     def run(self) -> None:
-        ui.run(title=TITLE, favicon=Path('favicon.ico'), uvicorn_reload_excludes='__pycache__/*')
+        ui.run(title=TITLE, favicon='favicon.ico',
+               # native=True, window_size=(1280, 720), reload=False,
+               uvicorn_reload_excludes='__pycache__/*', uvicorn_logging_level='warning',
+               show_welcome_message=False)
 
 
 if __name__ in {"__main__", "__mp_main__"}:
