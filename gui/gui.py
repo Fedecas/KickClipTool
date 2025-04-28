@@ -171,7 +171,8 @@ class Gui:
                     _build_views(views)
 
         def _build_date_label(date: str) -> None:
-            now, created_at = dt.now(UTC), dt.fromisoformat(date)
+            now = dt.now(UTC)
+            created_at = dt.fromisoformat(date.replace('Z', '+00:00'))
             delta = relativedelta(now, created_at)
             v, u = delta.seconds, 'seconds'
             if delta.years > 0:
