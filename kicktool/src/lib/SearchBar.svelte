@@ -10,7 +10,7 @@
     class="pepe outline-2 rounded-3xl w-96 transition-all text-lg py-3 pl-16 bg-black focus:outline-green-500 focus:outline-3 {hasResults ? 'my-6' : 'my-16'}"
     placeholder="Search channel"
     type="search"
-    bind:value={value}
+    bind:value
     oninput={handle_search}
   />
   <span class="absolute inset-y-0 left-4 flex items-center">
