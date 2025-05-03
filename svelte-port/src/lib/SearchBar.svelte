@@ -7,7 +7,7 @@
 
 <div class="relative">
   <input
-    class="pepe outline-2 rounded-3xl w-96 transition-all text-lg py-3 pl-16 bg-black focus:outline-green-500 focus:outline-3 {hasResults ? 'my-6' : 'my-16'}"
+    class="pepe outline-2 rounded-3xl w-96 transition-all text-lg py-3 pl-16 bg-black focus:outline-green-500 focus:outline-3 {hasResults ? 'mb-3' : 'my-16'}"
     placeholder="Search channel"
     type="search"
     bind:value

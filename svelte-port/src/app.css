@@ -13,4 +13,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --primary: #00ff00; /* Azul, por ejemplo */
+  --secondary: #6d6d6d; /* Verde, por ejemplo */
 }
