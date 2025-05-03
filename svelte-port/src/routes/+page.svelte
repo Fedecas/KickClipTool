@@ -18,15 +18,12 @@
   }
 
   async function handle_search() {
-    if (value.length > 0) {
-      try {
-        products = await searchChannel(value)
-      } catch (error) {
-        console.error('Error fetching products:', error)
-      }
-    } else {
-      products = []
+    try {
+      products = await searchChannel(value)
+    } catch (error) {
+      console.error('Error fetching products:', error)
     }
+
     searching = false
   }
 </script>
