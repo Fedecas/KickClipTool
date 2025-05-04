@@ -5,11 +5,22 @@
   import SearchResults from '$lib/SearchResults.svelte';
 
   let value: string = $state('');
+  let clicked: any = $state({});
   let channels: any[] = $state([]);
   let searching: boolean = $state(false);
   let hasResults: boolean = $derived(channels.length > 0);
-
+  
   let timeout: number = 0;
+
+  $effect(() => {
+      if (clicked) {
+        channels = [];
+
+        const user: any = clicked?.user || {};
+        value = user.username || '';
+      }
+    }
+  )
 
   async function debounce_search() {
     searching = true;
@@ -24,8 +35,13 @@
   }
 </script>
 
+{@debug value}
+
 <div class ="flex flex-col max-h-screen items-center">
   <Logo {hasResults} />
   <SearchBar bind:value {searching} handle_search={debounce_search} {hasResults} />
-  <SearchResults {channels} {hasResults} />
+  <SearchResults {channels} {hasResults} bind:clicked/>
+  {#if !hasResults}
+  <h1>no results found</h1>
+  {/if}
 </div>

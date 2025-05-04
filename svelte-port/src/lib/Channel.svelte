@@ -1,7 +1,7 @@
 <script lang="ts">
   import { BadgeCheck } from 'lucide-svelte';
 
-  let { channel } = $props();
+  let { channel, clicked = $bindable() } = $props();
 
   const user: any = channel?.user || {};
 
@@ -18,8 +18,11 @@
   }
 </script>
 
-<div class="outline flex flex-col items-center rounded-md gap-1">
-  <img class="w-96 h-64 object-cover" src={avatar} alt="Channel avatar" />
+<button
+  type="button"
+  onclick={() => clicked = channel}
+  class="outline flex flex-col items-center rounded-md gap-1">
+  <img class="w-96 h-64 object-cover hover:outline" src={avatar} alt="Channel avatar"/>
   <span class="flex flex-row">
     <h1 class="text-2xl mt-1">{name}</h1>
     {#if verified}
@@ -27,5 +30,4 @@
     {/if}
   </span>
   <h2 class="font-medium text-(--primary) mb-1">{followers} followers</h2>
-  <!--<h1 class="text-md font-medium">{verified}</h1>-->
-</div>
+</button>
