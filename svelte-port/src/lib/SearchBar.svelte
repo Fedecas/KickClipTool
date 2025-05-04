@@ -1,17 +1,25 @@
 <script lang="ts">
-  import Spinner from './Spinner.svelte';
   import { Search } from 'lucide-svelte';
+  import Spinner from '$lib/Spinner.svelte';
 
-  let { value = $bindable(), searching, handle_search, hasResults } = $props()
+  let { value, searching, hasResults, onInput } = $props();
+  let timeout: number = 0;
+
+  function handleInput(): void {
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(onInput, 300, value);
+  }
 </script>
 
 <div class="relative">
   <input
-    class="pepe outline-2 rounded-3xl w-96 transition-all text-lg py-3 pl-16 bg-black focus:outline-green-500 focus:outline-3 {hasResults ? 'mb-3' : 'my-16'}"
-    placeholder="Search channel"
+    class="card outline-2 rounded-3xl w-96 transition-all text-lg py-3 pl-16
+    focus:outline-(--primary) focus:outline-3 focus:drop-shadow-xl focus:drop-shadow-(color:--primary)
+    {hasResults ? 'mb-3' : 'my-16'}"
+    placeholder="Search channel..."
     type="search"
     bind:value
-    oninput={handle_search}
+    oninput={() => handleInput()}
   />
   <span class="absolute inset-y-0 left-4 flex items-center">
     {#if searching}
@@ -21,9 +29,3 @@
     {/if}
   </span>
 </div>
-
-<style>
-  .pepe:focus {
-    filter: drop-shadow(0 0 2rem #00ff00);
-  }
-</style>
