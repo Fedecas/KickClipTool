@@ -11,21 +11,21 @@
   }
 </script>
 
-<div class="relative">
+<span class="outline relative flex flex-row">
   <input
     class="card outline-2 rounded-3xl w-96 transition-all text-lg py-3 pl-16
     focus:outline-(--primary) focus:outline-3 focus:drop-shadow-xl focus:drop-shadow-(color:--primary)
-    {hasResults ? 'mb-3' : 'my-16'}"
+    {hasResults ? 'my-2' : 'my-16'}"
     placeholder="Search channel..."
     type="search"
     bind:value
     oninput={() => handleInput()}
   />
-  <span class="absolute inset-y-0 left-4 flex items-center">
+  <span class="absolute left-4 self-center">
     {#if searching}
     <Spinner />
     {:else}
     <Search />
     {/if}
   </span>
-</div>
+</span>
