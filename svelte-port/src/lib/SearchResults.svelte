@@ -1,5 +1,6 @@
 <script lang="ts">
   import Channel from './Channel.svelte';
+  import Clip from './Clip.svelte';
 
   let { results, hasResults = $bindable(), selected, onClick } = $props();
 </script>
@@ -8,10 +9,12 @@
   <div class="h-full m-3 p-2 grid grid-cols-6 gap-2">
     {#if !selected}
       {#each results as channel}
-      <Channel {channel} handleClick={onClick}/>
+      <Channel {channel} handleClick={onClick} />
       {/each}
     {:else}
-      <h1>OAA</h1>
+      {#each results as clip}
+      <Clip {clip} />
+      {/each}
     {/if}
   </div>
 </div>
