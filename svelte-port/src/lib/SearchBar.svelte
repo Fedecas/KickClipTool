@@ -11,21 +11,30 @@
   }
 </script>
 
-<span class="outline relative flex flex-row">
+<div class="relative w-96 min-h-12 {hasResults ? 'my-2' : 'my-16'}">
   <input
-    class="card outline-2 rounded-3xl w-96 transition-all text-lg py-3 pl-16
-    focus:outline-(--primary) focus:outline-3 focus:drop-shadow-xl focus:drop-shadow-(color:--primary)
-    {hasResults ? 'my-2' : 'my-16'}"
+    class="absolute outline-0 pl-16 size-full top-0 z-1"
     placeholder="Search channel..."
     type="search"
     bind:value
     oninput={() => handleInput()}
   />
-  <span class="absolute left-4 self-center">
+  <div
+  class="absolute outline-2 size-full rounded-3xl py-3 transition-all
+  focus:outline-(--primary) focus:outline-3 focus:drop-shadow-xl focus:drop-shadow-(color:--primary)">
+  </div>
+  <div class="absolute ml-4 top-3">
     {#if searching}
     <Spinner />
     {:else}
     <Search />
     {/if}
-  </span>
-</span>
+  </div>
+</div>
+
+<style>
+  input:focus + div {
+    outline: 3px solid var(--primary);
+    filter: drop-shadow(0 6px 4px var(--primary));
+  }
+</style>
