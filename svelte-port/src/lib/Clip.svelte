@@ -2,7 +2,7 @@
   import { Eye, Calendar } from 'lucide-svelte';
   import { formatDistance } from 'date-fns';
 
-  let { clip } = $props();
+  let { clip, handleClick } = $props();
 
   const creator: string = clip.creator?.username || '';
   const date: string = clip.created_at || '';
@@ -27,6 +27,7 @@
 
 <button
   type="button"
+  onclick={() => handleClick({url: url})}
   class="outline rounded-sm p-1 hover:outline-(--primary)">
   <span class="relative flex">
     <img

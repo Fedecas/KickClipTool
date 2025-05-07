@@ -2,7 +2,7 @@
   import Channel from './Channel.svelte';
   import Clip from './Clip.svelte';
 
-  let { results, hasResults = $bindable(), selected, getClips } = $props();
+  let { results, hasResults, selected, getClips, clipUrl = $bindable() } = $props();
 
   const COOLDOWN: number = 1000;
   const THRESHOLD: number = 300;
@@ -11,7 +11,7 @@
   let lastScrolledTo: number = 0;
   let triggered: boolean = false;
 
-  function handleClick(channel: any): void {
+  function handleChannelClick(channel: any): void {
     actual = channel;
     getClips(actual);
   }
@@ -30,9 +30,11 @@
       lastScrolledTo = scrolledTo;
     }
   }
-</script>
 
-{@debug results}
+  function handleClipClick(clip: any): void {
+    clipUrl = clip.url;
+  }
+</script>
 
 <div
   class="outline w-full h-full m-3 overflow-y-auto {hasResults ? '' : 'invisible'}"
@@ -40,11 +42,11 @@
   <div class="h-full m-3 p-2 grid grid-cols-6 gap-2">
     {#if !selected}
       {#each results as channel}
-      <Channel {channel} {handleClick} />
+        <Channel {channel} handleClick={handleChannelClick} />
       {/each}
     {:else}
       {#each results as clip}
-      <Clip {clip} />
+        <Clip {clip} handleClick={handleClipClick} />
       {/each}
     {/if}
   </div>
