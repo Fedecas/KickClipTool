@@ -19,8 +19,8 @@
   };
 
   function formatDate(date: string): string {
-    const clipDate: Date = new Date(date);
     const today: Date = new Date();
+    const clipDate: Date = new Date(date);
     return formatDistance(today, clipDate);
   }
 </script>

@@ -10,25 +10,36 @@
   let results: any[] = $state([]);
   let hasResults: boolean = $derived(results.length > 0);
 
+  let endReached: boolean = false;
   let nextCursor: string = '';
 
   async function handle_search_clips(channel: any) {
-    searchField = channel.name;
-    selected = channel.slug;
-    searching = true;
-    results = [];
-
-    const res = await searchClips(selected);
-    results = res?.clips;
-    nextCursor = res?.nextCursor;
-
-    searching = false;
+    if (!endReached) {
+      searching = true;
+      if (selected !== channel.slug) {
+        selected = channel.slug;
+        searchField = channel.name;
+        results = [];
+      }
+  
+      const res = await searchClips(selected, nextCursor);
+      results = [...results, ...res?.clips];
+      nextCursor = res?.nextCursor;
+  
+      if (!nextCursor) {
+        endReached = true;
+      }
+  
+      searching = false;
+    }
   }
 
   async function handle_search_channels(channel: string) {
     selected = '';
     searching = true;
     results = [];
+    nextCursor = '';
+    endReached = false;
 
     results = await searchChannels(channel);
 
@@ -39,7 +50,7 @@
 <div class ="flex flex-col max-h-screen items-center">
   <Logo {hasResults} />
   <SearchBar value={searchField} {searching} {hasResults} onInput={handle_search_channels} />
-  <SearchResults {results} {hasResults} {selected} onClick={handle_search_clips} />
+  <SearchResults {results} {hasResults} {selected} getClips={handle_search_clips} />
   {#if !hasResults}
   <h1>no results found</h1>
   {/if}
