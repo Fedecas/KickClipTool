@@ -2,7 +2,7 @@
   import Channel from './Channel.svelte';
   import Clip from './Clip.svelte';
 
-  let { results, hasResults, selected, getClips, clipUrl = $bindable() } = $props();
+  let { results, hasResults, selected, getClips, clipRef = $bindable(null) } = $props();
 
   const COOLDOWN: number = 1000;
   const THRESHOLD: number = 300;
@@ -32,7 +32,11 @@
   }
 
   function handleClipClick(clip: any): void {
-    clipUrl = clip.url;
+    const parts: string[] = clip.url.split('/');
+    clipRef = {
+      id: parts[parts.length - 3],
+      name: parts[parts.length - 2]
+    };
   }
 </script>
 

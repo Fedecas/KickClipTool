@@ -1,15 +1,18 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { X, Download } from 'lucide-svelte';
   import videojs from 'video.js';
-  import 'video.js/dist/video-js.css';
-  import { X } from 'lucide-svelte';
 
-  let { src = $bindable() } = $props();
+  const STREAM: string = 'https://clips.kick.com';
 
-  let videoElement: HTMLMediaElement;
+  let { ref = $bindable(null) } = $props();
+  let posterUrl: string = $derived(`${STREAM}/clips/${ref.id}/${ref.name}/thumbnail.webp`);
+  let videoUrl: string = $derived(`${STREAM}/clips/${ref.id}/${ref.name}/playlist.m3u8`);
+  let downloadUrl: string = $derived(`${STREAM}/tmp/${ref.name}.mp4`);
+  let loaded: boolean = $state(false);
 
   onMount(() => {
-    const player = videojs(videoElement, {});
+    const player = videojs('player');
 
     return () => {
       if (player) player.dispose();
@@ -17,20 +20,41 @@
   });
 </script>
 
-<div class="fixed inset-0 flex justify-center items-center z-4">
-  <div class="absolute inset-0 backdrop-blur-sm"></div>
-  <button
-    type="button"
-    class="absolute top-5 right-5 bg-(--primary) rounded-md p-2 hover:bg-black/70"
-    onclick={() => src = ''}>
-    <X class="text-black hover:text-white" />
-  </button>
+<div class="fixed flex flex-col inset-0 justify-center items-center backdrop-blur-sm z-4">
   <video
-    bind:this={videoElement}
-    class="video-js vjs-default-skin max-w-[75%] max-h-[75%]"
-    controls
-    preload="auto">
-    <source src={src} type="application/x-mpegURL" />
-    <track kind="captions" srclang="en" label="English" default />
+    id="player"
+    class="video-js max-w-[75vw] max-h-[75vh]"
+    poster={posterUrl}
+    controls={loaded}
+    playsinline
+    onloadeddata={() => {loaded = true}}
+    autoplay>
+    <source
+      src={videoUrl}
+      type="application/x-mpegURL" />
+    <track kind="captions" default />
   </video>
+  <div class="group">
+    <button
+      type="button"
+      aria-label="Close video"
+      onclick={() => ref = null}
+      class="absolute top-30 right-20 bg-(--primary) rounded-md p-2 group-hover:bg-black/50">
+      <X class="text-black group-hover:text-white" />
+    </button>
+  </div>
+  <a
+    href={downloadUrl}
+    download
+    class="group">
+    <button
+      type="button"
+      aria-label="Download video"
+      class="absolute top-50 right-20 bg-(--primary) rounded-md p-2 group-hover:bg-black/50">
+      <Download class="text-black group-hover:text-white" />
+    </button>
+  </a>
 </div>
+
+<style>
+</style>
