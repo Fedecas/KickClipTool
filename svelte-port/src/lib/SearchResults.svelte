@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { ClipRef } from './types';
   import Channel from './Channel.svelte';
   import Clip from './Clip.svelte';
 
@@ -16,6 +17,10 @@
     getClips(actual);
   }
 
+  function handleClipClick(ref: ClipRef): void {
+    clipRef = ref;
+  }
+
   function handleScroll(e: any): void {
     if (selected) {
       const target: Element = e.currentTarget;
@@ -23,20 +28,12 @@
       const isGoingDown: boolean = scrolledTo > lastScrolledTo;
       const shouldTrigger: boolean = scrolledTo >= (target.scrollHeight - THRESHOLD);
       if (isGoingDown && shouldTrigger && !triggered) {
-        getClips(actual);
         triggered = true;
+        getClips(actual);
         setTimeout(() => {triggered = false}, COOLDOWN);
       }
       lastScrolledTo = scrolledTo;
     }
-  }
-
-  function handleClipClick(clip: any): void {
-    const parts: string[] = clip.url.split('/');
-    clipRef = {
-      id: parts[parts.length - 3],
-      name: parts[parts.length - 2]
-    };
   }
 </script>
 

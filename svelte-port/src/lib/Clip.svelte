@@ -1,16 +1,26 @@
 <script lang="ts">
+  import type { ClipRef } from './types';
   import { Eye, Calendar } from 'lucide-svelte';
   import { formatDistance } from 'date-fns';
 
-  let { clip, handleClick } = $props();
+  interface Props {
+    clip: any,
+    handleClick: (ref: ClipRef) => void
+  }
 
-  const creator: string = clip.creator?.username || '';
-  const date: string = clip.created_at || '';
-  const duration: number = clip.duration || 0;
-  const thumbnail: string = clip.thumbnail_url || '';
-  const title: string = clip.title || '';
-  const url: string = clip.clip_url || '';
-  const views: number = clip.views || 0;
+  let { clip, handleClick }: Props = $props();
+
+  const creator: string = clip.creator.username;
+  const date: string = clip.created_at;
+  const duration: number = clip.duration;
+  const thumbnail: string = clip.thumbnail_url;
+  const title: string = clip.title;
+  const views: number = clip.views;
+
+  // For clip reference
+  const id: string = clip.id;
+  const video: string = clip.clip_url;
+  const slug: string = clip.channel.slug;
 
   function formatDuration(duration: number): string {
     const minutes: string = `${Math.floor(duration / 60)}`;
@@ -27,7 +37,16 @@
 
 <button
   type="button"
-  onclick={() => handleClick({url: url})}
+  onclick={() => {
+    const ref: ClipRef = {
+      id: id,
+      thumbnail: thumbnail,
+      video: video,
+      title: title,
+      channel: slug
+    };
+    handleClick(ref);
+  }}
   class="outline rounded-sm p-1 hover:outline-(--primary)">
   <span class="relative flex">
     <img

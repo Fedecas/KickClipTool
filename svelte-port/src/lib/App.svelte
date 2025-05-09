@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { ClipRef } from '$lib/types';
   import { searchChannels, searchClips } from '$lib/api';
   import Logo from '$lib/Logo.svelte';
   import SearchBar from '$lib/SearchBar.svelte';
@@ -9,7 +10,7 @@
   let searching: boolean = $state(false);
   let selected: string = $state('');
   let results: any[] = $state([]);
-  let clipRef: any = $state(null);
+  let clipRef: ClipRef | null = $state(null);
   let hasResults: boolean = $derived(results.length > 0);
 
   let endReached: boolean = false;
