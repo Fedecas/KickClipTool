@@ -41,7 +41,7 @@
 
 <div class="absolute flex flex-row inset-0 items-center justify-center
             backdrop-blur-sm bg-linear-[black,transparent,black] z-4">
-  <div class="shadow-xl shadow-(color:--primary) max-h-[75dvh] aspect-[16/9] rounded-md">
+  <div class="shadow-lg/80 shadow-(color:--primary) max-h-[75dvh] aspect-[16/9] rounded-md">
     <video
       bind:this={player}
       poster={posterUrl}

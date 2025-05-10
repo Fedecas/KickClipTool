@@ -2,7 +2,6 @@
   import type { ChannelObject, ChannelRef, ClipObject, ClipRef } from '$lib/types';
   import Channel from '$lib/Channel.svelte';
   import Clip from '$lib/Clip.svelte';
-    import type { UIEventHandler } from 'svelte/elements';
 
   interface Props {
     results: ClipObject[] | ChannelObject[],
@@ -50,7 +49,7 @@
 </script>
 
 <div
-  class="outline size-full m-3 overflow-y-auto {hasResults ? '' : 'invisible'}"
+  class="outline size-full m-3 overflow-y-auto bg-gray-950 {hasResults ? '' : 'invisible'}"
   onscroll={(e) => handleScroll(e)}>
   <div class="h-full m-3 p-2 grid grid-cols-6 gap-2">
     {#if !selected}
