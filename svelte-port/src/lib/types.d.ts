@@ -1,3 +1,42 @@
+export interface ApiChannel {
+  id?: number;
+  user_id?: number;
+  slug?: string;
+  is_banned?: boolean;
+  playback_url?: string;
+  name_updated_at?: string | null;
+  vod_enabled?: boolean;
+  subscription_enabled?: boolean;
+  is_affiliate?: boolean;
+  is_live?: boolean;
+  followers_count?: number;
+  viewer_count_ivs?: number;
+  last_activity_at?: string;
+  viewer_count_ws?: number;
+  viewer_count?: number;
+  userId?: number;
+  followersCount?: number;
+  following?: boolean;
+  subscription?: boolean;
+  isLive?: boolean;
+  recentCategories?: string[];
+  can_host?: boolean;
+  user?: {
+    id?: number;
+    username?: string;
+    agreed_to_terms?: boolean;
+    email_verified_at?: string;
+    bio?: string | null;
+    profilePic?: string | null;
+  };
+  verified?: {
+    id?: number;
+    channel_id?: number;
+    created_at?: string;
+    updated_at?: string;
+  } | null;
+}
+
 export interface ApiClip {
   id?: string;
   livestream_id?: string;
@@ -38,9 +77,22 @@ export interface ApiClip {
   };
 }
 
+export interface ApiChannelsResponse {
+  channels?: ApiChannel[];
+  categories?: any[];
+}
+
 export interface ApiClipsResponse {
   clips?: ApiClip[];
   nextCursor?: string;
+}
+
+export interface ChannelObject {
+  slug: string;
+  followers: number;
+  name: string;
+  avatar: string;
+  verified: boolean;
 }
 
 export interface ClipObject {
@@ -55,10 +107,17 @@ export interface ClipObject {
   channel: string;
 };
 
+export type ChannelsResponse = ChannelObject[];
+
 export interface ClipsResponse {
   clips: ClipObject[];
   nextCursor: string;
 };
+
+export interface ChannelRef {
+  slug: string;
+  name: string;
+}
 
 export interface ClipRef {
   id: string;

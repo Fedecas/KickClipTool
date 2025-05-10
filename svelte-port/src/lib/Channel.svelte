@@ -1,15 +1,22 @@
 <script lang="ts">
   import { BadgeCheck } from 'lucide-svelte';
 
-  let { channel, handleClick } = $props();
+  import type { ChannelObject, ChannelRef } from './types';
 
-  const user: any = channel?.user || {};
+  interface Props {
+    channel: ChannelObject,
+    handleClick: (channel: ChannelRef) => void
+  }
 
-  const avatar: string = user.profilePic || randomAvatar();
-  const followers: number = channel?.followersCount || 0;
-  const name: string = user.username || '';
-  const verified: boolean = !!channel?.verified;
-  const slug: string = channel?.slug || '';
+  // Runes
+  let {
+    channel,
+    handleClick = () => {}
+  }: Props = $props();
+
+  // Internal
+  const { slug, followers, name, avatar, verified } = channel;
+  const validAvatar: string = avatar || randomAvatar();
 
   function randomAvatar(): string {
     const AVATARS: number = 6;
@@ -23,7 +30,7 @@
   onclick={() => handleClick({name: name, slug: slug})}
   class="outline flex flex-col items-center rounded-md gap-1">
   <img
-    src={avatar}
+    src={validAvatar}
     alt="Channel avatar"
     class="w-96 h-64 object-cover hover:outline"/>
   <span class="flex flex-row">

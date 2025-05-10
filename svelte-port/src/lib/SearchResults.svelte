@@ -1,13 +1,13 @@
 <script lang="ts">
-  import type { ClipObject, ClipRef } from '$lib/types';
+  import type { ChannelObject, ChannelRef, ClipObject, ClipRef } from '$lib/types';
   import Channel from '$lib/Channel.svelte';
   import Clip from '$lib/Clip.svelte';
 
   interface Props {
-    results: ClipObject[] | any[],
+    results: ClipObject[] | ChannelObject[],
     hasResults: boolean,
     selected: string,
-    getClips: (channel: any) => void,
+    getClips: (channel: ChannelRef) => void,
     clipRef: ClipRef | null
   }
 
@@ -25,11 +25,11 @@
   }: Props = $props();
 
   // Internal
-  let actual: any = {};
+  let actual: ChannelRef | null = null;
   let lastScrolledTo: number = 0;
   let triggered: boolean = false;
 
-  function handleChannelClick(channel: any): void {
+  function handleChannelClick(channel: ChannelRef): void {
     actual = channel;
     getClips(actual);
   }
@@ -39,6 +39,7 @@
   }
 
   function handleScroll(e: any): void {
+    console.log(e, typeof(e))
     if (selected) {
       const target: Element = e.currentTarget;
       const scrolledTo: number = target.scrollTop + target.clientHeight;
@@ -46,7 +47,7 @@
       const shouldTrigger: boolean = scrolledTo >= (target.scrollHeight - THRESHOLD);
       if (isGoingDown && shouldTrigger && !triggered) {
         triggered = true;
-        getClips(actual);
+        if (actual) getClips(actual);
         setTimeout(() => {triggered = false}, COOLDOWN);
       }
       lastScrolledTo = scrolledTo;
@@ -60,11 +61,11 @@
   <div class="h-full m-3 p-2 grid grid-cols-6 gap-2">
     {#if !selected}
       {#each results as channel}
-        <Channel {channel} handleClick={handleChannelClick} />
+        <Channel channel={(channel as ChannelObject)} handleClick={handleChannelClick} />
       {/each}
     {:else}
       {#each results as clip}
-        <Clip {clip} handleClick={handleClipClick} />
+        <Clip clip={(clip as ClipObject)} handleClick={handleClipClick} />
       {/each}
     {/if}
   </div>

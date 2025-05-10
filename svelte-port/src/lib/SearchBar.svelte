@@ -1,8 +1,24 @@
 <script lang="ts">
   import { Search } from 'lucide-svelte';
+
   import Spinner from '$lib/Spinner.svelte';
 
-  let { value, searching, hasResults, onInput } = $props();
+  interface Props {
+    value: string,
+    searching: boolean,
+    hasResults: boolean,
+    onInput: (value: string) => void
+  }
+
+  // Runes
+  let {
+    value = '',
+    searching = false,
+    hasResults = false,
+    onInput = () => {}
+  }: Props = $props();
+
+  // Internal
   let timeout: number = 0;
 
   function handleInput(): void {

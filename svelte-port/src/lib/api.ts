@@ -1,29 +1,41 @@
-import type { ApiClip, ApiClipsResponse, ClipsResponse } from '$lib/types';
+import type { ApiChannel, ApiChannelsResponse, ChannelsResponse,
+              ApiClip, ApiClipsResponse, ClipsResponse } from '$lib/types';
 
 const CHANNELS_ENDPOINT = 'https://kick.com/api/search'
 const CLIPS_ENDPOINT = 'https://kick.com/api/v2/channels'
 
-export async function searchChannels(query: string): Promise<any[]> {
-  let result: any[] = [];
-  let response: Response = {} as Response;
-  if (query.length >= 3) {
-    const params = new URLSearchParams({'searched_word': query});
-    const requestUrl: string = `${CHANNELS_ENDPOINT}?${params}`;
+export async function searchChannels(query: string): Promise<ChannelsResponse> {
+  let result: ChannelsResponse = [];
+  if (query.length < 3) return result;
 
-    console.debug('fetching', requestUrl, '...');
-    try {
-      response = await fetch(requestUrl);
-      console.debug(`fetch ended (${response.status}, ${response.statusText})`);
+  let apiRes: ApiChannelsResponse = {};
+  const params = new URLSearchParams({'searched_word': query});
+  const requestUrl: string = `${CHANNELS_ENDPOINT}?${params}`;
 
-      if (response.ok) {
-        const res = await response.json();
-        result = res?.channels || [];
-      } else {
-        console.error(`Network response was not ok (${response.status})`);
-      }
-    } catch (error) {
-      console.error(`Error fetching channels: ${error}`);
+  console.debug('fetching', requestUrl, '...');
+  try {
+    const response = await fetch(requestUrl);
+    console.debug(`fetch ended (${response.status}, ${response.statusText})`);
+
+    if (response.ok) {
+      apiRes = await response.json();
+    } else {
+      console.error(`Network response was not ok (${response.status})`);
     }
+  } catch (error) {
+    console.error(`Error fetching channels: ${error}`);
+  }
+
+  if (apiRes.channels) {
+    result = apiRes.channels.map((channel: ApiChannel) => {
+      return {
+        slug: channel.slug ?? 'slug',
+        followers: channel.followersCount ?? 0,
+        name: channel.user?.username ?? 'name',
+        avatar: channel.user?.profilePic ?? '',
+        verified: !!channel.verified
+      };
+    });
   }
 
   return result;
@@ -42,7 +54,7 @@ export async function searchClips(query: string, cursor: string): Promise<ClipsR
 
   console.debug('fetching', requestUrl, '...');
   try {
-    const response: Response = await fetch(requestUrl);
+    const response = await fetch(requestUrl);
     console.debug(`fetch ended (${response.status}, ${response.statusText})`);
 
     if (response.ok) {
