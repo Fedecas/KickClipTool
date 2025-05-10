@@ -2,6 +2,7 @@
   import type { ChannelObject, ChannelRef, ClipObject, ClipRef } from '$lib/types';
   import Channel from '$lib/Channel.svelte';
   import Clip from '$lib/Clip.svelte';
+    import type { UIEventHandler } from 'svelte/elements';
 
   interface Props {
     results: ClipObject[] | ChannelObject[],
@@ -38,10 +39,10 @@
     clipRef = ref;
   }
 
-  function handleScroll(e: any): void {
+  function handleScroll(e: UIEvent): void {
     console.log(e, typeof(e))
     if (selected) {
-      const target: Element = e.currentTarget;
+      const target: HTMLDivElement = e.currentTarget as HTMLDivElement;
       const scrolledTo: number = target.scrollTop + target.clientHeight;
       const isGoingDown: boolean = scrolledTo > lastScrolledTo;
       const shouldTrigger: boolean = scrolledTo >= (target.scrollHeight - THRESHOLD);
