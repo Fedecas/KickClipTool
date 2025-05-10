@@ -29,16 +29,7 @@
 
 <button
   type="button"
-  onclick={() => {
-    const ref: ClipRef = {
-      id: id,
-      thumbnail: thumbnail,
-      video: video,
-      title: title,
-      channel: channel
-    };
-    handleClick(ref);
-  }}
+  onclick={() => {handleClick({id, thumbnail, video, title, channel})}}
   class="outline rounded-sm p-1 hover:outline-(--primary)">
   <span class="relative flex">
     <img
