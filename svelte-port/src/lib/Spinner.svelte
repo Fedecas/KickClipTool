@@ -2,8 +2,10 @@
 
 <style>
   .loader {
-    width: 48px;
-    height: 48px;
+    width: 100%;
+    height: 100%;
+    max-width: 48px;
+    max-height: 48px;
     border-radius: 50%;
     display: inline-block;
     border-top: 3px solid var(--primary);

@@ -39,11 +39,11 @@
   class="absolute outline-2 size-full rounded-3xl py-3 transition-all
   focus:outline-(--primary) focus:outline-3 focus:drop-shadow-xl focus:drop-shadow-(color:--primary)">
   </div>
-  <div class="absolute ml-4 top-3">
+  <div class="absolute ml-5 top-2.5 size-7">
     {#if searching}
     <Spinner />
     {:else}
-    <Search />
+    <Search class="size-full" />
     {/if}
   </div>
 </div>
