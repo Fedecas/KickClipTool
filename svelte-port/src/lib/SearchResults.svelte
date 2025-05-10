@@ -17,13 +17,7 @@
   const THRESHOLD: number = 300;
 
   // Runes
-  let {
-    results = [],
-    hasResults = false,
-    selected = '',
-    getClips = () => {},
-    clipRef = $bindable(null)
-  }: Props = $props();
+  let { results, hasResults, selected, getClips, clipRef = $bindable() }: Props = $props();
 
   // Internal
   let actual: ChannelRef | null = null;

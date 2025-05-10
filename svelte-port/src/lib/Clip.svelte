@@ -10,10 +10,7 @@
   }
 
   // Runes
-  let {
-    clip,
-    handleClick = () => {}
-  }: Props = $props();
+  let { clip, handleClick }: Props = $props();
 
   // Internal
   const { id, title, video, thumbnail, views, duration, date, creator, channel } = clip;

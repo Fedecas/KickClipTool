@@ -15,7 +15,7 @@
   const WEB: string = 'https://kick.com';
 
   // Runes
-  let { ref = $bindable(null) }: Props = $props();
+  let { ref = $bindable() }: Props = $props();
   let loaded: boolean = $state(false);
 
   // Internal

@@ -11,12 +11,7 @@
   }
 
   // Runes
-  let {
-    value = '',
-    searching = false,
-    hasResults = false,
-    onInput = () => {}
-  }: Props = $props();
+  let { value, searching, hasResults, onInput }: Props = $props();
 
   // Internal
   let timeout: number = 0;

@@ -1,5 +1,10 @@
 <script lang="ts">
-  let { hasResults } = $props();
+  interface Props {
+    hasResults: boolean;
+  }
+
+  // Runes
+  let { hasResults }: Props = $props();
 </script>
 
 <img
