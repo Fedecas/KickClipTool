@@ -34,7 +34,6 @@
   }
 
   function handleScroll(e: UIEvent): void {
-    console.log(e, typeof(e))
     if (selected) {
       const target: HTMLDivElement = e.currentTarget as HTMLDivElement;
       const scrolledTo: number = target.scrollTop + target.clientHeight;
