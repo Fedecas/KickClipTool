@@ -1,3 +1,5 @@
+import type { ApiClip, ApiClipsResponse, ClipsResponse } from '$lib/types';
+
 const CHANNELS_ENDPOINT = 'https://kick.com/api/search'
 const CLIPS_ENDPOINT = 'https://kick.com/api/v2/channels'
 
@@ -27,30 +29,57 @@ export async function searchChannels(query: string): Promise<any[]> {
   return result;
 }
 
-export async function searchClips(query: string, cursor: string): Promise<any> {
-  let result: any = {};
-  let response: Response = {} as Response;
-  if (query.length >= 3) {
-    let requestUrl: string = `${CLIPS_ENDPOINT}/${query}/clips`;
+export async function searchClips(query: string, cursor: string): Promise<ClipsResponse> {
+  let result: ClipsResponse = {clips: [], nextCursor: ''};
+  if (query.length < 3) return result;
 
-    if (cursor) {
-      const params = new URLSearchParams({'cursor': cursor});
-      requestUrl += `?${params}`;
+  let apiRes: ApiClipsResponse = {};
+  let requestUrl: string = `${CLIPS_ENDPOINT}/${query}/clips`;
+  if (cursor) {
+    const params = new URLSearchParams({'cursor': cursor});
+    requestUrl += `?${params}`;
+  }
+
+  console.debug('fetching', requestUrl, '...');
+  try {
+    const response: Response = await fetch(requestUrl);
+    console.debug(`fetch ended (${response.status}, ${response.statusText})`);
+
+    if (response.ok) {
+      apiRes = await response.json();
+    } else {
+      console.error(`Network response was not ok (${response.status})`);
     }
+  } catch (error) {
+    console.error(`Error fetching clips: ${error}`);
+  }
 
-    console.debug('fetching', requestUrl, '...');
-    try {
-      response = await fetch(requestUrl);
-      console.debug(`fetch ended (${response.status}, ${response.statusText})`);
-  
-      if (response.ok) {
-        result = await response.json();
-      } else {
-        console.error(`Network response was not ok (${response.status})`);
+  if (apiRes.clips) {
+    result.clips = apiRes.clips.map((clip: ApiClip) => {
+      let validDate: Date;
+      try {
+        validDate = new Date(clip.created_at ?? '');
+      } catch (error) {
+        console.error(`Error parsing date: ${error}`);
+        validDate = new Date();
       }
-    } catch (error) {
-      console.error(`Error fetching clips: ${error}`);
-    }
+
+      return {
+        id: clip.id ?? 'id',
+        title: clip.title ?? 'title',
+        video: clip.clip_url ?? 'video',
+        thumbnail: clip.thumbnail_url ?? 'thumbnail',
+        views: clip.views ?? 0,
+        duration: clip.duration ?? 0,
+        date: validDate,
+        creator: clip.creator?.username ?? '',
+        channel: clip.channel?.slug ?? ''
+      };
+    });
+
+    result.nextCursor = apiRes.nextCursor ?? '';
+  } else {
+    console.error('Invalid response format:', apiRes);
   }
 
   return result;

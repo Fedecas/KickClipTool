@@ -1,13 +1,30 @@
 <script lang="ts">
-  import type { ClipRef } from './types';
-  import Channel from './Channel.svelte';
-  import Clip from './Clip.svelte';
+  import type { ClipObject, ClipRef } from '$lib/types';
+  import Channel from '$lib/Channel.svelte';
+  import Clip from '$lib/Clip.svelte';
 
-  let { results, hasResults, selected, getClips, clipRef = $bindable(null) } = $props();
+  interface Props {
+    results: ClipObject[] | any[],
+    hasResults: boolean,
+    selected: string,
+    getClips: (channel: any) => void,
+    clipRef: ClipRef | null
+  }
 
+  // Constants
   const COOLDOWN: number = 1000;
   const THRESHOLD: number = 300;
 
+  // Runes
+  let {
+    results = [],
+    hasResults = false,
+    selected = '',
+    getClips = () => {},
+    clipRef = $bindable(null)
+  }: Props = $props();
+
+  // Internal
   let actual: any = {};
   let lastScrolledTo: number = 0;
   let triggered: boolean = false;
@@ -38,7 +55,7 @@
 </script>
 
 <div
-  class="outline w-full h-full m-3 overflow-y-auto {hasResults ? '' : 'invisible'}"
+  class="outline size-full m-3 overflow-y-auto {hasResults ? '' : 'invisible'}"
   onscroll={(e) => handleScroll(e)}>
   <div class="h-full m-3 p-2 grid grid-cols-6 gap-2">
     {#if !selected}
