@@ -9,12 +9,12 @@ export async function searchChannels(query: string): Promise<ChannelsResponse> {
   if (query.length < 3) return result;
 
   let apiRes: ApiChannelsResponse = {};
-  const params = new URLSearchParams({'searched_word': query});
+  const params: URLSearchParams = new URLSearchParams({'searched_word': query});
   const requestUrl: string = `${CHANNELS_ENDPOINT}?${params}`;
 
   console.debug('fetching', requestUrl, '...');
   try {
-    const response = await fetch(requestUrl);
+    const response: Response = await fetch(requestUrl);
     console.debug(`fetch ended (${response.status}, ${response.statusText})`);
 
     if (response.ok) {
@@ -54,7 +54,7 @@ export async function searchClips(query: string, cursor: string): Promise<ClipsR
 
   console.debug('fetching', requestUrl, '...');
   try {
-    const response = await fetch(requestUrl);
+    const response: Response = await fetch(requestUrl);
     console.debug(`fetch ended (${response.status}, ${response.statusText})`);
 
     if (response.ok) {
