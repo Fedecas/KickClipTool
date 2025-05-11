@@ -2,7 +2,9 @@
   import { formatDistance } from 'date-fns';
   import { Eye, Calendar, Play } from 'lucide-svelte';
 
+  import { blur } from 'svelte/transition';
   import type { ClipObject, ClipRef } from '$lib/types';
+  import Spinner from '$lib/Spinner.svelte';
 
   interface Props {
     clip: ClipObject,
@@ -11,6 +13,7 @@
 
   // Runes
   let { clip, handleClick }: Props = $props();
+  let loadedImg: boolean = $state(false);
 
   // Internal
   const { id, title, video, thumbnail, views, duration, date, creator, channel } = clip;
@@ -28,6 +31,7 @@
 </script>
 
 <button
+  in:blur={{ duration: 700 }}
   type="button"
   onclick={() => handleClick({id, thumbnail, video, title, channel})}
   class="relative flex flex-col group rounded-sm p-1
@@ -35,14 +39,25 @@
          hover:bg-gray-800 hover:inset-shadow-none hover:shadow-none">
   <div class="relative flex">
     <img
-    src={thumbnail}
-    alt="Clip thumbnail"
-    class="w-full rounded-sm object-cover group-hover:brightness-50 group-hover:shadow-md/100"/>
+      src={thumbnail}
+      alt="Clip thumbnail"
+      onload={() => {loadedImg = true}}
+      class="w-full aspect-video rounded-sm object-cover group-hover:brightness-50 group-hover:shadow-md/100"/>
+    {#if loadedImg}
     <h3 class="absolute bg-black/70 rounded-sm text-sm left-1 top-1 p-1.5">{formatDuration(duration)}</h3>
-    <div class="absolute bg-black/60 rounded-sm right-1 bottom-1 p-1.5 flex flex-row">
+    <div class="absolute bg-black/60 rounded-sm right-1 bottom-1 p-1.5 flex flex-row items-center">
       <h3 class="text-sm font-bold">{views}</h3>
       <Eye class="ml-1 h-5.5" />
     </div>
+    <div class="absolute w-[20%] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0
+                group-hover:opacity-80 trasition-opacity duration-500 ease-in-out">
+      <Play class="text-transparent size-full fill-white/100 aspect-square drop-shadow-md/100" />
+    </div>
+    {:else}
+    <div class="absolute w-[20%] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      <Spinner />
+    </div>
+    {/if}
   </div>
   <h1 class="content-center text-xl/4 font-medium leading-none line-clamp-2 h-12">{title}</h1>
   <h2 class="text-(--primary) font-medium">{creator}</h2>
@@ -50,11 +65,4 @@
     <Calendar class="text-(--secondary) mr-1 h-4.5" />
     <h3 class="text-(--secondary)">{formatDate(date)}</h3>
   </div>
-  <div class="absolute self-center size-[15%] top-[25%] opacity-0
-              group-hover:opacity-80 trasition-opacity duration-300 ease-in-out">
-    <Play class="size-full fill-white aspect-square drop-shadow-md/100" />
-  </div>
 </button>
-
-<style>
-</style>

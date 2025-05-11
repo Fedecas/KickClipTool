@@ -2,10 +2,10 @@
 
 <style>
   .loader {
+    aspect-ratio: 1 / 1;
     width: 100%;
-    height: 100%;
-    max-width: 48px;
-    max-height: 48px;
+    max-width: 100%;
+    max-height: 100%;
     border-radius: 50%;
     display: inline-block;
     border-top: 3px solid var(--primary);

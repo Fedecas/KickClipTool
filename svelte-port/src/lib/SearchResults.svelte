@@ -54,11 +54,11 @@
   <div class="h-full m-3 p-2 grid grid-cols-6 gap-2">
     {#if !selected}
       {#each results as channel}
-        <Channel channel={(channel as ChannelObject)} handleClick={handleChannelClick} />
+      <Channel channel={(channel as ChannelObject)} handleClick={handleChannelClick} />
       {/each}
     {:else}
       {#each results as clip}
-        <Clip clip={(clip as ClipObject)} handleClick={handleClipClick} />
+      <Clip clip={(clip as ClipObject)} handleClick={handleClipClick} />
       {/each}
     {/if}
   </div>
