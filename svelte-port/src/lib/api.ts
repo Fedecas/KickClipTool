@@ -4,12 +4,25 @@ import type { ApiChannel, ApiChannelsResponse, ChannelsResponse,
 const CHANNELS_ENDPOINT = 'https://kick.com/api/search'
 const CLIPS_ENDPOINT = 'https://kick.com/api/v2/channels'
 
+function cleanQuery(query: string): string {
+  return query.trim().replace(/[^a-zA-Z0-9_ ]/g, '');
+}
+
+function cleanChannelQuery(channel: string): string {
+  return cleanQuery(channel).toLowerCase().replace(/\s+/g, ' ');
+}
+
+function cleanCursorQuery(cursor: string): string {
+  return cleanQuery(cursor).replace(/\s+/g, '');
+}
+
 export async function searchChannels(query: string): Promise<ChannelsResponse> {
   let result: ChannelsResponse = [];
-  if (query.length < 3) return result;
+  const validQuery: string = cleanChannelQuery(query);
+  if (validQuery.length < 3) return result;
 
   let apiRes: ApiChannelsResponse = {};
-  const params: URLSearchParams = new URLSearchParams({'searched_word': query});
+  const params: URLSearchParams = new URLSearchParams({'searched_word': validQuery});
   const requestUrl: string = `${CHANNELS_ENDPOINT}?${params}`;
 
   console.debug('fetching', requestUrl, '...');
@@ -41,14 +54,16 @@ export async function searchChannels(query: string): Promise<ChannelsResponse> {
   return result;
 }
 
-export async function searchClips(query: string, cursor: string): Promise<ClipsResponse> {
+export async function searchClips(channel: string, cursor: string): Promise<ClipsResponse> {
   let result: ClipsResponse = {clips: [], nextCursor: ''};
-  if (query.length < 3) return result;
+  const validChannel: string = cleanChannelQuery(channel);
+  const validCursor: string = cleanCursorQuery(cursor);
+  if (validChannel.length < 3) return result;
 
   let apiRes: ApiClipsResponse = {};
-  let requestUrl: string = `${CLIPS_ENDPOINT}/${query}/clips`;
-  if (cursor) {
-    const params = new URLSearchParams({'cursor': cursor});
+  let requestUrl: string = `${CLIPS_ENDPOINT}/${validChannel}/clips`;
+  if (validCursor) {
+    const params = new URLSearchParams({'cursor': validCursor});
     requestUrl += `?${params}`;
   }
 
