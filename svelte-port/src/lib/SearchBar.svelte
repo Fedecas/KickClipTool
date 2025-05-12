@@ -11,30 +11,31 @@
     onInput: (value: string) => void
   }
 
+  // Constants
+  const TIMEOUT: number = 600; // ms
+
   // Runes
   let { value, searching, hasResults, onInput }: Props = $props();
 
   // Internal
-  let timeout: number = 0;
+  let timeout_id: number;
 
   function handleInput(): void {
-    if (timeout) clearTimeout(timeout);
-    timeout = setTimeout(onInput, 300, value);
+    if (timeout_id) clearTimeout(timeout_id);
+    timeout_id = setTimeout(onInput, TIMEOUT, value);
   }
 </script>
 
 <div
   in:fly={{ y: 500, duration: 1000 }}
-  class="relative w-[20%] min-h-12 {hasResults ? 'my-2' : 'my-16'}">
+  class="relative w-[20%] min-h-12 transition-margin duration-500 {hasResults ? 'my-2' : 'my-16'}">
   <input
-    class="absolute outline-0 pl-16 size-full top-0 z-1"
     placeholder="Search channel..."
     type="search"
     bind:value
-    oninput={() => handleInput()} />
-  <div
-    class="absolute outline-2 size-full rounded-3xl py-3 transition-all
-    focus:outline-(--primary) focus:outline-3 focus:drop-shadow-xl focus:drop-shadow-(color:--primary)">
+    oninput={handleInput}
+    class="absolute outline-0 pl-16 size-full text-lg top-0.5 z-1"/>
+  <div class="absolute outline-2 size-full rounded-3xl py-3 transition-all">
   </div>
   <div class="absolute ml-5 top-2.5 size-7">
     {#if searching}
