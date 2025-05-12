@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Search } from 'lucide-svelte';
 
+  import { onDestroy } from 'svelte';
   import { fly } from 'svelte/transition';
   import Spinner from '$lib/Spinner.svelte';
 
@@ -8,7 +9,7 @@
     value: string,
     searching: boolean,
     hasResults: boolean,
-    onInput: (value: string) => void
+    onInput: (value: string) => Promise<void>
   }
 
   // Constants
@@ -18,12 +19,16 @@
   let { value, searching, hasResults, onInput }: Props = $props();
 
   // Internal
-  let timeout_id: number;
+  let timeoutId: number = 0;
 
   function handleInput(): void {
-    if (timeout_id) clearTimeout(timeout_id);
-    timeout_id = setTimeout(onInput, TIMEOUT, value);
+    if (timeoutId) clearTimeout(timeoutId);
+    timeoutId = setTimeout(async () => { await onInput(value); }, TIMEOUT);
   }
+
+  onDestroy(() => {
+    if (timeoutId) clearTimeout(timeoutId);
+  });
 </script>
 
 <div
