@@ -42,8 +42,8 @@
 </script>
 
 <div
-  in:fly={{ y: 100, duration: 500 }}
-  out:fly={{ y: -100, duration: 500 }}
+  in:fly={{ y: 500, duration: 500 }}
+  out:fly={{ y: -500, duration: 500 }}
   class="absolute flex flex-row inset-0 items-center justify-center
          backdrop-blur-sm bg-linear-[black,transparent,black] z-4">
   <div class="h-[75dvh] max-h-[75dvh] aspect-[16/9] rounded-sm drop-shadow-lg/80 drop-shadow-(color:--primary)">
@@ -74,7 +74,7 @@
       {/if}
     </div>
   </div>
-  <div class="absolute flex flex-col justify-center items-center gap-4 w-24 h-[25dvh] bg-black/70 right-8 rounded-sm">
+  <div class="absolute flex flex-col justify-center items-center gap-4 w-24 p-5 bg-black/70 right-8 rounded-sm">
     <div class="group">
       <button
         type="button"
