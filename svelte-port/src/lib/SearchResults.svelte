@@ -2,57 +2,61 @@
   import type { ChannelObject, ChannelRef, ClipObject, ClipRef } from '$lib/types';
   import Channel from '$lib/Channel.svelte';
   import Clip from '$lib/Clip.svelte';
+  import { onDestroy } from 'svelte';
 
   interface Props {
     results: ClipObject[] | ChannelObject[],
     hasResults: boolean,
-    selected: string,
-    getClips: (channel: ChannelRef) => void,
+    channelRef: ChannelRef | null,
+    getClips: (channel: ChannelRef) => Promise<void>,
     clipRef: ClipRef | null
   }
 
   // Constants
-  const COOLDOWN: number = 1000;
-  const THRESHOLD: number = 300;
+  const COOLDOWN: number = 1000; // ms
+  const THRESHOLD: number = 300; // px
 
   // Runes
-  let { results, hasResults, selected, getClips, clipRef = $bindable() }: Props = $props();
+  let { results, hasResults, channelRef, getClips, clipRef = $bindable() }: Props = $props();
 
   // Internal
-  let actual: ChannelRef | null = null;
   let lastScrolledTo: number = 0;
   let triggered: boolean = false;
+  let timeoutId: number = 0;
 
-  function handleChannelClick(channel: ChannelRef): void {
-    actual = channel;
-    getClips(actual);
+  async function handleChannelClick(channel: ChannelRef): Promise<void> {
+    await getClips(channel);
   }
 
   function handleClipClick(ref: ClipRef): void {
     clipRef = ref;
   }
 
-  function handleScroll(e: UIEvent): void {
-    if (selected) {
-      const target: HTMLDivElement = e.currentTarget as HTMLDivElement;
-      const scrolledTo: number = target.scrollTop + target.clientHeight;
-      const isGoingDown: boolean = scrolledTo > lastScrolledTo;
-      const shouldTrigger: boolean = scrolledTo >= (target.scrollHeight - THRESHOLD);
-      if (isGoingDown && shouldTrigger && !triggered) {
-        triggered = true;
-        if (actual) getClips(actual);
-        setTimeout(() => {triggered = false}, COOLDOWN);
-      }
-      lastScrolledTo = scrolledTo;
+  async function handleScroll(e: UIEvent): Promise<void> {
+    if (!channelRef) return;
+    const target: HTMLDivElement = e.currentTarget as HTMLDivElement;
+    if (!target) return;
+    const scrolledTo: number = target.scrollTop + target.clientHeight;
+    const isGoingDown: boolean = scrolledTo > lastScrolledTo;
+    const shouldTrigger: boolean = scrolledTo >= (target.scrollHeight - THRESHOLD);
+    if (isGoingDown && shouldTrigger && !triggered) {
+      triggered = true;
+      await getClips(channelRef);
+      timeoutId = setTimeout(() => { triggered = false; }, COOLDOWN);
     }
+    lastScrolledTo = scrolledTo;
   }
+
+  onDestroy(() => {
+    if (timeoutId) clearTimeout(timeoutId);
+  });
 </script>
 
 <div
-  class="outline size-full m-3 overflow-y-auto bg-gray-950 {hasResults ? '' : 'invisible'}"
-  onscroll={(e) => handleScroll(e)}>
+  class="outline size-full m-3 overflow-y-auto bg-gray-950 {hasResults ? '' : 'collapse'}"
+  onscroll={handleScroll}>
   <div class="h-full m-3 p-2 grid grid-cols-6 gap-2">
-    {#if !selected}
+    {#if !channelRef}
       {#each results as channel}
       <Channel channel={(channel as ChannelObject)} handleClick={handleChannelClick} />
       {/each}

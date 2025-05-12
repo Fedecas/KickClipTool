@@ -1,50 +1,42 @@
 <script lang="ts">
   import type { ChannelObject, ClipObject, ChannelRef, ClipRef, ClipsResponse } from '$lib/types';
   import { searchChannels, searchClips } from '$lib/api';
-  import Logo from '$lib/Logo.svelte';
-  import SearchBar from '$lib/SearchBar.svelte';
-  import VideoPlayer from '$lib/VideoPlayer.svelte';
   import SearchResults from '$lib/SearchResults.svelte';
+  import VideoPlayer from '$lib/VideoPlayer.svelte';
+  import SearchBar from '$lib/SearchBar.svelte';
+  import Logo from '$lib/Logo.svelte';
 
   // Runes
-  let searchField: string = $state('');
   let searching: boolean = $state(false);
-  let selected: string = $state('');
-  let results: ClipObject[] | ChannelObject[] = $state([]);
   let clipRef: ClipRef | null = $state(null);
+  let channelRef: ChannelRef | null = $state(null);
+  let results: ClipObject[] | ChannelObject[] = $state([]);
   let hasResults: boolean = $derived(results.length > 0);
+  // @ts-ignore
+  let endReached: boolean = $derived(channelRef !== null && channelRef.nextCursor === '');
 
-  // Internal
-  let endReached: boolean = false;
-  let nextCursor: string = '';
+  async function handleSearchClips(channel: ChannelRef): Promise<void> {
+    if (endReached) return;
+    searching = true;
 
-  async function handleSearchClips(channel: ChannelRef) {
-    if (!endReached) {
-      searching = true;
-      if (selected !== channel.slug) {
-        selected = channel.slug;
-        searchField = channel.name;
-        results = [];
-      }
-
-      const res: ClipsResponse = await searchClips(selected, nextCursor);
-      results = [...(results as ClipObject[]), ...res.clips];
-      nextCursor = res.nextCursor;
-
-      if (!nextCursor) {
-        endReached = true;
-      }
-  
-      searching = false;
+    if (channelRef !== channel) {
+      channelRef = channel;
+      results = [];
     }
+
+    const slug = channelRef.slug;
+    const cursor = channelRef.nextCursor || '';
+    const res: ClipsResponse = await searchClips(slug, cursor);
+    results = [...(results as ClipObject[]), ...res.clips];
+    channelRef.nextCursor = res.nextCursor;
+
+    searching = false;
   }
 
-  async function handleSearchChannels(channel: string) {
-    selected = '';
+  async function handleSearchChannels(channel: string): Promise<void> {
     searching = true;
     results = [];
-    nextCursor = '';
-    endReached = false;
+    channelRef = null;
 
     results = await searchChannels(channel);
 
@@ -54,9 +46,9 @@
 
 <div class ="flex flex-col max-h-screen items-center">
   <Logo {hasResults} />
-  <SearchBar value={searchField} {searching} {hasResults} onInput={handleSearchChannels} />
-  <SearchResults {results} {hasResults} {selected} getClips={handleSearchClips} bind:clipRef />
+  <SearchBar {searching} {hasResults} {channelRef} handleInput={handleSearchChannels} />
+  <SearchResults {results} {hasResults} {channelRef} getClips={handleSearchClips} bind:clipRef />
   {#if clipRef}
-    <VideoPlayer bind:ref={clipRef} />
+  <VideoPlayer bind:ref={clipRef} />
   {/if}
 </div>

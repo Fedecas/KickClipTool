@@ -1,11 +1,11 @@
 <script lang="ts">
-  import Hls from 'hls.js';
   import { X, Download } from 'lucide-svelte';
+  import Hls from 'hls.js';
   
-  import { onMount } from 'svelte';
   import { fade, fly } from 'svelte/transition';
   import type { ClipRef } from '$lib/types';
   import Spinner from '$lib/Spinner.svelte';
+  import { onMount } from 'svelte';
 
   interface Props {
     ref: ClipRef | null;

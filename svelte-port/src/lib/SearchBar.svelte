@@ -1,29 +1,37 @@
 <script lang="ts">
   import { Search } from 'lucide-svelte';
 
-  import { onDestroy } from 'svelte';
-  import { fly } from 'svelte/transition';
+  import type { ChannelRef } from './types';
   import Spinner from '$lib/Spinner.svelte';
+  import { fly } from 'svelte/transition';
+  import { onDestroy } from 'svelte';
 
   interface Props {
-    value: string,
     searching: boolean,
     hasResults: boolean,
-    onInput: (value: string) => Promise<void>
+    channelRef: ChannelRef | null,
+    handleInput: (value: string) => Promise<void>
   }
 
   // Constants
   const TIMEOUT: number = 600; // ms
 
   // Runes
-  let { value, searching, hasResults, onInput }: Props = $props();
+  let { searching, hasResults, channelRef, handleInput }: Props = $props();
 
   // Internal
+  let value: string = $state('');
   let timeoutId: number = 0;
 
-  function handleInput(): void {
+  $effect(() => {
+    if (channelRef) {
+      value = channelRef.name;
+    }
+  });
+
+  function onInput(): void {
     if (timeoutId) clearTimeout(timeoutId);
-    timeoutId = setTimeout(async () => { await onInput(value); }, TIMEOUT);
+    timeoutId = setTimeout(async () => { await handleInput(value); }, TIMEOUT);
   }
 
   onDestroy(() => {
@@ -38,7 +46,7 @@
     placeholder="Search channel..."
     type="search"
     bind:value
-    oninput={handleInput}
+    oninput={onInput}
     class="absolute outline-0 pl-16 size-full text-lg top-0.5 z-1"/>
   <div class="absolute outline-2 size-full rounded-3xl py-3 transition-all">
   </div>

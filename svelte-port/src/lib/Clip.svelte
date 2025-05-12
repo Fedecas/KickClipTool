@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { formatDistance } from 'date-fns';
   import { Eye, Calendar, Play } from 'lucide-svelte';
+  import { formatDistance } from 'date-fns';
 
-  import { blur } from 'svelte/transition';
   import type { ClipObject, ClipRef } from '$lib/types';
   import Spinner from '$lib/Spinner.svelte';
+  import { blur } from 'svelte/transition';
 
   interface Props {
     clip: ClipObject,
@@ -28,12 +28,17 @@
     const today: Date = new Date();
     return formatDistance(today, date);
   }
+
+  function onClick(): void {
+    const ref: ClipRef = {id, thumbnail, video, title, channel};
+    handleClick(ref);
+  }
 </script>
 
 <button
   in:blur={{ duration: 700 }}
   type="button"
-  onclick={() => handleClick({id, thumbnail, video, title, channel})}
+  onclick={onClick}
   class="relative flex flex-col group rounded-sm p-1
          bg-[#242428] inset-shadow-sm/100 shadow-sm/100
          hover:bg-gray-800 hover:inset-shadow-none hover:shadow-none">

@@ -117,6 +117,7 @@ export interface ClipsResponse {
 export interface ChannelRef {
   slug: string;
   name: string;
+  nextCursor?: string;
 }
 
 export interface ClipRef {

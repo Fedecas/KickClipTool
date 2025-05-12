@@ -1,14 +1,17 @@
 <script lang="ts">
   import { BadgeCheck } from 'lucide-svelte';
 
-  import { blur } from 'svelte/transition';
   import type { ChannelObject, ChannelRef } from '$lib/types';
   import Spinner from '$lib/Spinner.svelte';
+  import { blur } from 'svelte/transition';
 
   interface Props {
     channel: ChannelObject,
-    handleClick: (channel: ChannelRef) => void
+    handleClick: (channel: ChannelRef) => Promise<void>
   }
+
+  // Constants
+  const AVATARS: number = 6;
 
   // Runes
   let { channel, handleClick }: Props = $props();
@@ -19,16 +22,20 @@
   const validAvatar: string = avatar || randomAvatar();
 
   function randomAvatar(): string {
-    const AVATARS: number = 6;
     const n: number = Math.floor(Math.random() * AVATARS) + 1;
     return `/default_avatars/${n}.jpeg`;
+  }
+
+  async function onClick(): Promise<void> {
+    const ref: ChannelRef = {slug, name};
+    await handleClick(ref);
   }
 </script>
 
 <button
   in:blur={{ duration: 700 }}
   type="button"
-  onclick={() => handleClick({name, slug})}
+  onclick={onClick}
   class="flex flex-col group items-center rounded-sm gap-1 p-1
          bg-[#242428] inset-shadow-sm/100 shadow-sm/100
          hover:bg-gray-800 hover:inset-shadow-none hover:shadow-none">
