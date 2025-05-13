@@ -4,10 +4,12 @@
   import SearchResults from '$lib/SearchResults.svelte';
   import VideoPlayer from '$lib/VideoPlayer.svelte';
   import SearchBar from '$lib/SearchBar.svelte';
+  import Message from '$lib/Message.svelte';
   import Logo from '$lib/Logo.svelte';
 
   // Runes
   let searching: boolean = $state(false);
+  let firstSearch: boolean = $state(false);
   let clipRef: ClipRef | null = $state(null);
   let channelRef: ChannelRef | null = $state(null);
   let results: ClipObject[] | ChannelObject[] = $state([]);
@@ -35,12 +37,13 @@
 
   async function handleSearchChannels(channel: string): Promise<void> {
     searching = true;
-    results = [];
     channelRef = null;
-
+    results = [];
+    
     results = await searchChannels(channel);
-
+    
     searching = false;
+    if (!firstSearch) firstSearch = true;
   }
 </script>
 
@@ -50,5 +53,8 @@
   <SearchResults {results} {hasResults} {channelRef} getClips={handleSearchClips} bind:clipRef />
   {#if clipRef}
   <VideoPlayer bind:ref={clipRef} />
+  {/if}
+  {#if firstSearch && !hasResults && !searching}
+  <Message text="no results found" />
   {/if}
 </div>
