@@ -11,21 +11,48 @@
     ref: ClipRef | null;
   }
 
-  // Constants
-  const STREAM: string = 'https://clips.kick.com';
-  const WEB: string = 'https://kick.com';
-
   // Runes
   let { ref = $bindable() }: Props = $props();
   let loaded: boolean = $state(false);
 
   // Internal
+  const id: string = ref?.id || '';
   const title: string = ref?.title || '';
   const videoUrl: string = ref?.video || '';
   const posterUrl: string = ref?.thumbnail || '';
-  const downloadUrl: string = ref ? `${STREAM}/tmp/${ref.id}.mp4` : '';
-  const webUrl: string = ref ? `${WEB}/${ref.channel}/clips/${ref.id}` : '';
+  const channel: string = ref?.channel || '';
+  const webUrl: string = ref ? `https://kick.com/${channel}/clips/${id}` : '';
   let player: HTMLVideoElement;
+
+  async function handleDownload(): Promise<void> {
+    let response: Response;
+    let blob: Blob | null = null;
+    try {
+      response = await fetch('/api/download', {
+        method: 'POST',
+        body: JSON.stringify({ url: videoUrl }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (response.ok) {
+        blob = await response.blob();
+      } else {
+        throw new Error(`Network response was not ok (${response.status})`);
+      }
+    } catch (error) {
+      console.error('Error fetching video:', error);
+    }
+
+    if (blob) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${id}.mp4`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  }
 
   onMount(() => {
     let hls: Hls;
@@ -86,20 +113,17 @@
         <X class="size-8 text-black group-hover:text-white" />
       </button>
     </div>
-    <a
-      href={downloadUrl}
-      target="_blank"
-      download
-      class="group">
+    <div class="group">
       <button
         type="button"
         aria-label="Download video"
+        onclick={handleDownload}
         class="bg-(--primary) rounded-sm p-2
                transition duration-300 ease-in-out
                group-hover:bg-black group-hover:outline group-hover:scale-120">
         <Download class="size-8 text-black group-hover:text-white" />
       </button>
-    </a>
+    </div>
     <a
       href={webUrl}
       target="_blank"
