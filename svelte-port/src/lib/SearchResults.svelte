@@ -13,16 +13,16 @@
   }
 
   // Constants
-  const COOLDOWN: number = 1000; // ms
-  const THRESHOLD: number = 300; // px
+  const COOLDOWN = 1000; // ms
+  const THRESHOLD = 300; // px
 
   // Runes
   let { results, hasResults, channelRef, getClips, clipRef = $bindable() }: Props = $props();
 
   // Internal
-  let lastScrolledTo: number = 0;
-  let triggered: boolean = false;
-  let timeoutId: number = 0;
+  let triggered = false;
+  let lastScrolledTo = 0;
+  let timeoutId: ReturnType<typeof setTimeout>;
 
   async function handleChannelClick(channel: ChannelRef): Promise<void> {
     await getClips(channel);
@@ -34,11 +34,11 @@
 
   async function handleScroll(e: UIEvent): Promise<void> {
     if (!channelRef) return;
-    const target: HTMLDivElement = e.currentTarget as HTMLDivElement;
+    const target = e.currentTarget as HTMLDivElement;
     if (!target) return;
-    const scrolledTo: number = target.scrollTop + target.clientHeight;
-    const isGoingDown: boolean = scrolledTo > lastScrolledTo;
-    const shouldTrigger: boolean = scrolledTo >= (target.scrollHeight - THRESHOLD);
+    const scrolledTo = target.scrollTop + target.clientHeight;
+    const isGoingDown = scrolledTo > lastScrolledTo;
+    const shouldTrigger = scrolledTo >= (target.scrollHeight - THRESHOLD);
     if (isGoingDown && shouldTrigger && !triggered) {
       triggered = true;
       await getClips(channelRef);

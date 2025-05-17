@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Search } from 'lucide-svelte';
 
-  import type { ChannelRef } from './types';
+  import type { ChannelRef } from '$lib/types';
   import Spinner from '$lib/Spinner.svelte';
   import { fly } from 'svelte/transition';
   import { onDestroy } from 'svelte';
@@ -14,14 +14,14 @@
   }
 
   // Constants
-  const TIMEOUT: number = 600; // ms
+  const TIMEOUT = 600; // ms
 
   // Runes
   let { searching, hasResults, channelRef, handleInput }: Props = $props();
 
   // Internal
-  let value: string = $state('');
-  let timeoutId: number = 0;
+  let value = $state('');
+  let timeoutId: ReturnType<typeof setTimeout>;
 
   $effect(() => {
     if (channelRef) {

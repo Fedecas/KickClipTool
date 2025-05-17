@@ -13,15 +13,15 @@
 
   // Runes
   let { ref = $bindable() }: Props = $props();
-  let loaded: boolean = $state(false);
+  let loaded = $state(false);
 
   // Internal
-  const id: string = ref?.id || '';
-  const title: string = ref?.title || '';
-  const videoUrl: string = ref?.video || '';
-  const posterUrl: string = ref?.thumbnail || '';
-  const channel: string = ref?.channel || '';
-  const webUrl: string = ref ? `https://kick.com/${channel}/clips/${id}` : '';
+  const id = ref?.id || '';
+  const title = ref?.title || '';
+  const videoUrl = ref?.video || '';
+  const posterUrl = ref?.thumbnail || '';
+  const channel = ref?.channel || '';
+  const webUrl = ref ? `https://kick.com/${channel}/clips/${id}` : '';
   let player: HTMLVideoElement;
 
   async function handleDownload(): Promise<void> {
@@ -80,8 +80,7 @@
         poster={posterUrl}
         controls={loaded}
         playsinline
-        autoplay
-        onloadeddata={() => loaded = true}
+        onloadeddata={() => { loaded = true }}
         class="absolute object-cover rounded-sm">
         <track kind="captions" default />
       </video>
@@ -106,7 +105,7 @@
       <button
         type="button"
         aria-label="Close video"
-        onclick={() => ref = null}
+        onclick={() => { ref = null }}
         class="bg-red-500 rounded-sm p-2
                transition duration-300 ease-in-out
                group-hover:bg-black group-hover:outline group-hover:scale-120">

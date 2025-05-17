@@ -11,23 +11,23 @@
   }
 
   // Constants
-  const AVATARS: number = 6;
+  const AVATARS = 6;
 
   // Runes
   let { channel, handleClick }: Props = $props();
-  let loadedImg: boolean = $state(false);
+  let loadedImg = $state(false);
 
   // Internal
   const { slug, followers, name, avatar, verified } = channel;
-  const validAvatar: string = avatar || randomAvatar();
+  const validAvatar = avatar || randomAvatar();
 
   function randomAvatar(): string {
-    const n: number = Math.floor(Math.random() * AVATARS) + 1;
+    const n = Math.floor(Math.random() * AVATARS) + 1;
     return `/default_avatars/${n}.jpeg`;
   }
 
   async function onClick(): Promise<void> {
-    const ref: ChannelRef = {slug, name};
+    const ref: ChannelRef = { slug, name };
     await handleClick(ref);
   }
 </script>
@@ -43,7 +43,7 @@
     <img
       src={validAvatar}
       alt="{name} avatar"
-      onload={() => {loadedImg = true}}
+      onload={() => { loadedImg = true }}
       class="size-full object-cover rounded-sm brightness-70
              group-hover:brightness-100 group-hover:drop-shadow-md/100"/>
     {#if !loadedImg}

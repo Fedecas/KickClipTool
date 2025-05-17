@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ChannelObject, ClipObject, ChannelRef, ClipRef, ClipsResponse } from '$lib/types';
+  import type { ChannelObject, ClipObject, ChannelRef, ClipRef } from '$lib/types';
   import { searchChannels, searchClips } from '$lib/api';
   import SearchResults from '$lib/SearchResults.svelte';
   import VideoPlayer from '$lib/VideoPlayer.svelte';
@@ -8,14 +8,14 @@
   import Logo from '$lib/Logo.svelte';
 
   // Runes
-  let searching: boolean = $state(false);
-  let firstSearch: boolean = $state(false);
+  let searching = $state(false);
+  let firstSearch = $state(false);
   let clipRef: ClipRef | null = $state(null);
   let channelRef: ChannelRef | null = $state(null);
   let results: ClipObject[] | ChannelObject[] = $state([]);
-  let hasResults: boolean = $derived(results.length > 0);
+  let hasResults = $derived(results.length > 0);
   // @ts-ignore
-  let endReached: boolean = $derived(channelRef !== null && channelRef.nextCursor === '');
+  let endReached = $derived(channelRef !== null && channelRef.nextCursor === ''); 
 
   async function handleSearchClips(channel: ChannelRef): Promise<void> {
     if (endReached) return;
@@ -28,7 +28,7 @@
 
     const slug = channelRef.slug;
     const cursor = channelRef.nextCursor || '';
-    const res: ClipsResponse = await searchClips(slug, cursor);
+    const res = await searchClips(slug, cursor);
     results = [...(results as ClipObject[]), ...res.clips];
     channelRef.nextCursor = res.nextCursor;
 

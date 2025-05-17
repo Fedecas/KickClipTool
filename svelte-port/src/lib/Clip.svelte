@@ -13,24 +13,24 @@
 
   // Runes
   let { clip, handleClick }: Props = $props();
-  let loadedImg: boolean = $state(false);
+  let loadedImg = $state(false);
 
   // Internal
   const { id, title, video, thumbnail, views, duration, date, creator, channel } = clip;
 
   function formatDuration(duration: number): string {
-    const minutes: string = `${Math.floor(duration / 60)}`;
-    const seconds: string = `${duration % 60}`;
+    const minutes = `${Math.floor(duration / 60)}`;
+    const seconds = `${duration % 60}`;
     return `${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`;
   };
 
   function formatDate(date: Date): string {
-    const today: Date = new Date();
+    const today = new Date();
     return formatDistance(today, date);
   }
 
   function onClick(): void {
-    const ref: ClipRef = {id, thumbnail, video, title, channel};
+    const ref: ClipRef = { id, thumbnail, video, title, channel };
     handleClick(ref);
   }
 </script>
@@ -46,7 +46,7 @@
     <img
       src={thumbnail}
       alt="Clip thumbnail"
-      onload={() => {loadedImg = true}}
+      onload={() => { loadedImg = true }}
       class="w-full aspect-video rounded-sm object-cover group-hover:brightness-50 group-hover:shadow-md/100"/>
     {#if loadedImg}
     <h3 class="absolute bg-black/70 rounded-sm text-sm left-1 top-1 p-1.5">{formatDuration(duration)}</h3>

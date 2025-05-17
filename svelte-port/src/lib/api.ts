@@ -1,8 +1,7 @@
 import type { ApiChannel, ApiChannelsResponse, ChannelsResponse,
               ApiClip, ApiClipsResponse, ClipsResponse } from '$lib/types';
 
-const CHANNELS_ENDPOINT = 'https://kick.com/api/search'
-const CLIPS_ENDPOINT = 'https://kick.com/api/v2/channels'
+const API_ENDPOINT = new URL('https://kick.com/api/');
 
 function cleanQuery(query: string): string {
   return query.trim().replace(/[^a-zA-Z0-9_ ]/g, '');
@@ -12,22 +11,25 @@ function cleanChannelQuery(channel: string): string {
   return cleanQuery(channel).toLowerCase().replace(/\s+/g, ' ');
 }
 
-function cleanCursorQuery(cursor: string): string {
+function cleanClipQuery(cursor: string): string {
   return cleanQuery(cursor).replace(/\s+/g, '');
 }
 
 export async function searchChannels(query: string): Promise<ChannelsResponse> {
+  const validQuery = cleanChannelQuery(query);
   let result: ChannelsResponse = [];
-  const validQuery: string = cleanChannelQuery(query);
   if (validQuery.length < 3) return result;
 
   let apiRes: ApiChannelsResponse = {};
-  const params: URLSearchParams = new URLSearchParams({'searched_word': validQuery});
-  const requestUrl: string = `${CHANNELS_ENDPOINT}?${params}`;
+  const requestUrl = new URL('search', API_ENDPOINT);
+  requestUrl.searchParams.append('searched_word', validQuery);
 
   console.debug('fetching', requestUrl, '...');
   try {
-    const response: Response = await fetch(requestUrl);
+    const response = await fetch(requestUrl, {
+      headers: { 'Accept': 'application/json' },
+      method: 'GET'
+    });
     console.debug(`fetch ended (${response.status}, ${response.statusText})`);
 
     if (response.ok) {
@@ -55,21 +57,23 @@ export async function searchChannels(query: string): Promise<ChannelsResponse> {
 }
 
 export async function searchClips(channel: string, cursor: string): Promise<ClipsResponse> {
-  let result: ClipsResponse = {clips: [], nextCursor: ''};
-  const validChannel: string = cleanChannelQuery(channel);
-  const validCursor: string = cleanCursorQuery(cursor);
+  const validChannel = cleanChannelQuery(channel);
+  const validCursor = cleanClipQuery(cursor);
+  let result: ClipsResponse = { clips: [], nextCursor: '' };
   if (validChannel.length < 3) return result;
 
   let apiRes: ApiClipsResponse = {};
-  let requestUrl: string = `${CLIPS_ENDPOINT}/${validChannel}/clips`;
+  const requestUrl = new URL(`v2/channels/${validChannel}/clips`, API_ENDPOINT);
   if (validCursor) {
-    const params = new URLSearchParams({'cursor': validCursor});
-    requestUrl += `?${params}`;
+    requestUrl.searchParams.append('cursor', validCursor);
   }
 
   console.debug('fetching', requestUrl, '...');
   try {
-    const response: Response = await fetch(requestUrl);
+    const response = await fetch(requestUrl, {
+      headers: { 'Accept': 'application/json' },
+      method: 'GET'
+    });
     console.debug(`fetch ended (${response.status}, ${response.statusText})`);
 
     if (response.ok) {
