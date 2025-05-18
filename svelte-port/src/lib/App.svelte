@@ -1,11 +1,11 @@
 <script lang="ts">
   import type { ChannelObject, ClipObject, ChannelRef, ClipRef } from '$lib/types';
+  import VideoPlayer from '$lib/video-player/VideoPlayer.svelte';
   import { searchChannels, searchClips } from '$lib/api';
-  import SearchResults from '$lib/SearchResults.svelte';
-  import VideoPlayer from '$lib/VideoPlayer.svelte';
+  import Content from '$lib/content/Content.svelte';
   import SearchBar from '$lib/SearchBar.svelte';
   import Message from '$lib/Message.svelte';
-  import Logo from '$lib/Logo.svelte';
+  import Header from '$lib/Header.svelte';
 
   // Runes
   let searching = $state(false);
@@ -48,9 +48,9 @@
 </script>
 
 <div class ="flex flex-col max-h-screen items-center">
-  <Logo {hasResults} />
+  <Header {hasResults} />
   <SearchBar {searching} {hasResults} {channelRef} handleInput={handleSearchChannels} />
-  <SearchResults {results} {hasResults} {channelRef} getClips={handleSearchClips} bind:clipRef />
+  <Content {results} {hasResults} {channelRef} getClips={handleSearchClips} bind:clipRef />
   {#if clipRef}
   <VideoPlayer bind:ref={clipRef} />
   {/if}

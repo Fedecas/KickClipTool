@@ -1,9 +1,9 @@
 import ffmpeg from 'ffmpeg-static';
 
+import { rm, mkdir, readFile, writeFile } from 'fs/promises';
 import { spawn } from 'child_process';
 import { json } from '@sveltejs/kit';
-import fs from 'fs/promises';
-import path from 'path';
+import { join } from 'path';
 
 async function downloadM3U8(url: string, outputPath: string): Promise<void> {
   let response: Response;
@@ -20,8 +20,8 @@ async function downloadM3U8(url: string, outputPath: string): Promise<void> {
   }
 
   try {
-    const file = path.join(outputPath, 'playlist.m3u8');
-    await fs.writeFile(file, content);
+    const file = join(outputPath, 'playlist.m3u8');
+    await writeFile(file, content);
   } catch (error) {
     throw new Error(`Error writing m3u8 file: ${error}`);
   }
@@ -47,9 +47,9 @@ async function downloadM3U8(url: string, outputPath: string): Promise<void> {
       }
 
       try {
-        const filePath = path.join(outputPath, file);
+        const filePath = join(outputPath, file);
         const fileBytes = await fileBlob.bytes();
-        await fs.writeFile(filePath, fileBytes);
+        await writeFile(filePath, fileBytes);
         console.debug('wrote', file, '(', fileBytes.length, 'bytes)');
       } catch (error) {
         throw new Error(`Error writing "${file}": ${error}`);
@@ -98,9 +98,9 @@ export async function POST({ request }): Promise<Response> {
     return json({ error: 'FFmpeg not found' }, { status: 500 });
   }
 
-  const fileDir = path.join(process.cwd(), 'tmp', clipId);
+  const fileDir = join(process.cwd(), 'tmp', clipId);
   try {
-    await fs.mkdir(fileDir, { recursive: true });
+    await mkdir(fileDir, { recursive: true });
   } catch (err) {
     console.error('Error creating directory:', err);
     return json({ error: 'cant create temporal directory' }, { status: 500 });
@@ -115,9 +115,9 @@ export async function POST({ request }): Promise<Response> {
   }
 
   const fileName = `${clipId}.mp4`;
-  const filePath = path.join(fileDir, fileName);
+  const filePath = join(fileDir, fileName);
   const args = [
-    '-i', path.join(fileDir, 'playlist.m3u8'),
+    '-i', join(fileDir, 'playlist.m3u8'),
     '-f', 'mp4',
     '-bsf:a', 'aac_adtstoasc',
     '-c', 'copy',
@@ -134,7 +134,7 @@ export async function POST({ request }): Promise<Response> {
 
   let fileBuffer: Buffer;
   try {
-    fileBuffer = await fs.readFile(filePath);
+    fileBuffer = await readFile(filePath);
   } catch (error) {
     console.error('Error reading output file:', error);
     return json({ error: 'error reading output file' }, { status: 500 });
@@ -142,7 +142,7 @@ export async function POST({ request }): Promise<Response> {
 
   console.debug('removing temporary files...');
   try {
-    await fs.rm(fileDir, { recursive: true });
+    await rm(fileDir, { recursive: true });
   } catch (error) {
     console.error('Error removing temporary files:', error);
   }

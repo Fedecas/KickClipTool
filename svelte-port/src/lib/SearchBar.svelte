@@ -1,10 +1,11 @@
 <script lang="ts">
   import { Search } from 'lucide-svelte';
 
+  import { onDestroy } from 'svelte';
+  import { fly } from 'svelte/transition';
+
   import type { ChannelRef } from '$lib/types';
   import Spinner from '$lib/Spinner.svelte';
-  import { fly } from 'svelte/transition';
-  import { onDestroy } from 'svelte';
 
   interface Props {
     searching: boolean,

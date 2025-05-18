@@ -2,9 +2,10 @@
   import { Eye, Calendar, Play } from 'lucide-svelte';
   import { formatDistance } from 'date-fns';
 
+  import { blur } from 'svelte/transition';
+
   import type { ClipObject, ClipRef } from '$lib/types';
   import Spinner from '$lib/Spinner.svelte';
-  import { blur } from 'svelte/transition';
 
   interface Props {
     clip: ClipObject,

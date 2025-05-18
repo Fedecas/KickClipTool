@@ -1,8 +1,9 @@
 <script lang="ts">
-  import type { ChannelObject, ChannelRef, ClipObject, ClipRef } from '$lib/types';
-  import Channel from '$lib/Channel.svelte';
-  import Clip from '$lib/Clip.svelte';
   import { onDestroy } from 'svelte';
+
+  import type { ChannelObject, ChannelRef, ClipObject, ClipRef } from '$lib/types';
+  import Channel from './Channel.svelte';
+  import Clip from './Clip.svelte';
 
   interface Props {
     results: ClipObject[] | ChannelObject[],

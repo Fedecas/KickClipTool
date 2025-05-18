@@ -1,9 +1,10 @@
 <script lang="ts">
   import { BadgeCheck } from 'lucide-svelte';
 
+  import { blur } from 'svelte/transition';
+
   import type { ChannelObject, ChannelRef } from '$lib/types';
   import Spinner from '$lib/Spinner.svelte';
-  import { blur } from 'svelte/transition';
 
   interface Props {
     channel: ChannelObject,
