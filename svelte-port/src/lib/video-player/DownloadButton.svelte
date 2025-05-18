@@ -1,20 +1,24 @@
 <script lang="ts">
   import { Download } from 'lucide-svelte';
 
+  import Spinner from '$lib/Spinner.svelte';
+
   interface Props {
     id: string;
     url: string;
   }
 
   let { id, url }: Props = $props();
+  let downloading = $state(false);
 
   async function handleDownload(): Promise<void> {
+    downloading = true;
     let response: Response;
     let blob: Blob | null = null;
     try {
       response = await fetch('/api/download', {
         method: 'POST',
-        body: JSON.stringify({ url: url }),
+        body: JSON.stringify({ url }),
         headers: { 'Content-Type': 'application/json' }
       });
       if (response.ok) {
@@ -27,26 +31,36 @@
     }
 
     if (blob) {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${id}.mp4`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      const blobUrl = URL.createObjectURL(blob);
+      const linkElement = document.createElement('a');
+      linkElement.href = blobUrl;
+      linkElement.download = `${id}.mp4`;
+      document.body.appendChild(linkElement);
+      linkElement.click();
+      document.body.removeChild(linkElement);
+      URL.revokeObjectURL(blobUrl);
     }
+    downloading = false;
   }
 </script>
 
-<div class="group">
-  <button
-    type="button"
-    aria-label="Download video"
-    onclick={handleDownload}
-    class="bg-(--primary) rounded-sm p-2
-           transition duration-300 ease-in-out
-           group-hover:bg-black group-hover:outline group-hover:scale-120">
-    <Download class="size-8 text-black group-hover:text-white" />
-  </button>
-</div>
+<button
+  type="button"
+  disabled={downloading}
+  aria-label="Download video"
+  onclick={handleDownload}
+  class="rounded-sm p-2 transition duration-300 ease-in-out group
+          { downloading ?
+            'bg-black outline cursor-not-allowed' :
+            'bg-(--primary) hover:bg-black hover:outline hover:scale-120'
+          }">
+  <div class="size-8">
+    {#if !downloading}
+    <Download class="size-full text-black group-hover:text-white" />
+    {:else}
+    <div class="">
+      <Spinner />
+    </div>
+    {/if}
+  </div>
+</button>
