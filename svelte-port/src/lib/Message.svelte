@@ -11,6 +11,6 @@
 <h1
   in:fly={{ y: -100, duration: 500 }}
   out:fly={{ y: -100, duration: 500 }}
-  class="font-bold text-(--primary)/80 text-3xl mt-15">
+  class="font-bold text-white/80 text-3xl mt-15">
   {text}
 </h1>

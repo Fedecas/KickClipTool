@@ -55,6 +55,6 @@
   <VideoPlayer bind:ref={clipRef} />
   {/if}
   {#if firstSearch && !hasResults && !searching}
-  <Message text="no results found" />
+  <Message text="no results found :(" />
   {/if}
 </div>
