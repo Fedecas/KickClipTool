@@ -1,10 +1,10 @@
 <script lang="ts">
   import { Eye, Calendar, Play } from 'lucide-svelte';
-  import { formatDistance } from 'date-fns';
 
   import { blur } from 'svelte/transition';
 
   import type { ClipObject, ClipRef } from '$lib/types';
+  import { formatDateDistance, formatDuration } from '$lib/utils';
   import Spinner from '$lib/Spinner.svelte';
 
   interface Props {
@@ -18,17 +18,6 @@
 
   // Internal
   const { id, title, video, thumbnail, views, duration, date, creator, channel } = clip;
-
-  function formatDuration(duration: number): string {
-    const minutes = `${Math.floor(duration / 60)}`;
-    const seconds = `${duration % 60}`;
-    return `${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`;
-  };
-
-  function formatDate(date: Date): string {
-    const today = new Date();
-    return formatDistance(today, date);
-  }
 
   function onClick(): void {
     const ref: ClipRef = { id, thumbnail, video, title, channel };
@@ -69,6 +58,6 @@
   <h2 class="text-(--primary) font-medium">{creator}</h2>
   <div class="items-center justify-center flex flex-row">
     <Calendar class="text-(--secondary) mr-1 h-4.5" />
-    <h3 class="text-(--secondary)">{formatDate(date)}</h3>
+    <h3 class="text-(--secondary)">{formatDateDistance(date)}</h3>
   </div>
 </button>
