@@ -58,7 +58,7 @@
     type="search"
     bind:value
     oninput={onInput}
-    class="outline-0 h-full w-[80%] mr-12 text-lg p-1 z-1
+    class="outline-0 h-full w-[80%] ml-1 mr-11 text-2xl p-1 z-1
             text-center focus:text-left"/>
   <div class="absolute outline-2 size-full rounded-3xl py-3"></div>
 </div>
