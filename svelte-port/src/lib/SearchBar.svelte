@@ -42,22 +42,25 @@
 
 <div
   in:fly={{ y: 500, duration: 1000 }}
-  class="relative w-[20%] min-h-12 transition-margin duration-500 {hasResults ? 'my-2' : 'my-16'}">
+  class="relative w-96 h-12 p-1 gap-2 flex flex-row items-center mr-2
+          {hasResults ? 'my-2' : 'my-16'}">
+  <div class="size-8 ml-5">
+    {#if searching}
+    <div class="mt-0.5">
+      <Spinner />
+    </div>
+    {:else}
+    <Search class="size-full" />
+    {/if}
+  </div>
   <input
     placeholder="Search channel..."
     type="search"
     bind:value
     oninput={onInput}
-    class="absolute outline-0 pl-16 size-full text-lg top-0.5 z-1"/>
-  <div class="absolute outline-2 size-full rounded-3xl py-3 transition-all">
-  </div>
-  <div class="absolute ml-5 top-2.5 size-7">
-    {#if searching}
-    <Spinner />
-    {:else}
-    <Search class="size-full" />
-    {/if}
-  </div>
+    class="outline-0 h-full w-[80%] mr-12 text-lg p-1 z-1
+            text-center focus:text-left"/>
+  <div class="absolute outline-2 size-full rounded-3xl py-3"></div>
 </div>
 
 <style>
