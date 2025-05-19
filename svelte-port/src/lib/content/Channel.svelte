@@ -46,17 +46,19 @@
       alt="{name} avatar"
       onload={() => { loadedImg = true }}
       class="size-full object-cover rounded-sm brightness-70
-             group-hover:brightness-100 group-hover:drop-shadow-md/100"/>
+              {loadedImg ? 'opacity-100' : 'opacity-0 drop-shadow-md/100'}
+              transition-opacity duration-1000 ease-in
+              group-hover:brightness-100 group-hover:drop-shadow-md/100"/>
     {#if !loadedImg}
     <div class="absolute w-[20%] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
       <Spinner />
     </div>
     {/if}
   </div>
-  <div class="flex flex-row">
-    <h1 class="text-2xl mt-1">{name}</h1>
+  <div class="w-full flex flex-row items-center justify-center gap-2">
+    <h1 class="text-2xl mt-1 truncate">{name}</h1>
     {#if verified}
-    <BadgeCheck class="text-(--primary) ml-2 mt-2"/>
+    <BadgeCheck class="size-6 text-(--primary) mt-1 flex-shrink-0"/>
     {/if}
   </div>
   <h2 class="font-medium text-(--primary) mb-1">{followers} followers</h2>

@@ -37,7 +37,10 @@
       src={thumbnail}
       alt="Clip thumbnail"
       onload={() => { loadedImg = true }}
-      class="w-full aspect-video rounded-sm object-cover group-hover:brightness-50 group-hover:shadow-md/100"/>
+      class="w-full aspect-video rounded-sm object-cover
+              {loadedImg ? 'opacity-100' : 'opacity-0'}
+              transition-opacity duration-1000 ease-in
+              group-hover:brightness-50 group-hover:shadow-md/100"/>
     {#if loadedImg}
     <h3 class="absolute bg-black/70 rounded-sm text-sm left-1 top-1 p-1.5">{formatDuration(duration)}</h3>
     <div class="absolute bg-black/60 rounded-sm right-1 bottom-1 p-1.5 flex flex-row items-center">
@@ -54,7 +57,7 @@
     </div>
     {/if}
   </div>
-  <h1 class="content-center text-xl/4 font-medium leading-none line-clamp-2 h-12">{title}</h1>
+  <h1 class="content-center text-xl font-medium leading-none line-clamp-2 h-12">{title}</h1>
   <h2 class="text-(--primary) font-medium">{creator}</h2>
   <div class="items-center justify-center flex flex-row">
     <Calendar class="text-(--secondary) mr-1 h-4.5" />
