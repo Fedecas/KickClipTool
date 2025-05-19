@@ -17,7 +17,7 @@
     src="/kick-logo.svg"
     alt="Kick logo"
   />
-  <h1 class="text-3xl font-medium {hasResults ? 'invisible' : 'mb-2'}">
+  <h1 class="text-3xl font-medium {hasResults ? 'invisible' : 'my-2'}">
     Clip Tool
   </h1>
 </div>
