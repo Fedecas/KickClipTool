@@ -8,7 +8,8 @@ function cleanQuery(query: string): string {
 }
 
 function cleanChannelQuery(channel: string): string {
-  return cleanQuery(channel).toLowerCase().replace(/\s+/g, ' ');
+  return cleanQuery(channel)
+    .toLowerCase().replace(/\s+/g, ' ').replace(/_+/g, '_');
 }
 
 function cleanClipQuery(cursor: string): string {
