@@ -54,9 +54,9 @@
 </script>
 
 <div
-  class="outline size-full m-3 overflow-y-auto bg-gray-950 {hasResults ? '' : 'collapse'}"
+  class="outline w-full m-3 overflow-y-auto bg-gray-950 {hasResults ? '' : 'hidden'}"
   onscroll={handleScroll}>
-  <div class="h-full m-3 p-2 grid grid-cols-6 gap-2">
+  <div class="m-3 p-2 grid grid-cols-6 items-center gap-2">
     {#if !channelRef}
       {#each results as channel}
       <Channel channel={(channel as ChannelObject)} handleClick={handleChannelClick} />
