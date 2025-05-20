@@ -36,6 +36,7 @@
     <img
       src={thumbnail}
       alt="Clip thumbnail"
+      loading="lazy"
       onload={() => { loadedImg = true }}
       class="w-full aspect-video rounded-sm object-cover
               {loadedImg ? 'opacity-100' : 'opacity-0'}

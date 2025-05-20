@@ -44,6 +44,7 @@
     <img
       src={validAvatar}
       alt="{name} avatar"
+      loading="lazy"
       onload={() => { loadedImg = true }}
       class="size-full object-cover rounded-sm brightness-70
               {loadedImg ? 'opacity-100' : 'opacity-0 drop-shadow-md/100'}

@@ -46,6 +46,7 @@
   <img
     src={posterUrl}
     alt="Clip poster"
+    loading="lazy"
     width="100%"
     height="100%"
     out:fade={{ duration: 500 }}
