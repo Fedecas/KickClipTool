@@ -1,6 +1,7 @@
 <script lang="ts">
   import { blur } from "svelte/transition";
-    import Spinner from "./Spinner.svelte";
+
+  import Spinner from "$lib/Spinner.svelte";
 
   interface Props {
     hasResults: boolean;
@@ -21,8 +22,8 @@
       src="/kick-logo.svg"
       alt="Kick logo"
       onload={() => { loadedImg = true }}
-      class="size-full drop-shadow-lg/100 
-              {loadedImg ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000 ease-in"/>
+      class="size-full transition-opacity duration-1000 ease-in
+              {loadedImg ? 'opacity-100' : 'opacity-0'}"/>
     {#if !loadedImg}
     <div class="absolute w-[20%] flex items-center">
       <Spinner />
