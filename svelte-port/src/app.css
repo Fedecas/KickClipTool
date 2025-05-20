@@ -19,7 +19,7 @@
 
   color-scheme: dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242428;
+  background-color: var(--color-gray-900);
 
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

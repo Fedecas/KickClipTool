@@ -47,9 +47,11 @@
   }
 </script>
 
-<div class ="flex flex-col max-h-screen items-center">
-  <Header {hasResults} />
-  <SearchBar {searching} {hasResults} {channelRef} handleInput={handleSearchChannels} />
+<div class ="flex flex-col items-center h-screen max-h-screen">
+  <div class="w-full flex flex-col items-center space-background">
+    <Header {hasResults} />
+    <SearchBar {searching} {hasResults} {channelRef} handleInput={handleSearchChannels} />
+  </div>
   <Content {results} {hasResults} {channelRef} getClips={handleSearchClips} bind:clipRef />
   {#if clipRef}
   <VideoPlayer bind:ref={clipRef} />
@@ -58,3 +60,13 @@
   <Message text="no results found :(" />
   {/if}
 </div>
+
+<style>
+  .space-background {
+    background-color: var(--color-gray-950);
+    background-image:
+      linear-gradient(to bottom, transparent, var(--color-gray-900)),
+      url('/space.webp');
+    background-size: cover;
+  }
+</style>
