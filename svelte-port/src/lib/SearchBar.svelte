@@ -44,7 +44,8 @@
   in:fly={{ y: 500, duration: 1000 }}
   class="relative w-96 h-12 p-1 gap-2 flex flex-row items-center mr-2
           {hasResults ? 'my-2' : 'my-16'}">
-  <div class="size-8 ml-5">
+  <div class="absolute size-full rounded-3xl py-3 bg-[#242428]"></div>
+  <div class="size-8 ml-5 z-1">
     {#if searching}
     <div class="mt-0.5">
       <Spinner />
@@ -58,9 +59,9 @@
     type="search"
     bind:value
     oninput={onInput}
-    class="outline-0 h-full w-[80%] ml-1 mr-11 text-2xl p-1 z-1
+    class="outline-0 h-full w-[80%] ml-1 mr-11 text-2xl p-1 z-2
             text-center focus:text-left"/>
-  <div class="absolute outline-2 size-full rounded-3xl py-3"></div>
+  <div class="absolute outline-2 size-full rounded-3xl py-3 z-1>"></div>
 </div>
 
 <style>
