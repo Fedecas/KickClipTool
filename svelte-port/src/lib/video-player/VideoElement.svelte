@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { fade, blur } from 'svelte/transition';
+  import { fade } from 'svelte/transition';
   import { onMount } from 'svelte';
 
+  import { initHLS } from './video';
   import Spinner from '$lib/Spinner.svelte';
 
   interface Props {
@@ -17,17 +18,11 @@
   let videoElement: HTMLVideoElement;
 
   onMount(() => {
-    import('hls.js').then(module => {
-      let hls = null;
-      if (module.default.isSupported()) {
-        hls = new module.default();
-        hls.loadSource(videoUrl);
-        hls.attachMedia(videoElement);
-      }
-      return () => {
-        if (hls) hls.destroy();
-      };
-    });
+    console.log("mounting...", videoUrl);
+    const hls = initHLS(videoElement, videoUrl);
+    return () => {
+      if (hls) hls.destroy();
+    };
   });
 </script>
 
@@ -38,7 +33,7 @@
     bind:this={videoElement}
     controls={loaded}
     playsinline
-    onloadeddata={() => { loaded = true }}
+    oncanplaythrough={() => { loaded = true }}
     class="size-full object-cover rounded-sm">
     <track kind="captions" default />
   </video>
