@@ -4,6 +4,7 @@ import { rm, mkdir, readFile, writeFile } from 'fs/promises';
 import { spawn } from 'child_process';
 import { json } from '@sveltejs/kit';
 import { join } from 'path';
+import { tmpdir } from 'os';
 
 async function downloadM3U8(url: string, outputPath: string): Promise<void> {
   let response: Response;
@@ -98,7 +99,7 @@ export async function POST({ request }): Promise<Response> {
     return json({ error: 'FFmpeg not found' }, { status: 500 });
   }
 
-  const fileDir = join(process.cwd(), 'tmp', clipId);
+  const fileDir = join(tmpdir(), 'KickClipTool', clipId);
   try {
     await mkdir(fileDir, { recursive: true });
   } catch (err) {

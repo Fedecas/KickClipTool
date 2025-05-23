@@ -1,6 +1,9 @@
 <script lang="ts">
   import { Download } from 'lucide-svelte';
 
+  import { invoke } from '@tauri-apps/api/core';
+  import { exists, readFile } from '@tauri-apps/plugin-fs';
+
   import Spinner from '$lib/Spinner.svelte';
 
   interface Props {
@@ -12,19 +15,18 @@
   let downloading = $state(false);
 
   async function handleDownload(): Promise<void> {
+    console.debug('downloading', `${id}.mp4`, '...');
     downloading = true;
-    let response: Response;
+    let resultPath: string;
     let blob: Blob | null = null;
     try {
-      response = await fetch('/api/download', {
-        method: 'POST',
-        body: JSON.stringify({ url }),
-        headers: { 'Content-Type': 'application/json' }
-      });
-      if (response.ok) {
-        blob = await response.blob();
+      resultPath = await invoke('download_m3u8', { url });
+      console.warn(resultPath);
+      if (await exists(resultPath)) {
+        const result = await readFile(resultPath);
+        blob = new Blob([result], { type: 'video/mp4' });
       } else {
-        throw new Error(`Network response was not ok (${response.status})`);
+        throw new Error("Some error");
       }
     } catch (error) {
       console.error('Error fetching video:', error);

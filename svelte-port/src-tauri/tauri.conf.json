@@ -24,6 +24,9 @@
     }
   },
   "bundle": {
+    "externalBin": [
+      "bin/ffmpeg"
+    ],
     "active": true,
     "targets": "all",
     "icon": [
