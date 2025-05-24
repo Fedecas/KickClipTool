@@ -25,7 +25,7 @@
   },
   "bundle": {
     "externalBin": [
-      "bin/ffmpeg"
+      "bin/custom_ffmpeg"
     ],
     "active": true,
     "targets": "all",

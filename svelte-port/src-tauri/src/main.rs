@@ -61,7 +61,7 @@ async fn download_m3u8(app: tauri::AppHandle, url: &str) -> Result<String, Strin
 
     // Run ffmpeg sidecar to convert to mp4
     let (mut rx, mut _child) = app.shell()
-        .sidecar("ffmpeg")
+        .sidecar("custom_ffmpeg")
         .map_err(|e| format!("{e}!!!"))?
         .args([
             "-i", &playlist_path.to_str().unwrap(),
