@@ -20,7 +20,7 @@
     let resultPath: string;
     let blob: Blob | null = null;
     try {
-      resultPath = await invoke('download_m3u8', { url });
+      resultPath = await invoke('download_m3u8_as_mp4', { url });
       console.warn(resultPath);
       if (await exists(resultPath)) {
         const result = await readFile(resultPath);
