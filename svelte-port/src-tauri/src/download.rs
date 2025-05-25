@@ -37,7 +37,7 @@ async fn build_mp4(app: AppHandle, input: &str, output: &str) -> Result<(), Stri
         if let CommandEvent::Error(error) = event {
             return Err(format!("Error running ffmpeg sidecar: {error}"));
         } else if let CommandEvent::Terminated(payload) = event {
-            log::info!("Ffmpeg sidecar terminated with code: {:#?}", payload.code);
+            log::info!("ffmpeg sidecar terminated with code: {:#?}", payload.code.unwrap());
         }
     }
     Ok(())
@@ -59,11 +59,12 @@ pub async fn download_m3u8_as_mp4(app: AppHandle, url: &str) -> Result<String, S
         return Ok(result);
     }
 
-    create_dir_all(tmp_dir).map_err(|e| format!("Error al crear directorio para {clip_id}: {e}"))?;
+    create_dir_all(tmp_dir).map_err(|e| format!("Cannot create temporal directory for {clip_id}: {e}"))?;
 
     // Run ffmpeg sidecar to download and pack to mp4
     build_mp4(app, url, &result).await?;
 
     // Send video path
+    log::info!("serving result in {}.", result);
     return Ok(result);
 }
