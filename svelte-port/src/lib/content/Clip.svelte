@@ -32,7 +32,7 @@
   class="relative flex flex-col group rounded-sm p-1
          bg-[#242428] inset-shadow-sm/100 shadow-sm/100
          hover:bg-gray-800 hover:inset-shadow-none hover:shadow-none">
-  <div class="relative flex">
+  <div class="relative flex bg-black/40">
     <img
       src={thumbnail}
       alt="Clip thumbnail"
@@ -42,12 +42,12 @@
               {loadedImg ? 'opacity-100' : 'opacity-0'}
               transition-opacity duration-1000 ease-in
               group-hover:brightness-50 group-hover:shadow-md/100"/>
-    {#if loadedImg}
     <h3 class="absolute bg-black/70 rounded-sm text-sm left-1 top-1 p-1.5">{formatDuration(duration)}</h3>
     <div class="absolute bg-black/60 rounded-sm right-1 bottom-1 p-1.5 flex flex-row items-center">
       <h3 class="text-sm font-bold">{views}</h3>
       <Eye class="ml-1 h-5.5" />
     </div>
+    {#if loadedImg}
     <div class="absolute w-[20%] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0
                 group-hover:opacity-80 trasition-opacity duration-500 ease-in-out">
       <Play class="text-transparent size-full fill-white/100 aspect-square drop-shadow-md/100" />

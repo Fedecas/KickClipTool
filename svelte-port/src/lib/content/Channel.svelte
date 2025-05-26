@@ -40,7 +40,7 @@
   class="flex flex-col group items-center rounded-sm gap-1 p-1
          bg-[#242428] inset-shadow-sm/100 shadow-sm/100
          hover:bg-gray-800 hover:inset-shadow-none hover:shadow-none">
-  <div class="relative w-full h-64">
+  <div class="relative w-full h-64 bg-black/40">
     <img
       src={validAvatar}
       alt="{name} avatar"
