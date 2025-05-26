@@ -57,6 +57,7 @@
   <input
     placeholder="Search channel..."
     type="search"
+    name="searchbar"
     bind:value
     oninput={onInput}
     class="outline-0 h-full w-[80%] ml-1 mr-11 text-2xl p-1 z-2
