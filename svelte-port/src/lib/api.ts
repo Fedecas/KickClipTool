@@ -3,17 +3,19 @@ import type { ApiChannel, ApiChannelsResponse, ChannelsResponse,
 
 const API_ENDPOINT = new URL('https://kick.com/api/');
 
-function cleanQuery(query: string): string {
-  return query.trim().replace(/[^a-zA-Z0-9_ ]/g, '');
-}
-
 function cleanChannelQuery(channel: string): string {
-  return cleanQuery(channel)
-    .toLowerCase().replace(/\s+/g, ' ').replace(/_+/g, '_');
+  return channel
+    .replace(/[^a-zA-Z0-9_ -]/g, '')
+    .replace(/ +/g, ' ')
+    .replace(/_+/g, '_')
+    .replace(/-+/g, '-')
+    .toLowerCase()
+    .trim()
 }
 
 function cleanClipQuery(cursor: string): string {
-  return cleanQuery(cursor).replace(/\s+/g, '');
+  return cursor
+    .replace(/[^a-zA-Z0-9_]/g, '');
 }
 
 export async function searchChannels(query: string): Promise<ChannelsResponse> {
