@@ -7,14 +7,8 @@
   ],
   "permissions": [
     "core:default",
-    "fs:default",
-    {
-      "identifier": "fs:allow-exists",
-      "allow": [{ "path": "$TEMP/*" }]
-    },
-    {
-      "identifier": "fs:allow-temp-read-recursive",
-      "allow": [{ "path": "$TEMP/*" }]
-    }
+    "fs:allow-temp-read-recursive",
+    "fs:allow-temp-write-recursive",
+    "shell:allow-spawn"
   ]
 }
