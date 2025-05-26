@@ -9,6 +9,7 @@
     "core:default",
     "fs:allow-temp-read-recursive",
     "fs:allow-temp-write-recursive",
-    "shell:allow-spawn"
+    "shell:allow-spawn",
+    "shell:allow-open"
   ]
 }

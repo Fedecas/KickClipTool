@@ -8,13 +8,13 @@
 
 <a
   href={web}
+  class="group"
   target="_blank"
-  class="group">
+  rel="noopener noreferrer">
   <button
     type="button"
     aria-label="See on website"
-    class="bg-(--primary) rounded-sm p-2
-            transition duration-300 ease-in-out
+    class="bg-(--primary) rounded-sm p-2 transition duration-300 ease-in-out
             group-hover:bg-black group-hover:outline group-hover:scale-120">
     <img
       src="/kick-icon.ico"
