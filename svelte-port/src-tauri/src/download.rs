@@ -1,7 +1,7 @@
 
 use regex::Regex;
 use std::env::temp_dir;
-use std::fs::create_dir_all;
+use std::fs::{create_dir_all, remove_dir_all};
 use tauri::{AppHandle, command};
 use tauri_plugin_shell::ShellExt;
 use tauri_plugin_shell::process::CommandEvent;
@@ -10,11 +10,11 @@ const CLIP_REGEX: &str = r"clip_[A-Z0-9]+";
 const APP_TEMP_DIR: &str = "KickClipTool";
 const FFMPEG_SIDECAR: &str = "custom_ffmpeg";
 
-fn get_clip_id<'a>(url: &'a str) -> Result<&'a str, String> {
+fn get_clip_id(url: &str) -> Result<&str, String> {
     let re = Regex::new(CLIP_REGEX).unwrap();
     let matches = re
         .find(url)
-        .ok_or_else(|| format!("Invalid url (clip id not found)"))?;
+        .ok_or_else(|| ("Invalid url (clip id not found)").to_string())?;
     Ok(matches.as_str())
 }
 
@@ -66,5 +66,13 @@ pub async fn download_m3u8_as_mp4(app: AppHandle, url: &str) -> Result<String, S
 
     // Send video path
     log::info!("serving result in {}.", result);
-    return Ok(result);
+    Ok(result)
+}
+
+pub fn cleanup_downloaded_files() {
+    let tmp_dir = temp_dir().join(APP_TEMP_DIR);
+    if tmp_dir.exists() {
+        log::info!("cleaning downloaded files...");
+        let _ = remove_dir_all(tmp_dir).map_err(|e| log::error!("{}", e));
+    }
 }
