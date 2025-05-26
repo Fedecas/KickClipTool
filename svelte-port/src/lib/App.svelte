@@ -47,7 +47,7 @@
   }
 </script>
 
-<div class ="flex flex-col items-center h-screen max-h-screen">
+<main class ="flex flex-col items-center min-w-[400px] h-screen min-h-[600px] max-h-screen ">
   <div class="w-full flex flex-col items-center space-background">
     <Header {hasResults} />
     <SearchBar {searching} {hasResults} {channelRef} handleInput={handleSearchChannels} />
@@ -59,7 +59,7 @@
   {#if firstSearch && !hasResults && !searching}
   <Message text="no results found :(" />
   {/if}
-</div>
+</main>
 
 <style>
   .space-background {
@@ -67,6 +67,5 @@
     background-image:
       linear-gradient(to bottom, transparent, var(--color-gray-900)),
       url('/space.webp');
-    background-size: cover;
   }
 </style>

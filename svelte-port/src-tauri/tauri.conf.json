@@ -16,6 +16,8 @@
         "title": "KickClipTool",
         "width": 1280,
         "height": 720,
+        "minWidth": 400,
+        "minHeight": 600,
         "resizable": true,
         "fullscreen": false
       }
