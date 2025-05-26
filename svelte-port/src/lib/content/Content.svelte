@@ -14,8 +14,8 @@
   }
 
   // Constants
-  const COOLDOWN = 1000; // ms
-  const THRESHOLD = 300; // px
+  const COOLDOWN_MS = 1000;
+  const THRESHOLD_PX = 250;
 
   // Runes
   let { results, hasResults, channelRef, getClips, clipRef = $bindable() }: Props = $props();
@@ -39,11 +39,11 @@
     if (!target) return;
     const scrolledTo = target.scrollTop + target.clientHeight;
     const isGoingDown = scrolledTo > lastScrolledTo;
-    const shouldTrigger = scrolledTo >= (target.scrollHeight - THRESHOLD);
+    const shouldTrigger = scrolledTo >= (target.scrollHeight - THRESHOLD_PX);
     if (isGoingDown && shouldTrigger && !triggered) {
       triggered = true;
       await getClips(channelRef);
-      timeoutId = setTimeout(() => { triggered = false; }, COOLDOWN);
+      timeoutId = setTimeout(() => { triggered = false; }, COOLDOWN_MS);
     }
     lastScrolledTo = scrolledTo;
   }
@@ -56,7 +56,7 @@
 <div
   class="outline w-full m-3 overflow-y-auto bg-gray-950 {hasResults ? '' : 'hidden'}"
   onscroll={handleScroll}>
-  <div class="m-3 p-2 grid grid-cols-6 items-center gap-2">
+  <div class="m-3 p-2 items-center gap-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
     {#if !channelRef}
       {#each results as channel}
       <Channel channel={(channel as ChannelObject)} handleClick={handleChannelClick} />
