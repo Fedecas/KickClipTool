@@ -26,30 +26,29 @@
   });
 </script>
 
-<div class="absolute max-h-[75dvh] aspect-[16/9] rounded-sm
-            drop-shadow-lg/80 drop-shadow-(color:--primary)
-            flex items-center justify-center">
+<div class="absolute h-[75dvh] aspect-video rounded-sm
+            drop-shadow-lg/80 flex items-center justify-center">
   <video
     bind:this={videoElement}
     controls={loaded}
     playsinline
+    preload="auto"
     oncanplaythrough={() => { loaded = true }}
-    class="size-full object-cover rounded-sm">
+    class="size-full object-contain rounded-sm">
     <track kind="captions" default />
   </video>
   {#if !loaded}
-  <img
-    src={posterUrl}
-    alt="Clip poster"
-    loading="lazy"
-    width="100%"
-    height="100%"
-    out:fade={{ duration: 500 }}
-    class="absolute size-full object-cover rounded-sm brightness-70 grayscale"/>
   <div
     out:fade={{ duration: 400 }}
-    class="absolute w-[20%]">
-    <Spinner />
+    class="absolute flex items-center justify-center bg-black/40">
+    <img
+      src={posterUrl}
+      alt="Clip poster"
+      class="object-cover rounded-sm brightness-70 grayscale"/>
+    <div
+      class="absolute w-[20%]">
+      <Spinner />
+    </div>
   </div>
   {/if}
 </div>
