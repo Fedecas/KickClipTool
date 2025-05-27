@@ -27,9 +27,9 @@
 <div
   in:fly={{ y: 500, duration: 500 }}
   out:fly={{ y: -500, duration: 500 }}
-  class="absolute flex flex-row inset-0 items-center justify-center
+  class="absolute flex flex-row fixed inset-0 items-center justify-center
          backdrop-blur-sm bg-linear-[black,transparent,black] z-4">
-  <h1 class="absolute top-10 left-15 text-3xl font-bold max-w-[90dvw] truncate">
+  <h1 class="absolute top-6 left-10 text-3xl font-bold max-w-[90dvw] truncate">
     {title}
   </h1>
   <VideoElement {posterUrl} {videoUrl} />
