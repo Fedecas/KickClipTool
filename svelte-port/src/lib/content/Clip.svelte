@@ -38,7 +38,7 @@
       alt="Clip thumbnail"
       loading="lazy"
       onload={() => { loadedImg = true }}
-      class="w-full aspect-video rounded-sm object-cover
+      class="w-full aspect-video rounded-sm object-contain
               {loadedImg ? 'opacity-100' : 'opacity-0'}
               transition-opacity duration-1000 ease-in
               group-hover:brightness-50 group-hover:shadow-md/100"/>
