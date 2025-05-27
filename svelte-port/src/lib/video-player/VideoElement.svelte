@@ -26,7 +26,7 @@
   });
 </script>
 
-<div class="absolute h-[75dvh] aspect-video rounded-sm
+<div class="absolute h-[75dvh] w-[75dvw] aspect-video rounded-sm
             drop-shadow-lg/80 flex items-center justify-center">
   <video
     bind:this={videoElement}
@@ -34,7 +34,7 @@
     playsinline
     preload="auto"
     oncanplaythrough={() => { loaded = true }}
-    class="size-full object-contain rounded-sm">
+    class="h-full w-auto object-contain rounded-sm">
     <track kind="captions" default />
   </video>
   {#if !loaded}
