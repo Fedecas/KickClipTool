@@ -1,0 +1,16 @@
+BUG: fechas
+mejorar readme (sha256?)
+
+ordenar por vistas
+html-css
+get_clips con generador
+close al cerrar (asyncsession)
+
+* reproductor m3u8
+* sounds
+* logger colors
+* cache
+fallback for search (typesense-cloudscraper)
+
+INSTALL:
+pyinstaller --onefile --icon=favicon.ico --add-data="KCT\Lib\site-packages\nicegui;nicegui" --add-data="favicon.ico;." main.py

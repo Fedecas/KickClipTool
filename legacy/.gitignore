@@ -1,0 +1,16 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+build/
+dist/
+*.spec
+
+# Distribution / packaging
+KCT/
+venv/
+env/
+
+# VS Code
+.vscode/
+
+ideas.txt
+tests/
