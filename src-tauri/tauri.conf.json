@@ -1,6 +1,6 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "kct",
+  "productName": "KickClipTool",
   "version": "2.0.0",
   "identifier": "com.fedecas.kct",
   "build": {
