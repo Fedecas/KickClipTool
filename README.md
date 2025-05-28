@@ -1,38 +1,70 @@
-# sv
+# ![icon](src-tauri/icons/32x32.png) KICK Clip Tool
+[![Kick](https://img.shields.io/badge/Kick-53FC19?logo=kick&logoColor=000)](https://kick.com/) [![Tauri](https://img.shields.io/badge/Tauri-24C8D8?logo=tauri&logoColor=fff)](https://v2.tauri.app/) [![SvelteKit](https://img.shields.io/badge/SvelteKit-%23f1413d.svg?logo=svelte&logoColor=white)](https://kit.svelte.dev/) [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/) [![](https://img.shields.io/github/v/tag/Fedecas/KickClipTool)](#) 
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A lightweight desktop application to watch and download streamer clips from the [KICK](https://kick.com) streaming platform, no login required.  
 
-## Creating a project
+---
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Features
+- 🔍 **Search**: Find streamers and explore their clips.
+- 🎬 **Watch**: Stream clips directly in the app..
+- ⬇️ **Download**: Save clips locally with one click, no login needed.
+- ⚡️ **Fast and responsive UI**
+- 🖥️ **Lightweight desktop app**
 
-```bash
-# create a new project in the current directory
-npx sv create
 
-# create a new project in my-app
-npx sv create my-app
+## Tech Stack
+**Frontend**: [SvelteKit](https://svelte.dev/docs/kit/introduction) for *reactive* UI components.
+**Styling**: [TailwindCSS](https://tailwindcss.com/docs/installation/using-vite) for *utility-first* CSS styling.
+**Build Tool**: [Vite](https://v6.vite.dev/guide) for *fast* development and production builds.
+**Desktop Framework**: [Tauri](https://v2.tauri.app/start) for *lightweight*, cross-platform desktop applications.
+**Video processing**: [FFmpeg](https://ffmpeg.org) minimal build for clip *download*.
+
+## Possible future features  
+- Sort clips by views or popularity.
+- Filter clips by date range.
+- Support for [Twitch](https://www.twitch.tv).
+- VOD playback and download utilities.
+- Chat utilities.
+
+---
+
+## Build
+### Prerequisites
+- [Node.js](https://nodejs.org/) (v22 or higher recommended)
+- [npm](https://www.npmjs.com/) or [pnpm](https://pnpm.io/) or [yarn](https://yarnpkg.com/)
+- [Tauri build dependencies](https://v2.tauri.app/es/start/prerequisites)
+
+### Installation
+- Clone the repository:
+```sh
+git clone https://github.com/Fedecas/KickClipTool.git
+cd KickClipTool
+```
+- Install dependencies:
+```sh
+npm install
+# or: pnpm install, yarn install
+```
+- Run in development mode:
+```sh
+npx tauri dev
+```
+- Build for release:
+```sh
+npx tauri build
 ```
 
-## Developing
+### Usage
+Launch the built executable found in `src-tauri/target/release` (or `/debug` in dev mode).
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+---
 
-```bash
-npm run dev
+## Custom FFmpeg
+This project includes a minimal **FFmpeg** build for clip downloading and processing (see [README](src-tauri/bin/README.md)).
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+## Fonts
+The app uses the **Giphurs** font family by [@Corne2Plum3](https://github.com/Corne2Plum3). Check out [Giphurs](https://github.com/Corne2Plum3/Giphurs) for more info.
 
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## License
+This project is licensed under the MIT License (see LICENSE).
