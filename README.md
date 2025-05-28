@@ -1,41 +1,38 @@
-# ![favicon](favicon.ico) KICK(.com) Clip Tool
+# sv
 
-A simple tool for searching channels and clips on kick.com
+Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
 
-## Requirements for install
+## Creating a project
 
-`Python >= 3.9`
+If you're seeing this, you've probably already done this step. Congrats!
 
-## Installation
+```bash
+# create a new project in the current directory
+npx sv create
 
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/Fedecas/KickClipTool.git
-    ```
-2. Navigate to the project directory:
-    ```bash
-    cd KickClipTool
-    ```
-3. Create and activate a virtual environment (recommended):
-    ```bash
-    python -m venv venv
-    source venv/bin/activate
-    (on Windows, run: venv/Scripts/activate)
-    ```
-4. Install dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
+# create a new project in my-app
+npx sv create my-app
+```
 
-## Usage
+## Developing
 
-* Activate the virtual environment (if it isn't already active):
+Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
-* Run the application using:
-    ```bash
-    python main.py
-    ```
+```bash
+npm run dev
 
-## License
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
+```
 
-This project is licensed under the [MIT License](LICENSE).
+## Building
+
+To create a production version of your app:
+
+```bash
+npm run build
+```
+
+You can preview the production build with `npm run preview`.
+
+> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.

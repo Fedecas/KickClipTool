@@ -1,16 +1,25 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-build/
-dist/
-*.spec
+node_modules
+legacy
+tmp
 
-# Distribution / packaging
-KCT/
-venv/
-env/
+# Output
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
 
-# VS Code
-.vscode/
+# OS
+.DS_Store
+Thumbs.db
 
-ideas.txt
-tests/
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
