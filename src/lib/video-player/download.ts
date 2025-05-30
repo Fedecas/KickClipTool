@@ -13,15 +13,13 @@ export async function downloadClip(url: string): Promise<Blob | null> {
   } else {
     const response = await fetch('/api/download', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ url })
+      body: JSON.stringify({ url }),
+      headers: { 'Content-Type': 'application/json' }
     });
     if (response.ok) {
       blob = await response.blob();
     } else {
-      throw new Error();
+      console.error(`Network response was not ok (${response.status})`);
     }
   }
 
