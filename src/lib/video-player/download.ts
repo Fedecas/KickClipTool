@@ -19,7 +19,8 @@ export async function downloadClip(url: string): Promise<Blob | null> {
     if (response.ok) {
       blob = await response.blob();
     } else {
-      console.error(`Network response was not ok (${response.status})`);
+      const data = await response.json();
+      console.error(`Network response was not ok: ${response.status} (${data.error})`);
     }
   }
 
