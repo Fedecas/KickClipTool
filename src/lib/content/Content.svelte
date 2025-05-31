@@ -23,7 +23,12 @@
   // Internal
   let triggered = false;
   let lastScrolledTo = 0;
+  let scrollElement: HTMLElement;
   let timeoutId: ReturnType<typeof setTimeout>;
+
+  $effect(() => {
+    if (results) scrollElement.scrollTo({ top: 0 });
+  });
 
   async function handleChannelClick(channel: ChannelRef): Promise<void> {
     await getClips(channel);
@@ -33,13 +38,11 @@
     clipRef = ref;
   }
 
-  async function handleScroll(e: UIEvent): Promise<void> {
-    if (!channelRef) return;
-    const target = e.currentTarget as HTMLDivElement;
-    if (!target) return;
-    const scrolledTo = target.scrollTop + target.clientHeight;
+  async function handleScroll(): Promise<void> {
+    if (!channelRef || !scrollElement) return;
+    const scrolledTo = scrollElement.scrollTop + scrollElement.clientHeight;
     const isGoingDown = scrolledTo > lastScrolledTo;
-    const shouldTrigger = scrolledTo >= (target.scrollHeight - THRESHOLD_PX);
+    const shouldTrigger = scrolledTo >= (scrollElement.scrollHeight - THRESHOLD_PX);
     if (isGoingDown && shouldTrigger && !triggered) {
       triggered = true;
       await getClips(channelRef);
@@ -54,6 +57,7 @@
 </script>
 
 <div
+  bind:this={scrollElement}
   class="outline w-full m-3 overflow-y-auto bg-gray-950 {hasResults ? '' : 'hidden'}"
   onscroll={handleScroll}>
   <div class="m-3 p-2 items-center gap-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
