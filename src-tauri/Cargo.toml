@@ -1,6 +1,6 @@
 [package]
 name = "kct"
-version = "2.0.0"
+version = "2.1.0"
 description = "A tool for kick(.com) clips"
 authors = ["Fedecas"]
 license = "GPL"
