@@ -1,4 +1,3 @@
-
 use regex::Regex;
 use std::env::temp_dir;
 use std::fs::{create_dir_all, remove_dir_all};
@@ -51,7 +50,7 @@ pub async fn download_m3u8_as_mp4(app: AppHandle, url: &str) -> Result<String, S
     let clip_id: &str = get_clip_id(url)?;
 
     // Create temporal directory for video files, if exists return actual file
-    let tmp_dir = temp_dir().join(APP_TEMP_DIR).join(clip_id);
+    let tmp_dir = temp_dir().join(APP_TEMP_DIR);
     let result_path = tmp_dir.join(format!("{clip_id}.mp4"));
     let result = result_path.to_str().unwrap().to_string();
     if result_path.exists() {
