@@ -10,10 +10,11 @@
 
   interface Props {
     ref: ClipRef | null;
+    downloads: string[];
   }
 
   // Runes
-  let { ref = $bindable() }: Props = $props();
+  let { ref = $bindable(), downloads = $bindable() }: Props = $props();
 
   // Internal
   const id = ref?.id || '';
@@ -35,7 +36,7 @@
   <VideoElement {posterUrl} {videoUrl} />
   <div class="absolute flex flex-col justify-center items-center gap-4 w-24 p-5 bg-black/70 right-8 rounded-sm">
     <CloseButton bind:ref />
-    <DownloadButton {id} url={videoUrl} />
+    <DownloadButton {id} url={videoUrl} bind:downloads />
     <WebButton web={webUrl} />
   </div>
 </div>

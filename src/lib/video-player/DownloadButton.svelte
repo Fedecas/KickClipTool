@@ -7,17 +7,18 @@
   interface Props {
     id: string;
     url: string;
+    downloads: string[];
   }
 
-  let { id, url }: Props = $props();
-  let downloading = $state(false);
+  let { id, url, downloads = $bindable() }: Props = $props();
+  let downloading = $derived(downloads.includes(id));
 
   // @ts-ignore
   const isTauri = !!window.__TAURI_INTERNALS__;
 
   async function handleDownload(): Promise<void> {
     console.debug('downloading', `${id}.mp4`, '...');
-    downloading = true;
+    downloads.push(id);
     let blob: Blob | null = null;
     try {
       blob = await downloadClip(isTauri, url);
@@ -35,7 +36,7 @@
       document.body.removeChild(linkElement);
       URL.revokeObjectURL(blobUrl);
     }
-    downloading = false;
+    downloads.splice(downloads.indexOf(id), 1);
   }
 </script>
 
