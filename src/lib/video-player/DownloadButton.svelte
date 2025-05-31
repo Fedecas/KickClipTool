@@ -12,12 +12,15 @@
   let { id, url }: Props = $props();
   let downloading = $state(false);
 
+  // @ts-ignore
+  const isTauri = !!window.__TAURI_INTERNALS__;
+
   async function handleDownload(): Promise<void> {
     console.debug('downloading', `${id}.mp4`, '...');
     downloading = true;
     let blob: Blob | null = null;
     try {
-      blob = await downloadClip(url);
+      blob = await downloadClip(isTauri, url);
     } catch (error) {
       console.error('Error fetching video:', error);
     }
@@ -38,10 +41,12 @@
 
 <button
   type="button"
-  disabled={downloading}
+  disabled={!isTauri || downloading}
   aria-label="Download video"
   onclick={handleDownload}
+  title={ isTauri ? 'Download video' : 'Clip download is disabled in the web version' }
   class="rounded-sm p-2 transition duration-300 ease-in-out group
+          { !isTauri ? 'cursor-not-allowed' : '' }
           { downloading ?
             'bg-black outline cursor-not-allowed' :
             'bg-(--primary) hover:bg-black hover:outline hover:scale-120'
