@@ -22,12 +22,12 @@ async function runFFmpeg(ffmpegDir: string, args: string[], log: boolean = false
     child.on('error', reject);
 
     if (log) {
-      child.stdout.on('data', (data) => {
-        console.debug('stdout:', data);
+      child.stdout.on('data', (data: Buffer) => {
+        console.debug('stdout:', data.toString());
       });
 
       child.stderr.on('data', (data) => {
-        console.error('stderr:', data);
+        console.error('stderr:', data.toString());
       });
     }
   });
