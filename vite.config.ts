@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => ({
   ],
   build: {
     rollupOptions: {
-      external: mode === 'tauri' ? ['ffmpeg-static'] : ['@tauri-apps/plugin-fs']
+      external: mode === 'tauri' ? [] : ['@tauri-apps/plugin-fs']
     }
   }
 }));

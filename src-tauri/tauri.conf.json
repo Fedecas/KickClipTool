@@ -6,8 +6,8 @@
   "build": {
     "frontendDist": "../build",
     "devUrl": "http://localhost:5173",
-    "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "npm run dev:tauri",
+    "beforeBuildCommand": "npm run build:tauri",
     "removeUnusedCommands": true
   },
   "app": {
