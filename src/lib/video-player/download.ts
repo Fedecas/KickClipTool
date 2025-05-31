@@ -1,10 +1,10 @@
-import { exists, readFile } from '@tauri-apps/plugin-fs';
-import { invoke } from '@tauri-apps/api/core';
 
 export async function downloadClip(url: string): Promise<Blob | null> {
   let blob: Blob | null = null;
   // @ts-ignore
   if (!!window.__TAURI_INTERNALS__) {
+    const { exists, readFile } = await import('@tauri-apps/plugin-fs');
+    const { invoke } = await import('@tauri-apps/api/core');
     const resultPath: string = await invoke('download_m3u8_as_mp4', { url });
     if (await exists(resultPath)) {
       const result = await readFile(resultPath);
