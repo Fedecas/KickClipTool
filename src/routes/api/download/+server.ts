@@ -46,6 +46,8 @@ export async function POST({ request }): Promise<Response> {
     return json({ error: 'FFmpeg not found' }, { status: 500 });
   }
 
+  console.debug("FFmpeg found:", ffmpeg);
+
   const fileDir = join(tmpdir(), 'KickClipTool', clipId);
   try {
     await mkdir(fileDir, { recursive: true });
@@ -65,7 +67,7 @@ export async function POST({ request }): Promise<Response> {
   ];
 
   try {
-    await runFFmpeg(ffmpeg, args);
+    await runFFmpeg(ffmpeg, args, true);
   } catch (error) {
     console.error('Error running ffmpeg:', error);
     return json({ error: 'error running ffmpeg' }, { status: 500 });
