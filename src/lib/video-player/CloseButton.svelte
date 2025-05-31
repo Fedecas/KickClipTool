@@ -13,6 +13,7 @@
 <div class="group">
   <button
       type="button"
+      title="Close video"
       aria-label="Close video"
       onclick={() => { ref = null }}
       class="bg-red-500 rounded-sm p-2
