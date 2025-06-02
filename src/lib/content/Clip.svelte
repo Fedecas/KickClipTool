@@ -64,7 +64,11 @@
     <h2 class="text-(--primary) font-medium">{creator}</h2>
     <div class="items-center flex flex-row">
       <Calendar class="text-(--secondary) mr-1 h-4.5" />
-      <h3 class="text-(--secondary)">{formatDateDistance(date)}</h3>
+      <h3
+        title={date.toString()}
+        class="text-(--secondary)">
+        {formatDateDistance(date)}
+      </h3>
     </div>
   </div>
 </button>

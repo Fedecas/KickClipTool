@@ -12,7 +12,7 @@ export function formatDateDistance(date: Date): string {
   const timeDiff = new Date().getTime() - date.getTime();
 
   for (const { ms, name } of TIME_UNITS) {
-    const count = Math.floor(timeDiff / ms);
+    const count = Math.round(timeDiff / ms);
     if (count > 0) {
       const prefix = name === 'year' || name === 'month' ? '~' : '';
       const suffix = count > 1 ? 's' : '';
