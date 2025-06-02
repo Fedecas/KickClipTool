@@ -1,4 +1,4 @@
-export async function downloadClip(isTauri: boolean, url: string): Promise<Blob | null> {
+export async function downloadClip(isTauri: boolean, url: string, id: string): Promise<Blob | null> {
   let blob: Blob | null = null;
   if (isTauri) {
     const { exists, readFile } = await import('@tauri-apps/plugin-fs');
@@ -8,8 +8,10 @@ export async function downloadClip(isTauri: boolean, url: string): Promise<Blob 
     if (await exists(resultPath)) {
       const result = await readFile(resultPath);
       blob = new Blob([result], { type: 'video/mp4' });
+    } else {
+      throw new Error("Result path does not exist");
     }
-  } else { //Temporary (?) disable download endpoint for web
+  } else { // Temporary (?) disable download endpoint for web
     /*const response = await fetch('/api/download', {
       method: 'POST',
       body: JSON.stringify({ url }),
