@@ -25,9 +25,13 @@
   let lastScrolledTo = 0;
   let scrollElement: HTMLElement;
   let timeoutId: ReturnType<typeof setTimeout>;
+  let lastResultLen = 0;
 
   $effect(() => {
-    if (results) scrollElement.scrollTo({ top: 0 });
+    if (results.length > 0 && lastResultLen === 0) {
+      scrollElement.scrollTo({ top: 0 });
+    }
+    lastResultLen = results.length;
   });
 
   async function handleChannelClick(channel: ChannelRef): Promise<void> {
@@ -60,7 +64,8 @@
   bind:this={scrollElement}
   class="outline w-full m-3 overflow-y-auto bg-gray-950 {hasResults ? '' : 'hidden'}"
   onscroll={handleScroll}>
-  <div class="m-3 p-2 items-center gap-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+  <div class="m-3 p-2 items-center gap-2 grid grid-cols-2
+              md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
     {#if !channelRef}
       {#each results as channel}
       <Channel channel={(channel as ChannelObject)} handleClick={handleChannelClick} />
