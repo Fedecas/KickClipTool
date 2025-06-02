@@ -60,9 +60,9 @@
   </div>
   <h1 class="w-full content-center mt-2 font-medium text-xl
             overflow-hidden leading-6 line-clamp-2">{title}</h1>
-  <div class="flex flex-col mt-auto">
-    <h2 class="text-(--primary) font-medium">{creator}</h2>
-    <div class="items-center flex flex-row">
+  <div class="flex flex-col mt-auto w-full">
+    <h2 class="text-(--primary) font-medium truncate">{creator}</h2>
+    <div class="items-center justify-center flex flex-row">
       <Calendar class="text-(--secondary) mr-1 h-4.5" />
       <h3
         title={date.toString()}
