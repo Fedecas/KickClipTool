@@ -29,10 +29,10 @@
   in:blur={{ duration: 700 }}
   type="button"
   onclick={onClick}
-  class="relative flex flex-col group rounded-sm p-1
-         bg-[#242428] inset-shadow-sm/100 shadow-sm/100
-         hover:bg-gray-800 hover:inset-shadow-none hover:shadow-none">
-  <div class="relative flex bg-black/40">
+  class="relative flex flex-col group rounded-sm aspect-square p-1 bg-[#242428]
+          inset-shadow-sm/100 shadow-sm/100 items-center justify-start
+          hover:bg-gray-800 hover:inset-shadow-none hover:shadow-none">
+  <div class="relative flex bg-black/40 w-full">
     <img
       src={thumbnail}
       alt="Clip thumbnail"
@@ -58,10 +58,13 @@
     </div>
     {/if}
   </div>
-  <h1 class="content-center text-xl font-medium leading-none line-clamp-2 h-12">{title}</h1>
-  <h2 class="text-(--primary) font-medium">{creator}</h2>
-  <div class="items-center justify-center flex flex-row">
-    <Calendar class="text-(--secondary) mr-1 h-4.5" />
-    <h3 class="text-(--secondary)">{formatDateDistance(date)}</h3>
+  <h1 class="w-full content-center mt-2 font-medium text-xl
+            overflow-hidden leading-6 line-clamp-2">{title}</h1>
+  <div class="flex flex-col mt-auto">
+    <h2 class="text-(--primary) font-medium">{creator}</h2>
+    <div class="items-center flex flex-row">
+      <Calendar class="text-(--secondary) mr-1 h-4.5" />
+      <h3 class="text-(--secondary)">{formatDateDistance(date)}</h3>
+    </div>
   </div>
 </button>
