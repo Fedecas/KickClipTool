@@ -50,17 +50,20 @@ async fn build_mp4(app: AppHandle, input: &str, output: &str, event_name: &str) 
         .expect("Failed to spawn sidecar");
 
     let window = app.get_webview_window("main").unwrap();
-    let mut last_emit = 0;
+    let mut duration = 0;
     while let Some(event) = rx.recv().await {
         match event {
             CommandEvent::Stdout(msg) | CommandEvent::Stderr(msg) => {
                 let msg_str = String::from_utf8_lossy(&msg);
                 let current_time = get_current_time(&msg_str);
-                if current_time > 0 && current_time != last_emit {
-                    window
-                        .emit(event_name, current_time)
-                        .map_err(|e| format!("Error sending download event: {e}"))?;
-                    last_emit = current_time;
+                if current_time > 0 {
+                    if duration == 0 {
+                        duration = current_time;
+                    } else {
+                        window
+                            .emit(event_name, current_time as f64 / duration as f64)
+                            .map_err(|e| format!("Error sending download event: {e}"))?;
+                    }
                 }
             }
             CommandEvent::Terminated(payload) => {

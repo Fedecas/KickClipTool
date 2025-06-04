@@ -1,8 +1,11 @@
 <script lang="ts">
+  import { listen } from '@tauri-apps/api/event';
   import { Download } from 'lucide-svelte';
 
+  import ProgressCircle from './ProgressCircle.svelte';
   import Spinner from '$lib/Spinner.svelte';
   import { downloadClip } from './download';
+  import { onMount } from 'svelte';
 
   interface Props {
     id: string;
@@ -13,7 +16,6 @@
   let { id, url, downloads = $bindable() }: Props = $props();
   let downloading = $derived(downloads.includes(id));
   let progress = $state(0);
-  let total = $state(0);
 
   // @ts-ignore
   const isTauri = !!window.__TAURI_INTERNALS__;
@@ -23,22 +25,10 @@
     console.debug('downloading', filename, '...');
     downloads.push(id);
     let blob: Blob | null = null;
-    let unlisten;
     try {
-      const { listen } = await import('@tauri-apps/api/event');
-      unlisten = await listen(id, ({ payload }: { payload: number }) => {
-        if (total !== 0 && payload !== 0) {
-          progress = payload;
-        } else if (total === 0) {
-          total = payload;
-        }
-      });
-
       blob = await downloadClip(isTauri, url, id);
     } catch (error) {
       console.error('Error fetching video:', error);
-    } finally {
-      if (unlisten) unlisten();
     }
 
     if (blob) {
@@ -53,6 +43,19 @@
     }
     downloads.splice(downloads.indexOf(id), 1);
   }
+
+  onMount(() => {
+    let unlisten: (() => void) | null = null;
+    listen(id, ({ payload }: { payload: number }) => {
+      console.log(payload);
+      progress = payload;
+    }).then((fn) => {
+      unlisten = fn;
+    });
+    return () => {
+      if (unlisten) unlisten();
+    };
+  });
 </script>
 
 <button
@@ -65,10 +68,13 @@
           { !isTauri ? 'cursor-not-allowed' : '' }
           { downloading ?
             'bg-black outline cursor-not-allowed' :
-            'bg-(--primary) hover:bg-black hover:outline hover:scale-120'}">
+            'bg-(--primary) hover:bg-black hover:outline hover:scale-120'}"
+>
   <div class="size-8">
     {#if !downloading}
     <Download class="size-full text-black group-hover:text-white" />
+    {:else if progress > 0}
+    <ProgressCircle {progress} />
     {:else}
     <div class="">
       <Spinner />
