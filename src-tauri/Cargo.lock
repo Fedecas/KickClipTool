@@ -1711,6 +1711,7 @@ name = "kct"
 version = "2.1.0"
 dependencies = [
  "log",
+ "once_cell",
  "regex",
  "serde",
  "serde_json",
