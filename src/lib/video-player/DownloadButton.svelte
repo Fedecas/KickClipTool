@@ -2,10 +2,11 @@
   import { listen } from '@tauri-apps/api/event';
   import { Download } from 'lucide-svelte';
 
-  import ProgressCircle from './ProgressCircle.svelte';
-  import Spinner from '$lib/Spinner.svelte';
-  import { downloadClip } from './download';
   import { onMount } from 'svelte';
+
+  import ProgressCircle from './ProgressCircle.svelte';
+  import { downloadClip } from './download';
+  import Spinner from '$lib/Spinner.svelte';
 
   interface Props {
     id: string;
@@ -21,33 +22,14 @@
   const isTauri = !!window.__TAURI_INTERNALS__;
 
   async function handleDownload(): Promise<void> {
-    let filename = `${id}.mp4`
-    console.debug('downloading', filename, '...');
     downloads.push(id);
-    let blob: Blob | null = null;
-    try {
-      blob = await downloadClip(isTauri, url, id);
-    } catch (error) {
-      console.error('Error fetching video:', error);
-    }
-
-    if (blob) {
-      const blobUrl = URL.createObjectURL(blob);
-      const linkElement = document.createElement('a');
-      linkElement.href = blobUrl;
-      linkElement.download = filename;
-      document.body.appendChild(linkElement);
-      linkElement.click();
-      document.body.removeChild(linkElement);
-      URL.revokeObjectURL(blobUrl);
-    }
+    await downloadClip(isTauri, url, id);
     downloads.splice(downloads.indexOf(id), 1);
   }
 
   onMount(() => {
     let unlisten: (() => void) | null = null;
     listen(id, ({ payload }: { payload: number }) => {
-      console.log(payload);
       progress = payload;
     }).then((fn) => {
       unlisten = fn;
@@ -76,9 +58,7 @@
     {:else if progress > 0}
     <ProgressCircle {progress} />
     {:else}
-    <div class="">
-      <Spinner />
-    </div>
+    <Spinner />
     {/if}
   </div>
 </button>
