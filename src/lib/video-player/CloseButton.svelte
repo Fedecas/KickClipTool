@@ -1,13 +1,11 @@
 <script lang="ts">
   import { X } from 'lucide-svelte';
 
-  import type { ClipRef } from '$lib/types';
-
   interface Props {
-    ref: ClipRef | null;
+    handleClick: () => void,
   }
 
-  let { ref = $bindable() }: Props = $props();
+  let { handleClick }: Props = $props();
 </script>
 
 <div class="group">
@@ -15,10 +13,11 @@
       type="button"
       title="Close video"
       aria-label="Close video"
-      onclick={() => { ref = null }}
+      onclick={handleClick}
       class="bg-red-500 rounded-sm p-2
              transition duration-300 ease-in-out
-             group-hover:bg-black group-hover:outline group-hover:scale-120">
-      <X class="size-8 text-black group-hover:text-white" />
+             group-hover:bg-black group-hover:outline group-hover:scale-120"
+  >
+    <X class="size-8 text-black group-hover:text-white" />
   </button>
 </div>
