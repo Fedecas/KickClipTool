@@ -1,7 +1,8 @@
 use regex::Regex;
+use tauri::async_runtime::Receiver;
 use std::env::temp_dir;
 use std::fs::{create_dir_all, remove_dir_all};
-use tauri::{command, AppHandle, Emitter, Manager};
+use tauri::{command, AppHandle, Emitter, Manager, WebviewWindow};
 use tauri_plugin_shell::ShellExt;
 use tauri_plugin_shell::process::CommandEvent;
 
@@ -18,24 +19,62 @@ fn get_clip_id(url: &str) -> Result<&str, String> {
     Ok(matches.as_str())
 }
 
-fn get_current_time(msg: &str) -> u16 {
-    let mut result: u16 = 0;
+fn get_current_time(msg: &str) -> f64 {
+    let mut result = 0.0;
     let re = Regex::new(TIME_REGEX).unwrap();
     let matched = re.find(msg);
     if let Some(time) = matched {
         let parts: Vec<&str> = time.as_str().split(&[':', '.']).collect();
         if parts.len() == 4 {
-            let minutes: u16 = parts[1].parse().unwrap();
-            let seconds: u16 = parts[2].parse().unwrap();
-            result = (minutes * 60) + seconds;
+            let minutes: f64 = parts[1].parse().unwrap();
+            let seconds: f64 = parts[2].parse().unwrap();
+            result = (minutes * 60.0) + seconds;
         }
     }
     return result;
 }
 
-async fn build_mp4(app: AppHandle, input: &str, output: &str, event_name: &str) -> Result<(), String> {
+fn emit_progress_event(window: &WebviewWindow, clip_id: &str, payload: f64) -> Result<(), String> {
+    window
+        .emit(clip_id, payload)
+        .map_err(|e| format!("Error sending download progress: {e}"))?;
+    Ok(())
+}
+
+async fn handle_sidecar_events(app: AppHandle, mut rx: Receiver<CommandEvent>, clip_id: &str) -> Result<(), String> {
+    let window = app.get_webview_window("main").unwrap();
     let mut result = Ok(());
-    let (mut rx, _child) = app
+    let mut duration = 0.0;
+    let mut payload: f64;
+    while let Some(event) = rx.recv().await {
+        match event {
+            CommandEvent::Stdout(msg) |
+            CommandEvent::Stderr(msg) => {
+                let msg_str = String::from_utf8_lossy(&msg);
+                let current_time = get_current_time(&msg_str);
+                if current_time > 0.0 {
+                    if duration > 0.0 {
+                        payload = current_time / duration;
+                        emit_progress_event(&window, clip_id, payload)?;
+                    } else {
+                        duration = current_time;
+                    }
+                }
+            }
+            CommandEvent::Terminated(payload) => {
+                log::info!("ffmpeg sidecar terminated with code: {:#?}", payload.code.unwrap());
+            }
+            _ => {
+                result = Err(format!("Error running ffmpeg sidecar: {event:#?}"));
+                break
+            }
+        }
+    }
+    return result;
+}
+
+async fn build_mp4(app: AppHandle, input: &str, output: &str, clip_id: &str) -> Result<(), String> {
+    let (rx, _child) = app
         .shell()
         .sidecar(FFMPEG_SIDECAR)
         .map_err(|e| format!("Error creating command: {e}"))?
@@ -49,39 +88,7 @@ async fn build_mp4(app: AppHandle, input: &str, output: &str, event_name: &str) 
         .spawn()
         .expect("Failed to spawn sidecar");
 
-    let window = app.get_webview_window("main").unwrap();
-    let mut duration = 0;
-    while let Some(event) = rx.recv().await {
-        match event {
-            CommandEvent::Stdout(msg) | CommandEvent::Stderr(msg) => {
-                let msg_str = String::from_utf8_lossy(&msg);
-                let current_time = get_current_time(&msg_str);
-                if current_time > 0 {
-                    if duration == 0 {
-                        duration = current_time;
-                    } else {
-                        window
-                            .emit(event_name, current_time as f64 / duration as f64)
-                            .map_err(|e| format!("Error sending download event: {e}"))?;
-                    }
-                }
-            }
-            CommandEvent::Terminated(payload) => {
-                log::info!("ffmpeg sidecar terminated with code: {:#?}", payload.code.unwrap());
-            }
-            CommandEvent::Error(error) => {
-                result = Err(format!("Error running ffmpeg sidecar: {error}"));
-                break
-            }
-            _ => ()
-        }
-    }
-
-    window
-        .emit(event_name, 0)
-        .map_err(|e| format!("Error sending last download event: {e}"))?;
-
-    return result;
+    handle_sidecar_events(app, rx, clip_id).await
 }
 
 #[command]
