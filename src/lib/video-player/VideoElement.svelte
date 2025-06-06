@@ -22,13 +22,14 @@
   let hls: Hls | null = null;
 
   $effect(() => {
-    if (hls && downloading) hls.stopLoad();
+    downloading ? hls?.stopLoad() : hls?.startLoad();
   });
 
   onMount(() => {
     hls = initHLS(videoElement, videoUrl);
     return () => {
-      if (hls) hls.destroy();
+      hls?.destroy();
+      hls = null;
     };
   });
 </script>
