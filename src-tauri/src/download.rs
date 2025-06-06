@@ -66,10 +66,12 @@ async fn handle_sidecar_events(
                     }
                 }
             }
-            CommandEvent::Terminated(payload) => {
-                log::info!(
-                    "ffmpeg sidecar terminated with code: {:#?}", payload.code.unwrap()
-                );
+            CommandEvent::Terminated(ref payload) => {
+                let code = payload.code.unwrap();
+                log::info!("ffmpeg sidecar terminated with code: {:#?}", code);
+                if code != 0 {
+                    return Err(format!("Ffmpeg sidecar terminated with code: {code}"));
+                }
             }
             _ => {
                 return Err(format!("Error running ffmpeg sidecar: {event:#?}"));
