@@ -4,7 +4,7 @@
 
   import { onMount } from 'svelte';
 
-  import ProgressCircle from './ProgressCircle.svelte';
+  import Progress from '$lib/Progress.svelte';
   import Spinner from '$lib/Spinner.svelte';
 
   interface Props {
@@ -46,7 +46,7 @@
     {#if !downloading}
     <Download class="size-full text-black group-hover:text-white" />
     {:else if progress > 0}
-    <ProgressCircle {progress} />
+    <Progress {progress} />
     {:else}
     <Spinner />
     {/if}
