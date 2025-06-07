@@ -16,10 +16,10 @@
   // Runes
   let { posterUrl, videoUrl, downloading }: Props = $props();
   let loaded = $state(false);
+  let hls: Hls | null = $state(null);
 
   // Internal
   let videoElement: HTMLVideoElement;
-  let hls: Hls | null = null;
 
   $effect(() => {
     downloading ? hls?.stopLoad() : hls?.startLoad();
