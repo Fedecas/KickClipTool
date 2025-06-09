@@ -127,3 +127,5 @@ export interface ClipRef {
   thumbnail: string;
   channel: string;
 };
+
+export type SortType = 'date' | 'views';

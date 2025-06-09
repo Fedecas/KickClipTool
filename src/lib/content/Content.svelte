@@ -1,8 +1,9 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
 
-  import type { ChannelObject, ChannelRef, ClipObject, ClipRef } from '$lib/types';
+  import type { ChannelObject, ChannelRef, ClipObject, ClipRef, SortType } from '$lib/types';
   import Channel from './Channel.svelte';
+  import Sort from './Sort.svelte';
   import Clip from './Clip.svelte';
 
   interface Props {
@@ -19,6 +20,7 @@
 
   // Runes
   let { results, hasResults, channelRef, getClips, clipRef = $bindable() }: Props = $props();
+  let sort: SortType = $state('date');
 
   // Internal
   let triggered = false;
@@ -60,20 +62,27 @@
   });
 </script>
 
-<div
-  bind:this={scrollElement}
-  class="outline w-full m-3 overflow-y-auto bg-gray-950 {hasResults ? '' : 'hidden'}"
-  onscroll={handleScroll}>
-  <div class="m-3 p-2 items-center gap-2 grid grid-cols-2
-              md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-    {#if !channelRef}
-      {#each results as channel}
-      <Channel channel={(channel as ChannelObject)} handleClick={handleChannelClick} />
-      {/each}
-    {:else}
-      {#each results as clip}
-      <Clip clip={(clip as ClipObject)} handleClick={handleClipClick} />
-      {/each}
-    {/if}
+<div class="w-full min-h-0 flex flex-col flex-1 m-3 {hasResults ? '' : 'hidden'}">
+  {#if channelRef}
+  <Sort bind:sort />
+  {/if}
+  <div
+    bind:this={scrollElement}
+    onscroll={handleScroll}
+    class="outline overflow-y-auto size-full flex-1 bg-gray-950"
+  >
+    <div class="m-3 p-2 items-center gap-2 grid grid-cols-2
+                md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
+    >
+      {#if !channelRef}
+        {#each results as channel}
+        <Channel channel={(channel as ChannelObject)} handleClick={handleChannelClick} />
+        {/each}
+      {:else}
+        {#each results as clip}
+        <Clip clip={(clip as ClipObject)} handleClick={handleClipClick} />
+        {/each}
+      {/if}
+    </div>
   </div>
 </div>
