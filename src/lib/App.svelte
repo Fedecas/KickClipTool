@@ -40,16 +40,19 @@
     searching = true;
     channelRef = null;
     results = [];
-    
+
     results = await searchChannels(channel);
-    
+
     searching = false;
     if (!firstSearch) firstSearch = true;
   }
 </script>
 
-<main class ="flex flex-col items-center max-w-[100dvw] h-[100dvh] min-h-[600px] max-h-screen ">
-  <div class="w-full flex flex-col items-center space-background">
+<main class="flex flex-col items-center overflow-hidden
+  min-w-[100px] w-dvw min-h-[600px] h-dvh bg-contain bg-gray-950
+  bg-[linear-gradient(to_bottom,transparent,var(--color-gray-900)),url('/space.webp')]"
+>
+  <div class="w-full flex flex-col items-center">
     <Header {hasResults} />
     <SearchBar {searching} {hasResults} {channelRef} handleInput={handleSearchChannels} />
   </div>
@@ -61,12 +64,3 @@
   <Message text="no results found :(" />
   {/if}
 </main>
-
-<style>
-  .space-background {
-    background-color: var(--color-gray-950);
-    background-image:
-      linear-gradient(to bottom, transparent, var(--color-gray-900)),
-      url('/space.webp');
-  }
-</style>
