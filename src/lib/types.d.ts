@@ -128,4 +128,4 @@ export interface ClipRef {
   channel: string;
 };
 
-export type SortType = 'date' | 'views';
+export type SortType = 'date' | 'view';
