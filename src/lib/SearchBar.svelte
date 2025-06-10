@@ -48,7 +48,7 @@
     { channelRef ? 'mt-6' : 'my-8' }"
 >
   <div class="absolute inset-0 rounded-md py-3 bg-[#242428]/70"></div>
-  <div class="size-8 ml-4 z-1">
+  <div class="size-8 ml-4 z-10">
     {#if searching}
     <div class="mt-0.5">
       <Spinner />
@@ -69,9 +69,9 @@
     onfocusin={() => focus = true}
     onfocusout={() => focus = false}
     placeholder="Search channel..."
-    class="outline-none h-full w-[80%] ml-2 mr-5 text-2xl/5 p-1 z-2 font-bold"
+    class="outline-none h-full w-[80%] ml-2 mr-5 text-2xl/5 p-1 z-20 font-bold"
   />
-  <div class="absolute inset-0 rounded-sm py-3 z-1
+  <div class="absolute inset-0 rounded-sm py-3 z-10
     transition-[outline-width, outline-color, drop-shadow] duration-500 ease-in-out
     { focus ?
       'outline-2 outline-(--primary) drop-shadow-lg/100 drop-shadow-(color:--primary)' :
