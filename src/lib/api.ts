@@ -61,7 +61,6 @@ export async function searchChannels(query: string): Promise<ChannelsResponse> {
 }
 
 export async function searchClips(channel: string, cursor: string, sort: SortType): Promise<ClipsResponse> {
-  console.log(sort);
   const validChannel = cleanChannelQuery(channel);
   const validCursor = cleanClipQuery(cursor);
   let result: ClipsResponse = { clips: [], nextCursor: '' };
@@ -69,6 +68,7 @@ export async function searchClips(channel: string, cursor: string, sort: SortTyp
 
   let apiRes: ApiClipsResponse = {};
   const requestUrl = new URL(`v2/channels/${validChannel}/clips`, API_ENDPOINT);
+  requestUrl.searchParams.append('sort', sort);
   if (validCursor) {
     requestUrl.searchParams.append('cursor', validCursor);
   }
