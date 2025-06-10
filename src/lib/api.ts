@@ -1,5 +1,6 @@
 import type { ApiChannel, ApiChannelsResponse, ChannelsResponse,
-              ApiClip, ApiClipsResponse, ClipsResponse } from '$lib/types';
+              ApiClip, ApiClipsResponse, ClipsResponse, 
+              SortType} from '$lib/types';
 
 const API_ENDPOINT = new URL('https://kick.com/api/');
 
@@ -59,7 +60,8 @@ export async function searchChannels(query: string): Promise<ChannelsResponse> {
   return result;
 }
 
-export async function searchClips(channel: string, cursor: string): Promise<ClipsResponse> {
+export async function searchClips(channel: string, cursor: string, sort: SortType): Promise<ClipsResponse> {
+  console.log(sort);
   const validChannel = cleanChannelQuery(channel);
   const validCursor = cleanClipQuery(cursor);
   let result: ClipsResponse = { clips: [], nextCursor: '' };

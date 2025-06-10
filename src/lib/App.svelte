@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ChannelObject, ClipObject, ChannelRef, ClipRef } from '$lib/types';
+  import type { ChannelObject, ClipObject, ChannelRef, ClipRef, SortType } from '$lib/types';
   import VideoPlayer from '$lib/video-player/VideoPlayer.svelte';
   import { searchChannels, searchClips } from '$lib/api';
   import Content from '$lib/content/Content.svelte';
@@ -17,19 +17,34 @@
   let hasResults = $derived(results.length > 0);
   // @ts-ignore
   let endReached = $derived(channelRef !== null && channelRef.nextCursor === '');
+  let sort: SortType = $state('date');
+  // svelte-ignore state_referenced_locally
+  let lastSort: SortType = sort;
 
-  async function handleSearchClips(channel: ChannelRef): Promise<void> {
+  $effect(() => {
+    if (sort !== lastSort && !!channelRef) {
+      (async () => {
+        await handleSearchClips(channelRef, sort);
+      })();
+    }
+  });
+
+  async function handleSearchClips(channel: ChannelRef, sort: SortType): Promise<void> {
     if (endReached) return;
     searching = true;
 
     if (channelRef !== channel) {
       channelRef = channel;
       results = [];
+    } else if (sort != lastSort) {
+      channelRef.nextCursor = '';
+      results = [];
+      lastSort = sort;
     }
 
     const slug = channelRef.slug;
     const cursor = channelRef.nextCursor || '';
-    const res = await searchClips(slug, cursor);
+    const res = await searchClips(slug, cursor, sort);
     results = [...(results as ClipObject[]), ...res.clips];
     channelRef.nextCursor = res.nextCursor;
 
@@ -56,7 +71,7 @@
     <Header {hasResults} />
     <SearchBar {searching} {hasResults} {channelRef} handleInput={handleSearchChannels} />
   </div>
-  <Content {results} {hasResults} {channelRef} getClips={handleSearchClips} bind:clipRef />
+  <Content {results} {hasResults} {channelRef} getClips={handleSearchClips} bind:clipRef bind:sort />
   {#if clipRef}
   <VideoPlayer bind:ref={clipRef} bind:downloads />
   {/if}

@@ -10,8 +10,9 @@
     results: ClipObject[] | ChannelObject[],
     hasResults: boolean,
     channelRef: ChannelRef | null,
-    getClips: (channel: ChannelRef) => Promise<void>,
-    clipRef: ClipRef | null
+    getClips: (channel: ChannelRef, sort: SortType) => Promise<void>,
+    clipRef: ClipRef | null,
+    sort: SortType
   }
 
   // Constants
@@ -19,8 +20,9 @@
   const THRESHOLD_PX = 250;
 
   // Runes
-  let { results, hasResults, channelRef, getClips, clipRef = $bindable() }: Props = $props();
-  let sort: SortType = $state('date');
+  let {
+    results, hasResults, channelRef, getClips, clipRef = $bindable(), sort = $bindable()
+  }: Props = $props();
 
   // Internal
   let triggered = false;
@@ -37,7 +39,7 @@
   });
 
   async function handleChannelClick(channel: ChannelRef): Promise<void> {
-    await getClips(channel);
+    await getClips(channel, sort);
   }
 
   function handleClipClick(ref: ClipRef): void {
@@ -51,7 +53,7 @@
     const shouldTrigger = scrolledTo >= (scrollElement.scrollHeight - THRESHOLD_PX);
     if (isGoingDown && shouldTrigger && !triggered) {
       triggered = true;
-      await getClips(channelRef);
+      await getClips(channelRef, sort);
       timeoutId = setTimeout(() => { triggered = false; }, COOLDOWN_MS);
     }
     lastScrolledTo = scrolledTo;
