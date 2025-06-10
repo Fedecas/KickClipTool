@@ -15,11 +15,12 @@
   let channelRef: ChannelRef | null = $state(null);
   let results: ClipObject[] | ChannelObject[] = $state([]);
   let hasResults = $derived(results.length > 0);
-  // @ts-ignore
-  let endReached = $derived(channelRef !== null && channelRef.nextCursor === '');
   let sort: SortType = $state('date');
-  // svelte-ignore state_referenced_locally
-  let lastSort: SortType = sort;
+  let lastSort: SortType = 'date';
+  let endReached = $derived(
+    // @ts-ignore
+    channelRef !== null && channelRef.nextCursor === '' && sort === lastSort
+  );
 
   $effect(() => {
     if (sort !== lastSort && !!channelRef) {
@@ -27,6 +28,7 @@
         await handleSearchClips(channelRef, sort);
       })();
     }
+    lastSort = sort;
   });
 
   async function handleSearchClips(channel: ChannelRef, sort: SortType): Promise<void> {
@@ -39,13 +41,16 @@
     } else if (sort != lastSort) {
       channelRef.nextCursor = '';
       results = [];
-      lastSort = sort;
     }
 
     const slug = channelRef.slug;
     const cursor = channelRef.nextCursor || '';
     const res = await searchClips(slug, cursor, sort);
-    results = [...(results as ClipObject[]), ...res.clips];
+    const clips = results as ClipObject[];
+    results = [
+      ...clips,
+      ...res.clips.filter(c1 => !clips.some(c2 => c1.id === c2.id))
+    ];
     channelRef.nextCursor = res.nextCursor;
 
     searching = false;
