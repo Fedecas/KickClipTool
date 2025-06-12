@@ -18,10 +18,7 @@
 <div class="ml-5 flex flex-row items-center gap-3 z-10">
   <SortButton type={'date'} {sort} Icon={Calendar} {handleClick} />
   <SortButton type={'view'} {sort} Icon={Eye} {handleClick} />
-  <div
-    aria-hidden="true"
-    class="p-2"
-  >
+  <div class="p-2">
     <ArrowDownWideNarrow class="size-7 opacity-90" />
   </div>
 </div>
