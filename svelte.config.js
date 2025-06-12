@@ -1,8 +1,8 @@
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import adapterStatic from '@sveltejs/adapter-static';
-import adapterNode from '@sveltejs/adapter-node';
+import adapterAuto from '@sveltejs/adapter-auto';
 
-const target = process.env.BUILD_TARGET || 'node';
+const target = process.env.BUILD_TARGET || 'auto';
 const adapter =
   target === 'tauri'
     ? adapterStatic({
@@ -12,11 +12,7 @@ const adapter =
         precompress: false,
         strict: true
       })
-    : adapterNode({  // Node by default
-        out: 'build',
-        precompress: true,
-        envPrefix: ''
-      });
+    : adapterAuto(); // Auto by default
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
