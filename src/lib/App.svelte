@@ -64,6 +64,7 @@
     searching = true;
     channelRef = null;
     results = [];
+    sort = lastSort = 'date';
 
     results = await searchChannels(channel);
 
