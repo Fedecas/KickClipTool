@@ -1,3 +1,4 @@
+import { notif } from './notifications';
 import type { ApiChannel, ApiChannelsResponse, ChannelsResponse,
               ApiClip, ApiClipsResponse, ClipsResponse, 
               SortType} from '$lib/types';
@@ -42,6 +43,7 @@ export async function searchChannels(query: string): Promise<ChannelsResponse> {
       console.error(`Network response was not ok (${response.status})`);
     }
   } catch (error) {
+    notif.error('Error searching for channels');
     console.error(`Error fetching channels: ${error}`);
   }
 
@@ -87,6 +89,7 @@ export async function searchClips(channel: string, cursor: string, sort: SortTyp
       console.error(`Network response was not ok (${response.status})`);
     }
   } catch (error) {
+    notif.error('Error searching for clips');
     console.error(`Error fetching clips: ${error}`);
   }
 

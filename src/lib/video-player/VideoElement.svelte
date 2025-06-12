@@ -4,6 +4,7 @@
   import { fade } from 'svelte/transition';
   import { onMount } from 'svelte';
 
+  import { notif } from '$lib/notifications';
   import Spinner from '$lib/Spinner.svelte';
   import { initHLS } from './video';
 
@@ -27,6 +28,7 @@
 
   onMount(() => {
     hls = initHLS(videoElement, videoUrl);
+    if (!hls) notif.error("Video can't be played");
     return () => {
       hls?.destroy();
       hls = null;

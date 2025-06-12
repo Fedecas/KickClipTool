@@ -1,13 +1,13 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
-  
-  import type { ClipRef } from '$lib/types';
 
   import DownloadButton from './DownloadButton.svelte';
   import VideoElement from './VideoElement.svelte';
   import CloseButton from './CloseButton.svelte';
   import WebButton from './WebButton.svelte';
+  import { notif } from '$lib/notifications';
   import { downloadClip } from './download';
+  import type { ClipRef } from '$lib/types';
 
   interface Props {
     ref: ClipRef | null,
@@ -33,9 +33,11 @@
   }
 
   async function handleDownload(): Promise<void> {
+    notif.success('Downloading...');
     downloads.push(id);
     await downloadClip(isTauri, videoUrl, id);
     downloads.splice(downloads.indexOf(id), 1);
+    notif.success('Download complete!');
   }
 </script>
 

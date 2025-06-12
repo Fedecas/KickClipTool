@@ -6,6 +6,7 @@
   import SearchBar from '$lib/SearchBar.svelte';
   import Message from '$lib/Message.svelte';
   import Header from '$lib/Header.svelte';
+  import { notif } from './notifications';
 
   // Runes
   let downloads = $state([]);
@@ -32,7 +33,10 @@
   });
 
   async function handleSearchClips(channel: ChannelRef, sort: SortType): Promise<void> {
-    if (endReached) return;
+    if (endReached) {
+      notif.success('No more clips');
+      return;
+    }
     searching = true;
 
     if (channelRef !== channel) {
