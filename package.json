@@ -33,6 +33,7 @@
 		"@tauri-apps/plugin-fs": "^2.3.0",
 		"hls.js": "^1.6.2",
 		"lucide-svelte": "^0.507.0",
+		"notyf": "^3.10.0",
 		"tailwindcss": "^4.1.5"
 	}
 }
