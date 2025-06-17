@@ -13,7 +13,6 @@ export function initHLS(ve: HTMLVideoElement, url: string): Hls | null {
     hls = new Hls(hlsConfig);
     let dummy = document.createElement('video');
     hls.attachMedia(dummy);
-    //hls.attachMedia(ve);
     hls.loadSource(url);
 
     let playOffset = 0;

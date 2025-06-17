@@ -1,5 +1,7 @@
+import { notif } from './notifications';
 import type { ApiChannel, ApiChannelsResponse, ChannelsResponse,
-              ApiClip, ApiClipsResponse, ClipsResponse } from '$lib/types';
+              ApiClip, ApiClipsResponse, ClipsResponse, 
+              SortType} from '$lib/types';
 
 const API_ENDPOINT = new URL('https://kick.com/api/');
 
@@ -41,6 +43,7 @@ export async function searchChannels(query: string): Promise<ChannelsResponse> {
       console.error(`Network response was not ok (${response.status})`);
     }
   } catch (error) {
+    notif.error('Error searching for channels');
     console.error(`Error fetching channels: ${error}`);
   }
 
@@ -59,7 +62,7 @@ export async function searchChannels(query: string): Promise<ChannelsResponse> {
   return result;
 }
 
-export async function searchClips(channel: string, cursor: string): Promise<ClipsResponse> {
+export async function searchClips(channel: string, cursor: string, sort: SortType): Promise<ClipsResponse> {
   const validChannel = cleanChannelQuery(channel);
   const validCursor = cleanClipQuery(cursor);
   let result: ClipsResponse = { clips: [], nextCursor: '' };
@@ -67,6 +70,7 @@ export async function searchClips(channel: string, cursor: string): Promise<Clip
 
   let apiRes: ApiClipsResponse = {};
   const requestUrl = new URL(`v2/channels/${validChannel}/clips`, API_ENDPOINT);
+  requestUrl.searchParams.append('sort', sort);
   if (validCursor) {
     requestUrl.searchParams.append('cursor', validCursor);
   }
@@ -85,6 +89,7 @@ export async function searchClips(channel: string, cursor: string): Promise<Clip
       console.error(`Network response was not ok (${response.status})`);
     }
   } catch (error) {
+    notif.error('Error searching for clips');
     console.error(`Error fetching clips: ${error}`);
   }
 

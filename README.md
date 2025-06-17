@@ -21,7 +21,6 @@ A lightweight desktop application to watch and download streamer clips from the 
 **Video processing**: [FFmpeg](https://ffmpeg.org) minimal build for clip *download*.  
   
 ## Possible future features  
-- Sort clips by views or popularity.  
 - Filter clips by date range.  
 - Support for [Twitch](https://www.twitch.tv).  
 - VOD playback and download utilities.  
