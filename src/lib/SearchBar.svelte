@@ -1,55 +1,22 @@
 <script lang="ts">
+  import { getSearchBarContext } from './SearchBar-state.svelte';
+  import Spinner from '$lib/Spinner.svelte';
+  import { fly } from 'svelte/transition';
   import { Search } from 'lucide-svelte';
 
-  import { onDestroy } from 'svelte';
-  import { fly } from 'svelte/transition';
-
-  import type { ChannelRef } from '$lib/types';
-  import Spinner from '$lib/Spinner.svelte';
-
-  interface Props {
-    searching: boolean,
-    hasResults: boolean,
-    channelRef: ChannelRef | null,
-    handleInput: (value: string) => Promise<void>
-  }
-
-  // Constants
-  const TIMEOUT = 600; // ms
-
-  // Runes
-  let { searching, hasResults, channelRef, handleInput }: Props = $props();
-
-  // Internal
-  let value = $state('');
-  let timeoutId: ReturnType<typeof setTimeout>;
-  let focus = $state(false);
-
-  $effect(() => {
-    if (channelRef) {
-      value = channelRef.name;
-    }
-  });
-
-  function onInput(): void {
-    if (timeoutId) clearTimeout(timeoutId);
-    timeoutId = setTimeout(async () => { await handleInput(value); }, TIMEOUT);
-  }
-
-  onDestroy(() => {
-    if (timeoutId) clearTimeout(timeoutId);
-  });
+  const self = getSearchBarContext();
+  let focus = $state(true);
 </script>
 
 <div
   in:fly={{ y: 500, duration: 1000 }}
   class="relative w-96 h-12 p-1 gap-2 flex flex-row items-center
     transition-margin delay-100 duration-600 ease-in-out
-    { channelRef ? 'mt-6' : 'my-8' }"
+    { self.selected ? 'mt-6' : 'my-8' }"
 >
   <div class="absolute inset-0 rounded-md py-3 bg-[#242428]/70"></div>
   <div class="size-8 ml-4 z-10">
-    {#if searching}
+    {#if self.searching}
     <div class="mt-0.5">
       <Spinner />
     </div>
@@ -58,14 +25,14 @@
     {/if}
   </div>
   <input
-    bind:value
+    bind:value={self.value}
     minlength=3
     maxlength=20
     type="search"
     name="searchbar"
     spellcheck=false
     autocomplete="off"
-    oninput={onInput}
+    oninput={self.onInput}
     onfocusin={() => focus = true}
     onfocusout={() => focus = false}
     placeholder="Search channel..."

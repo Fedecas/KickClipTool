@@ -1,17 +1,18 @@
 <script lang="ts">
   import type { ChannelObject, ClipObject, ChannelRef, ClipRef, SortType } from '$lib/types';
   import VideoPlayer from '$lib/video-player/VideoPlayer.svelte';
-  import { searchChannels, searchClips } from '$lib/api';
-  import Content from '$lib/content/Content.svelte';
-  import SearchBar from '$lib/SearchBar.svelte';
+  import { searchClips } from '$lib/api';
+  import ContentCmp from '$lib/content/Content.svelte';
+  import SearchBarCmp from '$lib/SearchBar.svelte';
   import Message from '$lib/Message.svelte';
   import Header from '$lib/Header.svelte';
   import { notif } from './notifications';
+  
+  import { SearchBar, setSearchBarContext } from './SearchBar-state.svelte';
+  import { Content } from './Content-state.svelte';
 
   // Runes
   let downloads = $state([]);
-  let searching = $state(false);
-  let firstSearch = $state(false);
   let clipRef: ClipRef | null = $state(null);
   let channelRef: ChannelRef | null = $state(null);
   let results: ClipObject[] | ChannelObject[] = $state([]);
@@ -22,6 +23,10 @@
     // @ts-ignore
     channelRef !== null && channelRef.nextCursor === '' && sort === lastSort
   );
+
+  const CMT = new Content();
+  const SB = new SearchBar(CMT);
+  setSearchBarContext(SB);
 
   $effect(() => {
     if (sort !== lastSort && !!channelRef) {
@@ -37,7 +42,7 @@
       notif.success('No more clips');
       return;
     }
-    searching = true;
+    SB.searching = true;
 
     if (channelRef !== channel) {
       channelRef = channel;
@@ -57,19 +62,7 @@
     ];
     channelRef.nextCursor = res.nextCursor;
 
-    searching = false;
-  }
-
-  async function handleSearchChannels(channel: string): Promise<void> {
-    searching = true;
-    channelRef = null;
-    results = [];
-    sort = lastSort = 'date';
-
-    results = await searchChannels(channel);
-
-    searching = false;
-    if (!firstSearch) firstSearch = true;
+    SB.searching = false;
   }
 </script>
 
@@ -79,13 +72,13 @@
 >
   <div class="w-full flex flex-col items-center">
     <Header {hasResults} />
-    <SearchBar {searching} {hasResults} {channelRef} handleInput={handleSearchChannels} />
+    <SearchBarCmp />
   </div>
-  <Content {results} {hasResults} {channelRef} getClips={handleSearchClips} bind:clipRef bind:sort />
+  <ContentCmp {results} {hasResults} {channelRef} getClips={handleSearchClips} bind:clipRef bind:sort />
   {#if clipRef}
   <VideoPlayer bind:ref={clipRef} bind:downloads />
   {/if}
-  {#if firstSearch && !hasResults && !searching}
+  {#if SB.firstSearch && !hasResults && !SB.searching}
   <Message text="no results found :(" />
   {/if}
 </main>
