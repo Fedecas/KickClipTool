@@ -8,8 +8,8 @@
   import Header from '$lib/Header.svelte';
   import { notif } from './notifications';
   
-  import { SearchBar, setSearchBarContext } from './SearchBar-state.svelte';
-  import { Content } from './Content-state.svelte';
+  import { SearchBarState, setSearchBarState } from './SearchBar-state.svelte';
+  import { ContentState, setContentState } from './Content-state.svelte';
 
   // Runes
   let downloads = $state([]);
@@ -24,9 +24,10 @@
     channelRef !== null && channelRef.nextCursor === '' && sort === lastSort
   );
 
-  const CMT = new Content();
-  const SB = new SearchBar(CMT);
-  setSearchBarContext(SB);
+  const CMT = new ContentState();
+  setContentState(CMT);
+  const SB = new SearchBarState(CMT);
+  setSearchBarState(SB);
 
   $effect(() => {
     if (sort !== lastSort && !!channelRef) {
@@ -71,14 +72,14 @@
   bg-[linear-gradient(to_bottom,transparent,var(--color-gray-900)),url('/space.webp')]"
 >
   <div class="w-full flex flex-col items-center">
-    <Header {hasResults} />
+    <Header hasResults={CMT.hasResults} />
     <SearchBarCmp />
   </div>
-  <ContentCmp {results} {hasResults} {channelRef} getClips={handleSearchClips} bind:clipRef bind:sort />
+  <ContentCmp />
   {#if clipRef}
   <VideoPlayer bind:ref={clipRef} bind:downloads />
   {/if}
-  {#if SB.firstSearch && !hasResults && !SB.searching}
+  {#if SB.firstSearch && !CMT.hasResults && !SB.searching}
   <Message text="no results found :(" />
   {/if}
 </main>
