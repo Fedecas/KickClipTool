@@ -7,28 +7,23 @@
   import Message from '$lib/Message.svelte';
   import Header from '$lib/Header.svelte';
   import { notif } from './notifications';
-  
+
   import { SearchBarState, setSearchBarState } from './SearchBarState.svelte';
   import { ContentState, setContentState } from './ContentState.svelte';
+  import { ChannelState, setChannelState } from './ChannelState.svelte';
+  import { ClipState, setClipState } from './ClipState.svelte';
 
-  // Runes
-  let downloads = $state([]);
-  let clipRef: ClipRef | null = $state(null);
-  let channelRef: ChannelRef | null = $state(null);
-  let results: ClipObject[] | ChannelObject[] = $state([]);
-  let hasResults = $derived(results.length > 0);
-  let sort: SortType = $state('date');
-  let lastSort: SortType = 'date';
-  let endReached = $derived(
-    // @ts-ignore
-    channelRef !== null && channelRef.nextCursor === '' && sort === lastSort
-  );
+  const CHS = new ChannelState();
+  const CLS = new ClipState();
+  const CS = new ContentState(CHS, CLS);
+  const SBS = new SearchBarState(CS);
 
-  const CMT = new ContentState();
-  setContentState(CMT);
-  const SB = new SearchBarState(CMT);
-  setSearchBarState(SB);
+  setChannelState(CHS);
+  setClipState(CLS);
+  setContentState(CS);
+  setSearchBarState(SBS);
 
+  /*
   $effect(() => {
     if (sort !== lastSort && !!channelRef) {
       (async () => {
@@ -65,6 +60,7 @@
 
     SB.searching = false;
   }
+  */
 </script>
 
 <main class="flex flex-col items-center overflow-hidden
@@ -72,14 +68,16 @@
   bg-[linear-gradient(to_bottom,transparent,var(--color-gray-900)),url('/space.webp')]"
 >
   <div class="w-full flex flex-col items-center">
-    <Header hasResults={CMT.hasResults} />
+    <Header hasResults={CS.hasResults} />
     <SearchBarCmp />
   </div>
   <ContentCmp />
+  <!--
   {#if clipRef}
   <VideoPlayer bind:ref={clipRef} bind:downloads />
   {/if}
-  {#if SB.firstSearch && !CMT.hasResults && !SB.searching}
+  -->
+  {#if SBS.firstSearch && !CS.hasResults && !SBS.searching}
   <Message text="no results found :(" />
   {/if}
 </main>
