@@ -4,7 +4,7 @@
   import { fly } from 'svelte/transition';
   import { onDestroy } from 'svelte';
 
-  import { getSearchBarState } from './SearchBar-state.svelte';
+  import { getSearchBarState } from './SearchBarState.svelte';
   import Spinner from '$lib/Spinner.svelte';
 
   const DEBOUNCE_MS = 600;

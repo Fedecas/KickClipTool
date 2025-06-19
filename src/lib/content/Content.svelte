@@ -6,8 +6,8 @@
   import Sort from './Sort.svelte';
   import Clip from './Clip.svelte';
 
-  import { getContentState } from '$lib/Content-state.svelte';
-  import { getSearchBarState } from '$lib/SearchBar-state.svelte';
+  import { getContentState } from '$lib/ContentState.svelte';
+  import { getSearchBarState } from '$lib/SearchBarState.svelte';
 
   const COOLDOWN_MS = 1000;
   const THRESHOLD_PX = 250;

@@ -8,8 +8,8 @@
   import Header from '$lib/Header.svelte';
   import { notif } from './notifications';
   
-  import { SearchBarState, setSearchBarState } from './SearchBar-state.svelte';
-  import { ContentState, setContentState } from './Content-state.svelte';
+  import { SearchBarState, setSearchBarState } from './SearchBarState.svelte';
+  import { ContentState, setContentState } from './ContentState.svelte';
 
   // Runes
   let downloads = $state([]);

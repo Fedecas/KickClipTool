@@ -1,5 +1,5 @@
 import { getContext, setContext } from 'svelte';
-import type { ContentState } from './Content-state.svelte';
+import type { ContentState } from './ContentState.svelte';
 import type { ChannelRef } from './types';
 
 const SEARCHBAR_KEY = Symbol('searchbar');
