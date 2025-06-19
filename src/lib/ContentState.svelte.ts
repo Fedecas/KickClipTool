@@ -1,30 +1,26 @@
-import type { ChannelObject, ChannelRef, ClipObject, SortType } from './types';
-import { searchChannels } from '$lib/api';
+import type { ChannelRef } from './types';
 import { getContext, setContext } from 'svelte';
+import type { ChannelState } from './ChannelState.svelte';
+import type { ClipState } from './ClipState.svelte';
 
 const CONTENT_KEY = Symbol('content');
 
 export class ContentState {
-  downloads = $state([]);
-  channels: ChannelObject[] = $state([]);
-  clips: ClipObject[] = $state([]);
-  sort: SortType = $state('date');
-  channelSelected = $state(false);
-  clipSelected = $state(false);
+  channelState: ChannelState | null = null;
+  clipState: ClipState | null = null;
 
-  //channel: ChannelRef | null = null;
-  lastSort: SortType = 'date';
+  hasResults: boolean = $derived(!!this.channelState?.hasResults || !!this.clipState?.hasResults);
+  //endReached = $derived(this.channelSelected &&/*channelRef.nextCursor === ''*/ this.sort === this.lastSort);
 
-  hasResults = $derived(this.channels.length > 0 || this.clips.length > 0);
-  endReached = $derived(this.channelSelected &&/*channelRef.nextCursor === ''*/ this.sort === this.lastSort);
-
-  constructor() {}
+  constructor(chs: ChannelState, cls: ClipState) {
+    this.channelState = chs;
+    this.clipState = cls;
+  }
 
   searchChannels = async (value: string) => {
-    this.channels = [];
-    this.lastSort = this.sort;
-    this.sort = 'date';
-    this.channels = await searchChannels(value);
+    //this.lastSort = this.sort;
+    //this.sort = 'date';
+    await this.channelState?.search(value);
   }
 
   searchClips = async (ref: ChannelRef) => {

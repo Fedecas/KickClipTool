@@ -6,14 +6,18 @@
   import Sort from './Sort.svelte';
   import Clip from './Clip.svelte';
 
-  import { getContentState } from '$lib/ContentState.svelte';
   import { getSearchBarState } from '$lib/SearchBarState.svelte';
+  import { getChannelState } from '$lib/ChannelState.svelte';
+  import { getContentState } from '$lib/ContentState.svelte';
+  import { getClipState } from '$lib/ClipState.svelte';
 
   const COOLDOWN_MS = 1000;
   const THRESHOLD_PX = 250;
 
-  const self = getContentState();
   const searchBar = getSearchBarState();
+  const chs = getChannelState();
+  const cls = getClipState();
+  const self = getContentState();
 
   let triggered = false;
   let lastScrolledTo = 0;
@@ -40,7 +44,7 @@
   }
 
   async function handleScroll(): Promise<void> {
-    if (!self.channelSelected || !scrollElement) return;
+    if (!chs.selected || !scrollElement) return;
     const scrolledTo = scrollElement.scrollTop + scrollElement.clientHeight;
     const isGoingDown = scrolledTo > lastScrolledTo;
     const shouldTrigger = scrolledTo >= (scrollElement.scrollHeight - THRESHOLD_PX);
@@ -58,8 +62,8 @@
 </script>
 
 <div class="w-full min-h-0 flex flex-col flex-1 m-3 {self.hasResults ? '' : 'hidden'}">
-  {#if self.channelSelected}
-  <Sort bind:sort={self.sort} />
+  {#if chs.selected}
+  <Sort bind:sort={cls.sort} />
   {/if}
   <div
     bind:this={scrollElement}
@@ -69,12 +73,12 @@
     <div class="m-3 p-2 items-center gap-2 grid grid-cols-2
       md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
     >
-      {#if !self.channelSelected}
-        {#each self.channels as channel}
+      {#if !chs.selected}
+        {#each chs.channels as channel}
         <Channel channel={(channel as ChannelObject)} handleClick={handleChannelClick} />
         {/each}
       {:else}
-        {#each self.clips as clip}
+        {#each cls.clips as clip}
         <Clip clip={(clip as ClipObject)} handleClick={handleClipClick} />
         {/each}
       {/if}
