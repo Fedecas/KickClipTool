@@ -1,22 +1,24 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
 
-  import type { ChannelObject, ChannelRef, ClipObject, ClipRef } from '$lib/types';
+  import type { ClipRef } from '$lib/types';
   import Channel from './Channel.svelte';
   import Sort from './Sort.svelte';
   import Clip from './Clip.svelte';
+  import Message from '$lib/Message.svelte';
 
   import { getSearchBarState } from '$lib/SearchBarState.svelte';
   import { getChannelState } from '$lib/ChannelState.svelte';
   import { getContentState } from '$lib/ContentState.svelte';
   import { getClipState } from '$lib/ClipState.svelte';
+  import { notif } from '$lib/notifications';
 
   const COOLDOWN_MS = 1000;
   const THRESHOLD_PX = 250;
 
-  const searchBar = getSearchBarState();
-  const chs = getChannelState();
-  const cls = getClipState();
+  const searchBarState = getSearchBarState();
+  const channelState = getChannelState();
+  const clipState = getClipState();
   const self = getContentState();
 
   let triggered = false;
@@ -24,7 +26,7 @@
   let scrollElement: HTMLElement;
   let timeoutId: ReturnType<typeof setTimeout>;
   let beforeHasResults = false;
-  let channelRef: ChannelRef;
+  let lastChannel = '';
 
   $effect(() => {
     if (self.hasResults && !beforeHasResults) {
@@ -33,24 +35,29 @@
     beforeHasResults = self.hasResults;
   });
 
-  async function handleChannelClick(ref: ChannelRef): Promise<void> {
-    channelRef = ref;
-    await searchBar.searchClips(channelRef);
+  async function handleChannelClick(channel: string): Promise<void> {
+    lastChannel = channel;
+    channelState.selected = true;
+    await searchBarState.searchClips(channel);
   }
 
   function handleClipClick(ref: ClipRef): void {
-    console.log('click channel', ref);
+    console.log('click clip', ref);
     //clipRef = ref;
   }
 
   async function handleScroll(): Promise<void> {
-    if (!chs.selected || !scrollElement) return;
+    if (!channelState.selected || !scrollElement) return;
     const scrolledTo = scrollElement.scrollTop + scrollElement.clientHeight;
     const isGoingDown = scrolledTo > lastScrolledTo;
     const shouldTrigger = scrolledTo >= (scrollElement.scrollHeight - THRESHOLD_PX);
     if (isGoingDown && shouldTrigger && !triggered) {
       triggered = true;
-      await searchBar.searchClips(channelRef);
+      if (self.clipState?.endReached) {
+        notif.success('No more clips');
+      } else {
+        await clipState.more();
+      }
       timeoutId = setTimeout(() => { triggered = false; }, COOLDOWN_MS);
     }
     lastScrolledTo = scrolledTo;
@@ -62,8 +69,8 @@
 </script>
 
 <div class="w-full min-h-0 flex flex-col flex-1 m-3 {self.hasResults ? '' : 'hidden'}">
-  {#if chs.selected}
-  <Sort bind:sort={cls.sort} />
+  {#if channelState.selected}
+  <Sort selectSort={clipState.selectSort} />
   {/if}
   <div
     bind:this={scrollElement}
@@ -73,15 +80,18 @@
     <div class="m-3 p-2 items-center gap-2 grid grid-cols-2
       md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
     >
-      {#if !chs.selected}
-        {#each chs.channels as channel}
-        <Channel channel={(channel as ChannelObject)} handleClick={handleChannelClick} />
+      {#if !channelState.selected}
+        {#each channelState.channels as channel}
+        <Channel channel={channel} handleClick={handleChannelClick} />
         {/each}
       {:else}
-        {#each cls.clips as clip}
-        <Clip clip={(clip as ClipObject)} handleClick={handleClipClick} />
+        {#each clipState.clips as clip}
+        <Clip clip={clip} handleClick={handleClipClick} />
         {/each}
       {/if}
     </div>
   </div>
 </div>
+{#if searchBarState.firstSearch && !self.hasResults && !searchBarState.searching}
+<Message text="no results found :(" />
+{/if}

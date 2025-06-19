@@ -24,11 +24,11 @@ export class SearchBarState {
     if (!this.firstSearch) this.firstSearch = true;
   }
 
-  searchClips = async (ref: ChannelRef) => {
-    this.value = ref.name;
+  searchClips = async (channel: string) => {
+    this.value = channel;
     this.selected = true;
     this.searching = true;
-    await this.contentStateManager.searchClips(ref);
+    await this.contentStateManager.searchClips(channel);
     this.searching = false;
   }
 }

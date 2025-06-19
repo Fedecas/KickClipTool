@@ -5,13 +5,15 @@
   import SortButton from './SortButton.svelte';
 
   interface Props {
-    sort: SortType
+    selectSort: (type: SortType) => Promise<void>
   }
 
-  let { sort = $bindable() }: Props = $props();
+  let { selectSort }: Props = $props();
+  let sort: SortType = $state('date');
 
-  function handleClick(type: SortType): void {
+  async function handleClick(type: SortType): Promise<void> {
     sort = type;
+    await selectSort(type);
   }
 </script>
 
