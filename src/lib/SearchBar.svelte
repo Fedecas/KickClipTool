@@ -1,11 +1,29 @@
 <script lang="ts">
-  import { getSearchBarContext } from './SearchBar-state.svelte';
-  import Spinner from '$lib/Spinner.svelte';
-  import { fly } from 'svelte/transition';
   import { Search } from 'lucide-svelte';
 
-  const self = getSearchBarContext();
+  import { fly } from 'svelte/transition';
+  import { onDestroy } from 'svelte';
+
+  import { getSearchBarState } from './SearchBar-state.svelte';
+  import Spinner from '$lib/Spinner.svelte';
+
+  const DEBOUNCE_MS = 600;
+
+  const self = getSearchBarState();
+
   let focus = $state(true);
+  let timeoutId: ReturnType<typeof setTimeout>;
+
+  function onInput() {
+    if (timeoutId) clearTimeout(timeoutId);
+    timeoutId = setTimeout(async () => {
+      await self.searchChannel();
+    }, DEBOUNCE_MS);
+  }
+
+  onDestroy(() => {
+    if (timeoutId) clearTimeout(timeoutId);
+  });
 </script>
 
 <div
@@ -32,7 +50,7 @@
     name="searchbar"
     spellcheck=false
     autocomplete="off"
-    oninput={self.onInput}
+    oninput={onInput}
     onfocusin={() => focus = true}
     onfocusout={() => focus = false}
     placeholder="Search channel..."

@@ -1,51 +1,42 @@
-import { getContext, setContext, onDestroy } from 'svelte';
-import type { Content } from './Content-state.svelte';
+import { getContext, setContext } from 'svelte';
+import type { ContentState } from './Content-state.svelte';
+import type { ChannelRef } from './types';
 
 const SEARCHBAR_KEY = Symbol('searchbar');
-const DEBOUNCE_MS = 600;
 
-export class SearchBar {
+export class SearchBarState {
   firstSearch = $state(false);
   searching = $state(false);
   selected = $state(false);
   value = $state('');
 
-  timeoutId: ReturnType<typeof setTimeout> | null;
-  contentManager: Content;
+  contentStateManager: ContentState;
 
-  constructor(contentManager: Content) {
-    this.contentManager = contentManager;
-    this.timeoutId = null;
-    onDestroy(() => {
-      if (this.timeoutId) clearTimeout(this.timeoutId);
-    });
+  constructor(contentStateManager: ContentState) {
+    this.contentStateManager = contentStateManager;
   }
 
-  search = async () => {
+  searchChannel = async () => {
     this.selected = false;
     this.searching = true;
-    await this.contentManager.searchChannels(this.value);
+    await this.contentStateManager.searchChannels(this.value);
     this.searching = false;
     if (!this.firstSearch) this.firstSearch = true;
   }
 
-  onInput = () => {
-    if (this.timeoutId) clearTimeout(this.timeoutId);
-    this.timeoutId = setTimeout(async () => {
-      await this.search();
-    }, DEBOUNCE_MS);
-  }
-
-  select = (ch: string) => {
-    this.value = ch;
+  searchClips = async (ref: ChannelRef) => {
+    this.value = ref.name;
     this.selected = true;
+    this.searching = true;
+    await this.contentStateManager.searchClips(ref);
+    this.searching = false;
   }
 }
 
-export function getSearchBarContext(): SearchBar {
-  return getContext(SEARCHBAR_KEY) as SearchBar;
+export function getSearchBarState(): SearchBarState {
+  return getContext(SEARCHBAR_KEY) as SearchBarState;
 }
 
-export function setSearchBarContext(sb: SearchBar): SearchBar {
-  return setContext(SEARCHBAR_KEY, sb);
+export function setSearchBarState(sbs: SearchBarState): SearchBarState {
+  return setContext(SEARCHBAR_KEY, sbs);
 }
