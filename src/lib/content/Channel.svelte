@@ -3,12 +3,12 @@
 
   import { blur } from 'svelte/transition';
 
-  import type { ChannelObject, ChannelRef } from '$lib/types';
+  import type { ChannelObject } from '$lib/types';
   import Spinner from '$lib/Spinner.svelte';
 
   interface Props {
     channel: ChannelObject,
-    handleClick: (channel: ChannelRef) => Promise<void>
+    handleClick: (channel: string) => Promise<void>
   }
 
   // Constants
@@ -28,8 +28,7 @@
   }
 
   async function onClick(): Promise<void> {
-    const ref: ChannelRef = { slug, name };
-    await handleClick(ref);
+    await handleClick(slug);
   }
 </script>
 
