@@ -7,13 +7,15 @@ const CHANNEL_KEY = Symbol('channel');
 export class ChannelState {
   channels: ChannelObject[] = $state([]);
   hasResults: boolean = $derived(this.channels.length > 0);
-  selected: boolean = $state(false);
 
   constructor() {}
 
-  search = async (value: string) => {
-    this.selected = false;
+  reset = () => {
     this.channels = [];
+  }
+
+  search = async (value: string) => {
+    this.reset();
     this.channels = await searchChannels(value);
   }
 }
