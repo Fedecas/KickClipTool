@@ -4,12 +4,12 @@
   import { fly } from 'svelte/transition';
   import { onDestroy } from 'svelte';
 
-  import { getSearchBarState } from './SearchBarState.svelte';
   import Spinner from '$lib/Spinner.svelte';
+  import { getContentState } from './ContentState.svelte';
 
   const DEBOUNCE_MS = 600;
 
-  const self = getSearchBarState();
+  const content = getContentState();
 
   let focus = $state(true);
   let timeoutId: ReturnType<typeof setTimeout>;
@@ -17,7 +17,7 @@
   function onInput() {
     if (timeoutId) clearTimeout(timeoutId);
     timeoutId = setTimeout(async () => {
-      await self.searchChannel();
+      await content.searchChannels();
     }, DEBOUNCE_MS);
   }
 
@@ -30,11 +30,11 @@
   in:fly={{ y: 500, duration: 1000 }}
   class="relative w-96 h-12 p-1 gap-2 flex flex-row items-center
     transition-margin delay-100 duration-600 ease-in-out
-    { self.selected ? 'mt-6' : 'my-8' }"
+    { content.channelSelected ? 'mt-6' : 'my-8' }"
 >
   <div class="absolute inset-0 rounded-md py-3 bg-[#242428]/70"></div>
   <div class="size-8 ml-4 z-10">
-    {#if self.searching}
+    {#if content.searching}
     <div class="mt-0.5">
       <Spinner />
     </div>
@@ -43,7 +43,7 @@
     {/if}
   </div>
   <input
-    bind:value={self.value}
+    bind:value={content.input}
     minlength=3
     maxlength=20
     type="search"
