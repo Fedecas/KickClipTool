@@ -19,11 +19,13 @@
 
   onMount(() => {
     let unlisten: (() => void) | null = null;
-    listen(id, ({ payload }: { payload: number }) => {
-      progress = payload;
-    }).then((fn) => {
-      unlisten = fn;
-    });
+    if (isTauri) {
+      listen(id, ({ payload }: { payload: number }) => {
+        progress = payload;
+      }).then((fn) => {
+        unlisten = fn;
+      });
+    }
     return () => {
       if (unlisten) unlisten();
     };
@@ -35,12 +37,12 @@
   disabled={!isTauri || downloading}
   aria-label="Download video"
   onclick={handleClick}
-  title={ isTauri ? 'Download video' : 'Clip download is disabled in the web version' }
+  title={isTauri ? 'Download video' : 'Clip download is disabled in the web version'}
   class="rounded-sm p-2 transition duration-300 ease-in-out group
-          { !isTauri ? 'cursor-not-allowed' : '' }
-          { downloading ?
-            'bg-black outline cursor-not-allowed' :
-            'bg-(--primary) hover:bg-black hover:outline hover:scale-120'}"
+    { !isTauri ? 'cursor-not-allowed' : '' }
+    { downloading ?
+      'bg-black outline cursor-not-allowed' :
+      'bg-(--primary) hover:bg-black hover:outline hover:scale-120'}"
 >
   <div class="size-8">
     {#if !downloading}
