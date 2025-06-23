@@ -1,4 +1,6 @@
-function saveClipFile(blob: Blob, id: string) {
+const VALIDS_VIDEO_EXT: string[] = ['m3u8', 'mp4'];
+
+function saveClipFile(blob: Blob, id: string): void {
   const filename = `${id}.mp4`;
   const blobUrl = URL.createObjectURL(blob);
   const linkElement = document.createElement('a');
@@ -17,9 +19,8 @@ async function getClipFile(url: string): Promise<Blob | null> {
 
   try {
     const resultPath: string = await invoke('download_m3u8_as_mp4', { url });
-    if (!await exists(resultPath)) {
-      throw new Error("Result path does not exist");
-    }
+    if (!await exists(resultPath)) throw new Error("Result path does not exist");
+
     const content = await readFile(resultPath);
     result = new Blob([content], { type: 'video/mp4' });
   } catch (error) {
@@ -29,15 +30,12 @@ async function getClipFile(url: string): Promise<Blob | null> {
   return result;
 }
 
-export async function downloadClip(isTauri: boolean, url: string, id: string) {
-  let blob = null;
-  if (isTauri) {
-    blob = await getClipFile(url);
-  } else {
-    console.warn('Clip download is disabled in the web version');
-  }
+export async function downloadClip(url: string, id: string): Promise<void> {
+  const ext = url.split('.').at(-1) ?? '';
+  if (!VALIDS_VIDEO_EXT.includes(ext)) return console.error("Unsupported video format!");
 
-  if (blob) {
-    saveClipFile(blob, id);
-  }
+  const blob = await getClipFile(url);
+  if (!blob) return console.error("Error downloading clip file!");
+
+  saveClipFile(blob, id);
 }

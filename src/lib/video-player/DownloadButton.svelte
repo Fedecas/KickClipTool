@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { listen } from '@tauri-apps/api/event';
   import { Download } from 'lucide-svelte';
 
   import { onMount } from 'svelte';
@@ -10,20 +9,29 @@
   interface Props {
     id: string,
     downloading: boolean,
-    isTauri: boolean,
+    canDownload: boolean,
     handleClick: () => Promise<void>,
   }
 
-  let { id, downloading, isTauri, handleClick }: Props = $props();
+  let { id, downloading, canDownload, handleClick }: Props = $props();
   let progress = $state(0);
 
   onMount(() => {
     let unlisten: (() => void) | null = null;
-    if (isTauri) {
-      listen(id, ({ payload }: { payload: number }) => {
-        progress = payload;
-      }).then((fn) => {
+    if (canDownload) {
+      const setupDownloadListener = async () => {
+        const { listen } = await import('@tauri-apps/api/event');
+        const unlisten = await listen<number>(id, ({ payload }) => {
+          progress = payload;
+        });
+
+        return unlisten;
+      }
+
+      setupDownloadListener().then((fn) => {
         unlisten = fn;
+      }).catch((err) => {
+        console.error('Error trying to configure download listener', err);
       });
     }
     return () => {
@@ -34,12 +42,12 @@
 
 <button
   type="button"
-  disabled={!isTauri || downloading}
+  disabled={!canDownload || downloading}
   aria-label="Download video"
   onclick={handleClick}
-  title={isTauri ? 'Download video' : 'Clip download is disabled in the web version'}
+  title={canDownload ? 'Download video' : 'Clip download is disabled in the web version'}
   class="rounded-sm p-2 transition duration-300 ease-in-out group
-    { !isTauri ? 'cursor-not-allowed' : '' }
+    { !canDownload ? 'cursor-not-allowed' : '' }
     { downloading ?
       'bg-black outline cursor-not-allowed' :
       'bg-(--primary) hover:bg-black hover:outline hover:scale-120'}"
