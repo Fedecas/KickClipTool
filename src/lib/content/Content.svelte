@@ -1,21 +1,23 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
 
-  import type { ClipRef } from '$lib/types';
+  import type { ClipObject } from '$lib/types';
   import Channel from './Channel.svelte';
   import Sort from './Sort.svelte';
   import Clip from './Clip.svelte';
   import Message from '$lib/Message.svelte';
-  import { getContentState } from '$lib/ContentState.svelte';
+  import { ContentState, getContentState } from '$lib/ContentState.svelte';
   import { notif } from '$lib/notifications';
+  import VideoPlayer from '$lib/video-player/VideoPlayer.svelte';
 
   const COOLDOWN_MS = 1000;
   const THRESHOLD_PX = 250;
 
-  const self = getContentState();
+  const self: ContentState = getContentState();
   const selectSort = self.selectSort;
   let channels = $derived(self.channelState?.channels ?? []);
   let clips = $derived(self.clipState?.clips ?? []);
+  let video = $derived(self.video);
   let hasResults = $derived(self.hasResults);
   let firstSearch = $derived(self.firstSearch);
   let searching = $derived(self.searching);
@@ -48,9 +50,8 @@
     await self.searchClips(channel);
   }
 
-  function handleClipClick(ref: ClipRef): void {
-    console.log('click clip');
-    //clipRef = ref;
+  function handleClipClick(clipData: ClipObject): void {
+    self.playVideo(clipData);
   }
 
   onDestroy(() => {
@@ -87,4 +88,6 @@
 </div>
 {#if !hasResults && firstSearch && !searching}
 <Message text="no results found :(" />
+{:else if video}
+<VideoPlayer clipData={video} />
 {/if}

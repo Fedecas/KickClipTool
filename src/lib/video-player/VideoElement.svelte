@@ -4,22 +4,18 @@
   import { fade } from 'svelte/transition';
   import { onMount } from 'svelte';
 
-  import { notif } from '$lib/notifications';
   import Spinner from '$lib/Spinner.svelte';
-  import { initHLS } from './video';
+  import { loadVideo } from './video';
 
   interface Props {
-    posterUrl: string;
-    videoUrl: string;
-    downloading: boolean;
+    thumbnail: string,
+    video: string,
+    downloading: boolean,
   }
 
-  // Runes
-  let { posterUrl, videoUrl, downloading }: Props = $props();
-  let loaded = $state(false);
+  let { thumbnail, video, downloading }: Props = $props();
   let hls: Hls | null = $state(null);
-
-  // Internal
+  let loaded = $state(false);
   let videoElement: HTMLVideoElement;
 
   $effect(() => {
@@ -27,8 +23,7 @@
   });
 
   onMount(() => {
-    hls = initHLS(videoElement, videoUrl);
-    if (!hls) notif.error("Video can't be played");
+    hls = loadVideo(videoElement, video);
     return () => {
       hls?.destroy();
       hls = null;
@@ -37,7 +32,7 @@
 </script>
 
 <div class="absolute h-[75dvh] w-[75dvw] aspect-video rounded-sm
-            drop-shadow-lg/80 flex items-center justify-center"
+  drop-shadow-lg/80 flex items-center justify-center"
 >
   <video
     bind:this={videoElement}
@@ -55,7 +50,7 @@
     class="absolute flex items-center justify-center bg-black/40"
   >
     <img
-      src={posterUrl}
+      src={thumbnail}
       alt="Clip poster"
       class="object-cover rounded-sm brightness-70 grayscale"
     />
