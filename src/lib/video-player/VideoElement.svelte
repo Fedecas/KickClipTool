@@ -19,7 +19,7 @@
   let videoElement: HTMLVideoElement;
 
   $effect(() => {
-    downloading ? hls?.stopLoad() : hls?.startLoad();
+    downloading && loaded ? hls?.stopLoad() : hls?.startLoad();
   });
 
   onMount(() => {
