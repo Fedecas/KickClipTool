@@ -5,28 +5,49 @@
   import { onMount } from 'svelte';
 
   import Spinner from '$lib/Spinner.svelte';
-  import { loadVideo } from './video';
+  import { loadPlaylist } from './video';
 
   interface Props {
     thumbnail: string,
     video: string,
     downloading: boolean,
+    canDownload: boolean,
   }
 
-  let { thumbnail, video, downloading }: Props = $props();
-  let hls: Hls | null = $state(null);
+  let { thumbnail, video, downloading, canDownload }: Props = $props();
   let loaded = $state(false);
   let videoElement: HTMLVideoElement;
 
-  $effect(() => {
-    downloading && loaded ? hls?.stopLoad() : hls?.startLoad();
-  });
-
   onMount(() => {
-    hls = loadVideo(videoElement, video);
+    let hls: Hls | null = null;
+    const ext = video.split('.').at(-1) ?? '';
+  
+    if (ext === 'mp4') {
+      videoElement.src = video;
+      videoElement.addEventListener('canplaythrough', () => {
+        loaded = true;
+      });
+    } else if (ext === 'm3u8') {
+      loadPlaylist(videoElement, video)
+      .then((res: Hls | null) => {
+        hls = res;
+      });
+
+      videoElement.addEventListener('ready', () => {
+        loaded = true;
+      });
+
+      if (canDownload) {
+        $effect(() => {
+          (downloading && loaded) ? hls?.stopLoad() : hls?.startLoad();
+        });
+      }
+    } else {
+      console.error('Unsupported video extension:' , ext);
+    }
+
     return () => {
-      hls?.destroy();
-      hls = null;
+      if (hls) hls.destroy();
     };
   });
 </script>
@@ -39,7 +60,6 @@
     controls={loaded}
     playsinline
     preload="auto"
-    oncanplaythrough={() => { loaded = true }}
     class="h-full w-auto object-contain rounded-sm"
   >
     <track kind="captions" default />

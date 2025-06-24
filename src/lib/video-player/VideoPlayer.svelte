@@ -42,7 +42,7 @@
   <h1 class="absolute top-6 left-10 text-3xl font-bold max-w-[90dvw] truncate">
     {title}
   </h1>
-  <VideoElement {thumbnail} {video} {downloading} />
+  <VideoElement {thumbnail} {video} {downloading} {canDownload} />
   <div class="absolute flex flex-col justify-center items-center
     gap-4 w-24 p-5 bg-black/70 right-8 rounded-sm"
   >
