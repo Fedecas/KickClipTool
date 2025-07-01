@@ -9,15 +9,17 @@
   import { ContentState, getContentState } from '$lib/ContentState.svelte';
   import { notif } from '$lib/notifications';
   import VideoPlayer from '$lib/video-player/VideoPlayer.svelte';
+  import { getVideoState, VideoState } from '$lib/VideoState.svelte';
 
   const COOLDOWN_MS = 1000;
   const THRESHOLD_PX = 250;
 
   const self: ContentState = getContentState();
+  const vs: VideoState = getVideoState();
   const selectSort = self.selectSort;
   let channels = $derived(self.channelState?.channels ?? []);
   let clips = $derived(self.clipState?.clips ?? []);
-  let video = $derived(self.video);
+  let playing = $derived(self.playing);
   let hasResults = $derived(self.hasResults);
   let firstSearch = $derived(self.firstSearch);
   let searching = $derived(self.searching);
@@ -51,7 +53,7 @@
   }
 
   function handleClipClick(clipData: ClipObject): void {
-    self.playVideo(clipData);
+    vs.open(clipData);
   }
 
   onDestroy(() => {
@@ -88,6 +90,6 @@
 </div>
 {#if !hasResults && firstSearch && !searching}
 <Message text="no results found :(" />
-{:else if video}
-<VideoPlayer clipData={video} />
+{:else if playing}
+<VideoPlayer />
 {/if}

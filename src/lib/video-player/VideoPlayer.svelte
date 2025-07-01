@@ -6,30 +6,29 @@
   import CloseButton from './CloseButton.svelte';
   import WebButton from './WebButton.svelte';
   import { notif } from '$lib/notifications';
-  import type { ClipObject } from '$lib/types';
-  import { getContentState } from '$lib/ContentState.svelte';
+  import { getVideoState } from '$lib/VideoState.svelte';
 
-  interface Props {
-    clipData: ClipObject
-  }
-
-  let { clipData }: Props = $props();
-  const { id, title, video, thumbnail, channel } = clipData;
+  const self = getVideoState();
+  const id = self.id;
+  const url = self.url;
+  const ext = self.ext;
+  const title = self.title;
+  const thumbnail = self.thumbnail;
+  const channel = self.channel;
+  const canDownload = self.canDownload;
   const webUrl = `https://kick.com/${channel}/clips/${id}`;
-  const content = getContentState();
-  const canDownload = content.canDownload;
 
-  let downloading = $derived(content.downloads.includes(id));
-
-  function handleClose(): void {
-    content.closeVideo();
-  }
+  let isDownloading = $derived(self.isDownloading);
 
   async function handleDownload(): Promise<void> {
     if (!canDownload) return console.warn('Clip download is disabled in the web version');
     notif.success('Downloading...');
-    await content.downloadVideo();
+    await self.download();
     notif.success('Download complete!');
+  }
+
+  function handleClose(): void {
+    self.close();
   }
 </script>
 
@@ -42,12 +41,12 @@
   <h1 class="absolute top-6 left-10 text-3xl font-bold max-w-[90dvw] truncate">
     {title}
   </h1>
-  <VideoElement {thumbnail} {video} {downloading} {canDownload} />
+  <VideoElement {thumbnail} {url} {isDownloading} {canDownload} {ext} />
   <div class="absolute flex flex-col justify-center items-center
     gap-4 w-24 p-5 bg-black/70 right-8 rounded-sm"
   >
     <CloseButton handleClick={handleClose} />
-    <DownloadButton {id} {downloading} {canDownload} handleClick={handleDownload} />
+    <DownloadButton {id} {isDownloading} {canDownload} handleClick={handleDownload} />
     <WebButton url={webUrl} />
   </div>
 </div>
