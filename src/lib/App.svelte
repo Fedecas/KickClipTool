@@ -5,7 +5,7 @@
 
   import { ChannelState, setChannelState } from './ChannelState.svelte';
   import { ClipState, setClipState } from './ClipState.svelte';
-  import { ContentState, setContentState } from './ContentState.svelte';
+  import { ContentState, setContentState } from './content/ContentState.svelte';
   import { VideoState, setVideoState } from './VideoState.svelte';
 
   const channelState = new ChannelState();

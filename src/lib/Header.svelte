@@ -2,7 +2,7 @@
   import { blur } from "svelte/transition";
 
   import Spinner from "$lib/Spinner.svelte";
-  import { getContentState } from "./ContentState.svelte";
+  import { getContentState } from "./content/ContentState.svelte";
 
   const content = getContentState();
 

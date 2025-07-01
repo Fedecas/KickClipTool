@@ -5,7 +5,7 @@
   import { onDestroy } from 'svelte';
 
   import Spinner from '$lib/Spinner.svelte';
-  import { getContentState } from './ContentState.svelte';
+  import { getContentState } from './content/ContentState.svelte';
 
   const DEBOUNCE_MS = 600;
 

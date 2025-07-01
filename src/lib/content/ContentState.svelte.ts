@@ -1,23 +1,23 @@
 import { getContext, setContext } from 'svelte';
-import type { ChannelState } from './ChannelState.svelte';
-import type { ClipState } from './ClipState.svelte';
-import type { ClipObject, SortType } from './types';
-import { downloadClip } from './video-player/download';
+import type { ChannelState } from '../ChannelState.svelte';
+import type { ClipState } from '../ClipState.svelte';
+import type { ClipObject, SortType } from '../types';
+import { downloadClip } from '../video-player/download';
 
 const CONTENT_KEY = Symbol('content');
 
 export class ContentState {
   downloads: string[] = $state([]);
   firstSearch: boolean = $state(false);
-  searching: boolean = $state(false);
-  playing: boolean = $state(false);
   input: string = $state('');
+  playing: boolean = $state(false);
+  searching: boolean = $state(false);
 
   channelState: ChannelState | null = null;
   clipState: ClipState | null = null;
 
-  hasResults: boolean = $derived(!!this.channelState?.hasResults || !!this.clipState?.hasResults);
   channelSelected: boolean = $derived(this.clipState?.channel !== '');
+  hasResults: boolean = $derived(!!this.channelState?.hasResults || !!this.clipState?.hasResults);
 
   constructor(chs: ChannelState, cls: ClipState) {
     this.channelState = chs;
