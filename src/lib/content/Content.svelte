@@ -1,30 +1,28 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
 
-  import type { ClipObject } from '$lib/types';
   import Channel from './Channel.svelte';
-  import Sort from './Sort.svelte';
   import Clip from './Clip.svelte';
   import Message from '$lib/Message.svelte';
-  import { ContentState, getContentState } from '$lib/ContentState.svelte';
-  import { notif } from '$lib/notifications';
+  import Sort from './Sort.svelte';
   import VideoPlayer from '$lib/video-player/VideoPlayer.svelte';
+  
+  import { ContentState, getContentState } from './ContentState.svelte';
+  import { notif } from '$lib/notifications';
   import { getVideoState, VideoState } from '$lib/VideoState.svelte';
 
   const COOLDOWN_MS = 1000;
   const THRESHOLD_PX = 250;
 
-  const self: ContentState = getContentState();
-  const vs: VideoState = getVideoState();
-  const selectSort = self.selectSort;
-  let channels = $derived(self.channelState?.channels ?? []);
-  let clips = $derived(self.clipState?.clips ?? []);
-  let playing = $derived(self.playing);
-  let hasResults = $derived(self.hasResults);
-  let firstSearch = $derived(self.firstSearch);
-  let searching = $derived(self.searching);
-  let channelSelected = $derived(self.channelSelected);
+  const content: ContentState = getContentState();
+  const { firstSearch, playing, searching, channelSelected, hasResults, selectSort } = content;
+  const channels = $derived(content.channelState?.channels ?? []);
+  const clips = $derived(content.clipState?.clips ?? []);
+  const handleChannelClick = content.searchClips;
 
+  const video: VideoState = getVideoState();
+  const handleClipClick = video.open;
+  
   let triggered = false;
   let lastScrolledTo = 0;
   let scrollElement: HTMLElement;
@@ -41,19 +39,11 @@
     const shouldTrigger = scrolledTo >= (scrollElement.scrollHeight - THRESHOLD_PX);
     if (isGoingDown && shouldTrigger && !triggered) {
       triggered = true;
-      const hasMore = await self.moreClips();
+      const hasMore = await content.moreClips();
       if (!hasMore) notif.success('No more clips');
       timeoutId = setTimeout(() => { triggered = false; }, COOLDOWN_MS);
     }
     lastScrolledTo = scrolledTo;
-  }
-
-  async function handleChannelClick(channel: string): Promise<void> {
-    await self.searchClips(channel);
-  }
-
-  function handleClipClick(clipData: ClipObject): void {
-    vs.open(clipData);
   }
 
   onDestroy(() => {
