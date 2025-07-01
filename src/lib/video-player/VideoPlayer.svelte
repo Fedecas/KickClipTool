@@ -6,19 +6,12 @@
   import CloseButton from './CloseButton.svelte';
   import WebButton from './WebButton.svelte';
   import { notif } from '$lib/notifications';
-  import { getVideoState } from '$lib/VideoState.svelte';
+  import { getVideoState, VideoState } from '$lib/VideoState.svelte';
 
-  const self = getVideoState();
-  const id = self.id;
-  const url = self.url;
-  const ext = self.ext;
-  const title = self.title;
-  const thumbnail = self.thumbnail;
-  const channel = self.channel;
-  const canDownload = self.canDownload;
+  const self: VideoState = getVideoState();
+  const { id, url, ext, title, thumbnail, channel, canDownload } = self;
   const webUrl = `https://kick.com/${channel}/clips/${id}`;
-
-  let isDownloading = $derived(self.isDownloading);
+  const isDownloading = $derived(self.isDownloading);
 
   async function handleDownload(): Promise<void> {
     if (!canDownload) return console.warn('Clip download is disabled in the web version');
