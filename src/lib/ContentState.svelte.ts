@@ -7,14 +7,11 @@ import { downloadClip } from './video-player/download';
 const CONTENT_KEY = Symbol('content');
 
 export class ContentState {
+  downloads: string[] = $state([]);
   firstSearch: boolean = $state(false);
   searching: boolean = $state(false);
+  playing: boolean = $state(false);
   input: string = $state('');
-  downloads: string[] = $state([]);
-  video: ClipObject | null = $state(null);
-
-  // @ts-expect-error - Can't download if it's not Tauri app
-  canDownload: boolean = !!window.__TAURI_INTERNALS__;
 
   channelState: ChannelState | null = null;
   clipState: ClipState | null = null;
@@ -25,7 +22,6 @@ export class ContentState {
   constructor(chs: ChannelState, cls: ClipState) {
     this.channelState = chs;
     this.clipState = cls;
-    this.downloads = [];
   }
 
   searchChannels = async () => {
@@ -47,12 +43,10 @@ export class ContentState {
   }
 
   moreClips = async (): Promise<boolean> => {
-    let res = false;
-    if (this.clipState) {
-      this.searching = true;
-      res = await this.clipState.more();
-      this.searching = false;
-    }
+    if (!this.clipState) return false;
+    this.searching = true;
+    const res = await this.clipState.more();
+    this.searching = false;
     return res;
   }
 
@@ -63,20 +57,18 @@ export class ContentState {
     this.searching = false;
   }
 
-  playVideo = (clipData: ClipObject) => {
-    this.video = clipData;
+  openVideo = () => {
+    this.playing = true;
   }
 
-  downloadVideo = async () => {
-    if (!this.video || !this.canDownload) return;
-    const { id, video } = this.video;
+  downloadVideo = async (id: string, url: string) => {
     this.downloads.push(id);
-    await downloadClip(video, id);
+    await downloadClip(url, id);
     this.downloads.splice(this.downloads.indexOf(id), 1);
   }
 
   closeVideo = () => {
-    this.video = null;
+    this.playing = false;
   }
 }
 
