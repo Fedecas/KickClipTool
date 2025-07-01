@@ -7,7 +7,7 @@ const VIDEO_KEY = Symbol('video');
 export class VideoState {
   channel: string = '';
   ext: string = '';
-  id: string = '';
+  id: string = $state('');
   thumbnail: string = '';
   title: string = '';
   url: string = '';
