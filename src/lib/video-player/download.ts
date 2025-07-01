@@ -1,5 +1,3 @@
-const VALIDS_VIDEO_EXT: string[] = ['m3u8', 'mp4'];
-
 function saveClipFile(blob: Blob, id: string): void {
   const filename = `${id}.mp4`;
   const blobUrl = URL.createObjectURL(blob);
@@ -31,9 +29,6 @@ async function getClipFile(url: string): Promise<Blob | null> {
 }
 
 export async function downloadClip(url: string, id: string): Promise<void> {
-  const ext = url.split('.').at(-1) ?? '';
-  if (!VALIDS_VIDEO_EXT.includes(ext)) return console.error("Unsupported video format!");
-
   const blob = await getClipFile(url);
   if (!blob) return console.error("Error downloading clip file!");
 

@@ -9,26 +9,20 @@
 
   interface Props {
     thumbnail: string,
-    video: string,
-    downloading: boolean,
+    url: string,
+    isDownloading: boolean,
     canDownload: boolean,
+    ext: string,
   }
 
-  let { thumbnail, video, downloading, canDownload }: Props = $props();
+  let { thumbnail, url, isDownloading, canDownload, ext }: Props = $props();
   let loaded = $state(false);
   let videoElement: HTMLVideoElement;
 
   onMount(() => {
     let hls: Hls | null = null;
-    const ext = video.split('.').at(-1) ?? '';
-  
-    if (ext === 'mp4') {
-      videoElement.src = video;
-      videoElement.addEventListener('canplaythrough', () => {
-        loaded = true;
-      });
-    } else if (ext === 'm3u8') {
-      loadPlaylist(videoElement, video)
+    if (ext === 'm3u8') {
+      loadPlaylist(videoElement, url)
       .then((res: Hls | null) => {
         hls = res;
       });
@@ -39,11 +33,14 @@
 
       if (canDownload) {
         $effect(() => {
-          (downloading && loaded) ? hls?.stopLoad() : hls?.startLoad();
+          (isDownloading && loaded) ? hls?.stopLoad() : hls?.startLoad();
         });
       }
     } else {
-      console.error('Unsupported video extension:' , ext);
+      videoElement.src = url;
+      videoElement.addEventListener('canplaythrough', () => {
+        loaded = true;
+      });
     }
 
     return () => {
