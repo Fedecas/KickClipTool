@@ -7,14 +7,14 @@
   import Spinner from '$lib/Spinner.svelte';
 
   interface Props {
-    id: string,
-    isDownloading: boolean,
-    canDownload: boolean,
-    handleClick: () => Promise<void>,
+    id: string;
+    isDownloading: boolean;
+    canDownload: boolean;
+    handleClick: () => Promise<void>;
   }
 
-  let { id, isDownloading, canDownload, handleClick }: Props = $props();
-  let progress = $state(0);
+  const { id, isDownloading, canDownload, handleClick }: Props = $props();
+  let progress: number = $state(0);
 
   onMount(() => {
     let unlisten: (() => void) | null = null;
@@ -45,12 +45,12 @@
   disabled={!canDownload || isDownloading}
   aria-label="Download video"
   onclick={handleClick}
-  title={canDownload ? 'Download video' : 'Clip download is disabled in the web version'}
+  title={canDownload ? "Download video" : "Clip download is disabled in the web version"}
   class="rounded-sm p-2 transition duration-300 ease-in-out group
-    { !canDownload ? 'cursor-not-allowed' : '' }
+    { !canDownload ? "cursor-not-allowed" : "" }
     { isDownloading ?
-      'bg-black outline cursor-not-allowed' :
-      'bg-(--primary) hover:bg-black hover:outline hover:scale-120'}"
+      "bg-black outline cursor-not-allowed" :
+      "bg-(--primary) hover:bg-black hover:outline hover:scale-120"}"
 >
   <div class="size-8">
     {#if !isDownloading}

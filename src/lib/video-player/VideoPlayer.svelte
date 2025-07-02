@@ -1,27 +1,25 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
 
+  import { notif } from '$lib/notifications';
+  import { getVideoState, VideoState } from '$lib/video-player/VideoState.svelte';
+
+  import CloseButton from './CloseButton.svelte';
   import DownloadButton from './DownloadButton.svelte';
   import VideoElement from './VideoElement.svelte';
-  import CloseButton from './CloseButton.svelte';
   import WebButton from './WebButton.svelte';
-  import { notif } from '$lib/notifications';
-  import { getVideoState, VideoState } from '$lib/VideoState.svelte';
 
   const self: VideoState = getVideoState();
   const { id, url, ext, title, thumbnail, channel, canDownload } = self;
-  const webUrl = `https://kick.com/${channel}/clips/${id}`;
+  const handleClose = self.close;
   const isDownloading = $derived(self.isDownloading);
+  const webUrl = `https://kick.com/${channel}/clips/${id}`;
 
-  async function handleDownload(): Promise<void> {
+  const handleDownload = async (): Promise<void> => {
     if (!canDownload) return console.warn('Clip download is disabled in the web version');
     notif.success('Downloading...');
     await self.download();
     notif.success('Download complete!');
-  }
-
-  function handleClose(): void {
-    self.close();
   }
 </script>
 

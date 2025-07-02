@@ -13,10 +13,10 @@ async function mountHLS(ve: HTMLVideoElement, url: string): Promise<Hls | null> 
     videoPreference: { videoCodec: 'avc1.640028' },
     audioPreference: { audioCodec: 'mp4a.40.2' },
   };
-  const hls = new Hls(hlsConfig);
-  let playOffset = 0;
-  let recoveryAttempts = 0;
-  let startFailed = false;
+  const hls: Hls = new Hls(hlsConfig);
+  let playOffset: number = 0;
+  let recoveryAttempts: number = 0;
+  let startFailed: boolean = false;
 
   hls.attachMedia(ve);
   hls.loadSource(url);

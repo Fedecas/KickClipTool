@@ -1,25 +1,26 @@
 <script lang="ts">
   import type Hls from 'hls.js';
 
-  import { fade } from 'svelte/transition';
   import { onMount } from 'svelte';
+  import { fade } from 'svelte/transition';
 
   import Spinner from '$lib/Spinner.svelte';
+
   import { loadPlaylist } from './video';
 
   interface Props {
-    thumbnail: string,
-    url: string,
-    isDownloading: boolean,
-    canDownload: boolean,
-    ext: string,
+    thumbnail: string;
+    url: string;
+    isDownloading: boolean;
+    canDownload: boolean;
+    ext: string;
   }
 
-  let { thumbnail, url, isDownloading, canDownload, ext }: Props = $props();
+  const { thumbnail, url, isDownloading, canDownload, ext }: Props = $props();
   let loaded = $state(false);
   let videoElement: HTMLVideoElement;
 
-  onMount(() => {
+  const setupVideo = (): Hls | null => {
     let hls: Hls | null = null;
     if (ext === 'm3u8') {
       loadPlaylist(videoElement, url)
@@ -42,7 +43,11 @@
         loaded = true;
       });
     }
+    return hls;
+  }
 
+  onMount(() => {
+    const hls = setupVideo();
     return () => {
       if (hls) hls.destroy();
     };
