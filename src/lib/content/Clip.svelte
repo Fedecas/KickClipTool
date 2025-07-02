@@ -3,23 +3,20 @@
 
   import { blur } from 'svelte/transition';
 
-  import type { ClipObject } from '$lib/types';
-  import { formatDateDistance, formatDuration } from '$lib/utils';
   import Spinner from '$lib/Spinner.svelte';
+  import { formatDateDistance, formatDuration } from '$lib/content/format';
+  import type { ClipObject } from '$lib/types';
 
   interface Props {
-    clip: ClipObject,
-    handleClick: (clipData: ClipObject) => void
+    clip: ClipObject;
+    handleClick: (clipData: ClipObject) => void;
   }
 
-  // Runes
-  let { clip, handleClick }: Props = $props();
-  let loadedImg = $state(false);
-
-  // Internal
+  const { clip, handleClick }: Props = $props();
   const { title, thumbnail, views, duration, date, creator } = clip;
+  let loadedImg: boolean = $state(false);
 
-  function onClick(): void {
+  const onClick = (): void => {
     handleClick(clip);
   }
 </script>

@@ -2,14 +2,14 @@
   import type { SortType } from '$lib/types';
 
   interface Props {
-    type: SortType
-    sort: SortType
-    Icon: any
-    handleClick: (type: SortType) => void
+    type: SortType;
+    sort: SortType;
+    Icon: any;
+    handleClick: (type: SortType) => void;
   }
 
-  let { type, sort, Icon, handleClick }: Props = $props();
-  let pressed = $derived(sort === type);
+  const { type, sort, Icon, handleClick }: Props = $props();
+  const pressed = $derived(sort === type);
 </script>
 
 <button

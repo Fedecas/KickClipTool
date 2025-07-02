@@ -1,6 +1,7 @@
 import { getContext, setContext } from 'svelte';
-import type { ClipObject, SortType } from './types';
-import { searchClips } from './api';
+
+import { searchClips } from '$lib/api';
+import type { ClipObject, SortType } from '$lib/types';
 
 const CLIP_KEY = Symbol('clip');
 
@@ -16,14 +17,14 @@ export class ClipState {
 
   constructor() {}
 
-  reset = () => {
+  reset = (): void => {
     this.channel = '';
     this.clips = [];
     this.cursor = '';
     this.sort = 'date';
   }
 
-  search = async (channel: string) => {
+  search = async (channel: string): Promise<void> => {
     if (this.channel !== channel) {
       this.reset();
       this.channel = channel;
@@ -46,7 +47,7 @@ export class ClipState {
     return res;
   }
 
-  selectSort = async (type: SortType) => {
+  selectSort = async (type: SortType): Promise<void> => {
     if (type !== this.sort) {
       const channel = this.channel;
       this.reset();

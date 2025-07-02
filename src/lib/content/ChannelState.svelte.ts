@@ -1,6 +1,7 @@
 import { getContext, setContext } from 'svelte';
-import type { ChannelObject } from './types';
-import { searchChannels } from './api';
+
+import { searchChannels } from '$lib/api';
+import type { ChannelObject } from '$lib/types';
 
 const CHANNEL_KEY = Symbol('channel');
 
@@ -10,11 +11,11 @@ export class ChannelState {
 
   constructor() {}
 
-  reset = () => {
+  reset = (): void => {
     this.channels = [];
   }
 
-  search = async (value: string) => {
+  search = async (value: string): Promise<void> => {
     this.reset();
     this.channels = await searchChannels(value);
   }

@@ -1,8 +1,10 @@
 import { getContext, setContext } from 'svelte';
-import type { ChannelState } from '../ChannelState.svelte';
-import type { ClipState } from '../ClipState.svelte';
-import type { ClipObject, SortType } from '../types';
-import { downloadClip } from '../video-player/download';
+
+import { downloadClip } from '$lib/video-player/download';
+import type { SortType } from '$lib/types';
+
+import type { ChannelState } from './ChannelState.svelte';
+import type { ClipState } from './ClipState.svelte';
 
 const CONTENT_KEY = Symbol('content');
 
@@ -24,7 +26,7 @@ export class ContentState {
     this.clipState = cls;
   }
 
-  searchChannels = async () => {
+  searchChannels = async (): Promise<void> => {
     if (!this.channelState || !this.clipState) return;
     this.searching = true;
     this.clipState.reset();
@@ -33,7 +35,7 @@ export class ContentState {
     if (!this.firstSearch) this.firstSearch = true;
   }
 
-  searchClips = async (channel: string) => {
+  searchClips = async (channel: string): Promise<void> => {
     if (!this.channelState || !this.clipState) return;
     this.input = channel;
     this.searching = true;
@@ -50,24 +52,24 @@ export class ContentState {
     return res;
   }
 
-  selectSort = async (type: SortType) => {
+  selectSort = async (type: SortType): Promise<void> => {
     if (!this.clipState) return;
     this.searching = true;
     await this.clipState.selectSort(type);
     this.searching = false;
   }
 
-  openVideo = () => {
+  openVideo = (): void => {
     this.playing = true;
   }
 
-  downloadVideo = async (id: string, url: string) => {
+  downloadVideo = async (id: string, url: string): Promise<void> => {
     this.downloads.push(id);
     await downloadClip(url, id);
     this.downloads.splice(this.downloads.indexOf(id), 1);
   }
 
-  closeVideo = () => {
+  closeVideo = (): void => {
     this.playing = false;
   }
 }

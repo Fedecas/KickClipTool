@@ -1,38 +1,39 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
 
+  import Message from '$lib/Message.svelte';
+  import { notif } from '$lib/notifications';
+  import VideoPlayer from '$lib/video-player/VideoPlayer.svelte';
+  import { getVideoState, VideoState } from '$lib/video-player/VideoState.svelte';
+  import type { ChannelObject, ClipObject } from '$lib/types';
+
   import Channel from './Channel.svelte';
   import Clip from './Clip.svelte';
-  import Message from '$lib/Message.svelte';
   import Sort from './Sort.svelte';
-  import VideoPlayer from '$lib/video-player/VideoPlayer.svelte';
-  
   import { ContentState, getContentState } from './ContentState.svelte';
-  import { notif } from '$lib/notifications';
-  import { getVideoState, VideoState } from '$lib/VideoState.svelte';
 
   const COOLDOWN_MS = 1000;
   const THRESHOLD_PX = 250;
 
   const content: ContentState = getContentState();
   const { firstSearch, playing, searching, channelSelected, hasResults, selectSort } = content;
-  const channels = $derived(content.channelState?.channels ?? []);
-  const clips = $derived(content.clipState?.clips ?? []);
+  const channels: ChannelObject[] = $derived(content.channelState?.channels ?? []);
+  const clips: ClipObject[] = $derived(content.clipState?.clips ?? []);
   const handleChannelClick = content.searchClips;
 
   const video: VideoState = getVideoState();
   const handleClipClick = video.open;
-  
-  let triggered = false;
-  let lastScrolledTo = 0;
+
+  let lastScrolledTo: number = 0;
   let scrollElement: HTMLElement;
   let timeoutId: ReturnType<typeof setTimeout>;
+  let triggered: boolean = false;
 
   $effect(() => {
     if (hasResults) scrollElement.scrollTo({ top: 0 });
   });
 
-  async function handleScroll(): Promise<void> {
+  const handleScroll = async (): Promise<void> => {
     if (!channelSelected || !scrollElement) return;
     const scrolledTo = scrollElement.scrollTop + scrollElement.clientHeight;
     const isGoingDown = scrolledTo > lastScrolledTo;
@@ -53,7 +54,7 @@
 
 <div class="w-full min-h-0 flex flex-col flex-1 m-3
   transition-hidden duration-300 ease-in-out
-  { hasResults ? '' : 'hidden' }"
+  { hasResults ? "" : "hidden" }"
 >
   {#if channelSelected}
   <Sort {selectSort} />

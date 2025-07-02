@@ -3,31 +3,22 @@
 
   import { blur } from 'svelte/transition';
 
-  import type { ChannelObject } from '$lib/types';
   import Spinner from '$lib/Spinner.svelte';
+  import type { ChannelObject } from '$lib/types';
+
+  import { randomAvatar } from './format';
 
   interface Props {
-    channel: ChannelObject,
-    handleClick: (channel: string) => Promise<void>
+    channel: ChannelObject;
+    handleClick: (channel: string) => Promise<void>;
   }
 
-  // Constants
-  const AVATARS = 6;
-
-  // Runes
-  let { channel, handleClick }: Props = $props();
-  let loadedImg = $state(false);
-
-  // Internal
+  const { channel, handleClick }: Props = $props();
   const { slug, followers, name, avatar, verified } = channel;
-  const validAvatar = avatar || randomAvatar();
+  const validAvatar: string = avatar || randomAvatar();
+  let loadedImg: boolean = $state(false);
 
-  function randomAvatar(): string {
-    const n = Math.floor(Math.random() * AVATARS) + 1;
-    return `/default_avatars/${n}.jpeg`;
-  }
-
-  async function onClick(): Promise<void> {
+  const onClick = async (): Promise<void> => {
     await handleClick(slug);
   }
 </script>
@@ -49,7 +40,7 @@
       class="size-full object-cover rounded-sm brightness-70
         transition-opacity duration-1000 ease-in
         group-hover:brightness-100 group-hover:drop-shadow-md/100
-        {loadedImg ? 'opacity-100' : 'opacity-0 drop-shadow-md/100'}"
+        {loadedImg ? "opacity-100" : "opacity-0 drop-shadow-md/100"}"
     />
     {#if !loadedImg}
     <div class="absolute w-[20%] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
