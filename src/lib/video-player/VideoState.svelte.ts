@@ -1,6 +1,6 @@
 import { getContext, setContext } from 'svelte';
-import type { ClipObject } from '../types';
-import type { ContentState } from '../content/ContentState.svelte';
+import type { ContentState } from '$lib/content/ContentState.svelte';
+import type { ClipObject } from '$lib/types';
 
 const VIDEO_KEY = Symbol('video');
 

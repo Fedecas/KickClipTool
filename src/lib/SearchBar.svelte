@@ -1,16 +1,15 @@
 <script lang="ts">
   import { Search } from 'lucide-svelte';
 
-  import { fly } from 'svelte/transition';
   import { onDestroy } from 'svelte';
+  import { fly } from 'svelte/transition';
 
   import Spinner from '$lib/Spinner.svelte';
-  import { getContentState } from './content/ContentState.svelte';
+  import { getContentState } from '$lib/content/ContentState.svelte';
 
   const DEBOUNCE_MS = 600;
 
   const content = getContentState();
-
   let focus = $state(true);
   let timeoutId: ReturnType<typeof setTimeout>;
 
@@ -30,7 +29,7 @@
   in:fly={{ y: 500, duration: 1000 }}
   class="relative w-96 h-12 p-1 gap-2 flex flex-row items-center
     transition-margin delay-100 duration-600 ease-in-out
-    { content.channelSelected ? 'mt-6' : 'my-8' }"
+    { content.channelSelected ? "mt-6" : "my-8" }"
 >
   <div class="absolute inset-0 rounded-md py-3 bg-[#242428]/70"></div>
   <div class="size-8 ml-4 z-10">
@@ -59,8 +58,8 @@
   <div class="absolute inset-0 rounded-sm py-3 z-10
     transition-[outline-width, outline-color, drop-shadow] duration-500 ease-in-out
     { focus ?
-      'outline-2 outline-(--primary) drop-shadow-lg/100 drop-shadow-(color:--primary)' :
-      'outline' 
+      "outline-2 outline-(--primary) drop-shadow-lg/100 drop-shadow-(color:--primary)" :
+      "outline" 
     }"
   ></div>
 </div>

@@ -2,14 +2,14 @@
   import { onMount } from "svelte";
 
   interface Props {
-    progress: number, // 0..1
+    progress: number; // 0..1
   }
 
-  let { progress }: Props = $props();
-  let radio = $state(0);
-  let total = $derived(2 * Math.PI * radio);
-  let offset = $derived(total * (1 - progress));
+  const { progress }: Props = $props();
   let container: HTMLDivElement;
+  let radio = $state(0);
+  const total = $derived(2 * Math.PI * radio);
+  const offset = $derived(total * (1 - progress));
 
   onMount(() => {
     const { width } = container.getBoundingClientRect();

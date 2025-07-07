@@ -2,10 +2,9 @@
   import { blur } from "svelte/transition";
 
   import Spinner from "$lib/Spinner.svelte";
-  import { getContentState } from "./content/ContentState.svelte";
+  import { getContentState } from "$lib/content/ContentState.svelte";
 
   const content = getContentState();
-
   let loadedImg = $state(false);
 </script>
 
@@ -13,7 +12,7 @@
   in:blur={{ duration: 1000 }}
   class="flex flex-col items-center justify-end gap-2
     transition-[margin, opacity] delay-100 duration-600 ease-in-out
-    { content.hasResults ? 'opacity-0 -mt-28' : 'opacity-90 mt-28' }"
+    { content.hasResults ? "opacity-0 -mt-28" : "opacity-90 mt-28" }"
 >
   <div class="relative w-2xs flex justify-center items-center">
     <img
@@ -21,7 +20,7 @@
       alt="Kick logo"
       onload={() => { loadedImg = true }}
       class="size-full transition-opacity duration-1000 ease-in px-5
-        { loadedImg ? 'opacity-100' : 'opacity-0' }"
+        { loadedImg ? "opacity-100" : "opacity-0" }"
     />
     {#if !loadedImg}
     <div class="absolute w-[20%] flex items-center">

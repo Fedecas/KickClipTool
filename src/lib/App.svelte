@@ -2,11 +2,10 @@
   import Content from '$lib/content/Content.svelte';
   import Header from '$lib/Header.svelte';
   import SearchBar from '$lib/SearchBar.svelte';
-
-  import { ChannelState, setChannelState } from './ChannelState.svelte';
-  import { ClipState, setClipState } from './ClipState.svelte';
-  import { ContentState, setContentState } from './content/ContentState.svelte';
-  import { VideoState, setVideoState } from './VideoState.svelte';
+  import { ChannelState, setChannelState } from '$lib/content/ChannelState.svelte';
+  import { ClipState, setClipState } from '$lib/content/ClipState.svelte';
+  import { ContentState, setContentState } from '$lib/content/ContentState.svelte';
+  import { VideoState, setVideoState } from '$lib/video-player/VideoState.svelte';
 
   const channelState = new ChannelState();
   const clipState = new ClipState();

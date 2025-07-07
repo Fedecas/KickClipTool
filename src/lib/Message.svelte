@@ -2,10 +2,10 @@
   import { fly } from "svelte/transition";
 
   interface Props {
-    text: string
+    text: string;
   }
 
-  let { text }: Props = $props();
+  const { text }: Props = $props();
 </script>
 
 <h1

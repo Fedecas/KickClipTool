@@ -3,7 +3,7 @@
     url: string;
   }
 
-  let { url }: Props = $props();
+  const { url }: Props = $props();
 </script>
 
 <a
