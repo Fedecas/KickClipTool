@@ -1,59 +1,47 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
 
-  import type { ChannelObject, ChannelRef, ClipObject, ClipRef, SortType } from '$lib/types';
+  import Message from '$lib/Message.svelte';
+  import { notif } from '$lib/notifications';
+  import VideoPlayer from '$lib/video-player/VideoPlayer.svelte';
+  import { getVideoState, VideoState } from '$lib/video-player/VideoState.svelte';
+  import type { ChannelObject, ClipObject } from '$lib/types';
+
   import Channel from './Channel.svelte';
-  import Sort from './Sort.svelte';
   import Clip from './Clip.svelte';
+  import Sort from './Sort.svelte';
+  import { ContentState, getContentState } from './ContentState.svelte';
 
-  interface Props {
-    results: ClipObject[] | ChannelObject[],
-    hasResults: boolean,
-    channelRef: ChannelRef | null,
-    getClips: (channel: ChannelRef, sort: SortType) => Promise<void>,
-    clipRef: ClipRef | null,
-    sort: SortType
-  }
-
-  // Constants
   const COOLDOWN_MS = 1000;
   const THRESHOLD_PX = 250;
 
-  // Runes
-  let {
-    results, hasResults, channelRef, getClips, clipRef = $bindable(), sort = $bindable()
-  }: Props = $props();
+  const content: ContentState = getContentState();
+  const channels: ChannelObject[] = $derived(content.channelState?.channels ?? []);
+  const clips: ClipObject[] = $derived(content.clipState?.clips ?? []);
+  const handleChannelClick = content.searchClips;
+  const selectSort = content.selectSort;
 
-  // Internal
-  let triggered = false;
-  let lastScrolledTo = 0;
+  const video: VideoState = getVideoState();
+  const handleClipClick = video.open;
+
+  let lastScrolledTo: number = 0;
   let scrollElement: HTMLElement;
   let timeoutId: ReturnType<typeof setTimeout>;
-  let lastResultLen = 0;
+  let triggered: boolean = false;
 
   $effect(() => {
-    if (results.length > 0 && lastResultLen === 0) {
-      scrollElement.scrollTo({ top: 0 });
-    }
-    lastResultLen = results.length;
+    if (content.hasResults) scrollElement.scrollTo({ top: 0 });
   });
 
-  async function handleChannelClick(channel: ChannelRef): Promise<void> {
-    await getClips(channel, sort);
-  }
-
-  function handleClipClick(ref: ClipRef): void {
-    clipRef = ref;
-  }
-
-  async function handleScroll(): Promise<void> {
-    if (!channelRef || !scrollElement) return;
+  const handleScroll = async (): Promise<void> => {
+    if (!content.channelSelected || !scrollElement) return;
     const scrolledTo = scrollElement.scrollTop + scrollElement.clientHeight;
     const isGoingDown = scrolledTo > lastScrolledTo;
     const shouldTrigger = scrolledTo >= (scrollElement.scrollHeight - THRESHOLD_PX);
     if (isGoingDown && shouldTrigger && !triggered) {
       triggered = true;
-      await getClips(channelRef, sort);
+      const hasMore = await content.moreClips();
+      if (!hasMore) notif.success('No more clips');
       timeoutId = setTimeout(() => { triggered = false; }, COOLDOWN_MS);
     }
     lastScrolledTo = scrolledTo;
@@ -64,9 +52,12 @@
   });
 </script>
 
-<div class="w-full min-h-0 flex flex-col flex-1 m-3 {hasResults ? '' : 'hidden'}">
-  {#if channelRef}
-  <Sort bind:sort />
+<div class="w-full min-h-0 flex flex-col flex-1 m-3
+  transition-hidden duration-300 ease-in-out
+  { content.hasResults ? "" : "hidden" }"
+>
+  {#if content.channelSelected}
+  <Sort {selectSort} />
   {/if}
   <div
     bind:this={scrollElement}
@@ -74,17 +65,22 @@
     class="outline overflow-y-auto size-full flex-1 bg-gray-950"
   >
     <div class="m-3 p-2 items-center gap-2 grid grid-cols-2
-                md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
+      md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
     >
-      {#if !channelRef}
-        {#each results as channel}
-        <Channel channel={(channel as ChannelObject)} handleClick={handleChannelClick} />
+      {#if !content.channelSelected}
+        {#each channels as channel}
+        <Channel channel={channel} handleClick={handleChannelClick} />
         {/each}
       {:else}
-        {#each results as clip}
-        <Clip clip={(clip as ClipObject)} handleClick={handleClipClick} />
+        {#each clips as clip}
+        <Clip clip={clip} handleClick={handleClipClick} />
         {/each}
       {/if}
     </div>
   </div>
 </div>
+{#if !content.hasResults && content.firstSearch && !content.searching}
+<Message text="no results found :(" />
+{:else if content.playing}
+<VideoPlayer />
+{/if}

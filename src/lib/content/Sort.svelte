@@ -2,16 +2,19 @@
   import { Eye, Calendar, ArrowDownWideNarrow } from 'lucide-svelte';
 
   import type { SortType } from '$lib/types';
+
   import SortButton from './SortButton.svelte';
 
   interface Props {
-    sort: SortType
+    selectSort: (type: SortType) => Promise<void>;
   }
 
-  let { sort = $bindable() }: Props = $props();
+  const { selectSort }: Props = $props();
+  let sort: SortType = $state('date');
 
-  function handleClick(type: SortType): void {
+  const handleClick = async (type: SortType): Promise<void> => {
     sort = type;
+    await selectSort(type);
   }
 </script>
 

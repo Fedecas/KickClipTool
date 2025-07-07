@@ -114,18 +114,4 @@ export interface ClipsResponse {
   nextCursor: string;
 };
 
-export interface ChannelRef {
-  slug: string;
-  name: string;
-  nextCursor?: string;
-}
-
-export interface ClipRef {
-  id: string;
-  title: string;
-  video: string;
-  thumbnail: string;
-  channel: string;
-};
-
 export type SortType = 'date' | 'view';

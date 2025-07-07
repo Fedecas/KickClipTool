@@ -1,9 +1,9 @@
 <script lang="ts">
   interface Props {
-    url: string,
+    url: string;
   }
 
-  let { url }: Props = $props();
+  const { url }: Props = $props();
 </script>
 
 <a
@@ -17,7 +17,7 @@
     title="See on website"
     aria-label="See on website"
     class="bg-(--primary) rounded-sm p-2 transition duration-300 ease-in-out
-            group-hover:bg-black group-hover:outline group-hover:scale-120"
+      group-hover:bg-black group-hover:outline group-hover:scale-120"
   >
     <img
       src="/kick-icon.ico"

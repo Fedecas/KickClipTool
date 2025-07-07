@@ -3,25 +3,21 @@
 
   import { blur } from 'svelte/transition';
 
-  import type { ClipObject, ClipRef } from '$lib/types';
-  import { formatDateDistance, formatDuration } from '$lib/utils';
   import Spinner from '$lib/Spinner.svelte';
+  import { formatDateDistance, formatDuration } from '$lib/content/format';
+  import type { ClipObject } from '$lib/types';
 
   interface Props {
-    clip: ClipObject,
-    handleClick: (ref: ClipRef) => void
+    clip: ClipObject;
+    handleClick: (clipData: ClipObject) => void;
   }
 
-  // Runes
-  let { clip, handleClick }: Props = $props();
-  let loadedImg = $state(false);
+  const { clip, handleClick }: Props = $props();
+  const { title, thumbnail, views, duration, date, creator } = clip;
+  let loadedImg: boolean = $state(false);
 
-  // Internal
-  const { id, title, video, thumbnail, views, duration, date, creator, channel } = clip;
-
-  function onClick(): void {
-    const ref: ClipRef = { id, thumbnail, video, title, channel };
-    handleClick(ref);
+  const onClick = (): void => {
+    handleClick(clip);
   }
 </script>
 
@@ -30,8 +26,9 @@
   type="button"
   onclick={onClick}
   class="relative flex flex-col group rounded-sm aspect-square p-1 bg-[#242428]
-          inset-shadow-sm/100 shadow-sm/100 items-center justify-start
-          hover:bg-gray-800 hover:inset-shadow-none hover:shadow-none">
+    inset-shadow-sm/100 shadow-sm/100 items-center justify-start
+    hover:bg-gray-800 hover:inset-shadow-none hover:shadow-none"
+>
   <div class="relative flex bg-black/40 w-full">
     <img
       src={thumbnail}
@@ -39,17 +36,23 @@
       loading="lazy"
       onload={() => { loadedImg = true }}
       class="w-full aspect-video rounded-sm object-contain
-              {loadedImg ? 'opacity-100' : 'opacity-0'}
-              transition-opacity duration-1000 ease-in
-              group-hover:brightness-50 group-hover:shadow-md/100"/>
-    <h3 class="absolute bg-black/70 rounded-sm text-sm left-1 top-1 p-1.5">{formatDuration(duration)}</h3>
+        {loadedImg ? 'opacity-100' : 'opacity-0'}
+        transition-opacity duration-1000 ease-in
+        group-hover:brightness-50 group-hover:shadow-md/100"
+    />
+    <h3 class="absolute bg-black/70 rounded-sm text-sm left-1 top-1 p-1.5">
+      {formatDuration(duration)}
+    </h3>
     <div class="absolute bg-black/60 rounded-sm right-1 bottom-1 p-1.5 flex flex-row items-center">
-      <h3 class="text-sm font-bold">{views}</h3>
+      <h3 class="text-sm font-bold">
+        {views}
+      </h3>
       <Eye class="ml-1 h-5.5" />
     </div>
     {#if loadedImg}
     <div class="absolute w-[20%] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0
-                group-hover:opacity-80 trasition-opacity duration-500 ease-in-out">
+      group-hover:opacity-80 trasition-opacity duration-500 ease-in-out"
+    >
       <Play class="text-transparent size-full fill-white/100 aspect-square drop-shadow-md/100" />
     </div>
     {:else}
@@ -59,14 +62,20 @@
     {/if}
   </div>
   <h1 class="w-full content-center mt-2 font-medium text-xl
-            overflow-hidden leading-6 line-clamp-2">{title}</h1>
+    overflow-hidden leading-6 line-clamp-2"
+  >
+    {title}
+  </h1>
   <div class="flex flex-col mt-auto w-full">
-    <h2 class="text-(--primary) font-medium truncate">{creator}</h2>
+    <h2 class="text-(--primary) font-medium truncate">
+      {creator}
+    </h2>
     <div class="items-center justify-center flex flex-row">
       <Calendar class="text-(--secondary) mr-1 h-4.5" />
       <h3
         title={date.toString()}
-        class="text-(--secondary)">
+        class="text-(--secondary)"
+      >
         {formatDateDistance(date)}
       </h3>
     </div>

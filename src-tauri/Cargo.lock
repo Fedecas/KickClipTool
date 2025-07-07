@@ -1708,7 +1708,7 @@ dependencies = [
 
 [[package]]
 name = "kct"
-version = "2.1.0"
+version = "2.2.0"
 dependencies = [
  "log",
  "once_cell",

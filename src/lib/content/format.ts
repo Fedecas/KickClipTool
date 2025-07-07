@@ -6,6 +6,7 @@ const TIME_UNITS = [
   { ms: 60000, name: 'minute' }, // ms for 60 seconds
   { ms: 1000, name: 'second' } // ms for 1 second
 ];
+const AVATARS = 6;
 
 export function formatDateDistance(date: Date): string {
   let result = 'just now';
@@ -28,4 +29,9 @@ export function formatDuration(duration: number): string {
   const minutes = `${Math.floor(duration / 60)}`;
   const seconds = `${duration % 60}`;
   return `${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`;
-};
+}
+
+export function randomAvatar(): string {
+  const n = Math.floor(Math.random() * AVATARS) + 1;
+  return `/default_avatars/${n}.jpeg`;
+}

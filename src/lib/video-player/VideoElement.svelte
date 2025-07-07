@@ -1,50 +1,67 @@
 <script lang="ts">
   import type Hls from 'hls.js';
 
-  import { fade } from 'svelte/transition';
   import { onMount } from 'svelte';
+  import { fade } from 'svelte/transition';
 
-  import { notif } from '$lib/notifications';
   import Spinner from '$lib/Spinner.svelte';
-  import { initHLS } from './video';
+
+  import { loadPlaylist } from './video';
 
   interface Props {
-    posterUrl: string;
-    videoUrl: string;
-    downloading: boolean;
+    thumbnail: string;
+    url: string;
+    isDownloading: boolean;
+    canDownload: boolean;
+    ext: string;
   }
 
-  // Runes
-  let { posterUrl, videoUrl, downloading }: Props = $props();
+  const { thumbnail, url, isDownloading, canDownload, ext }: Props = $props();
   let loaded = $state(false);
-  let hls: Hls | null = $state(null);
-
-  // Internal
   let videoElement: HTMLVideoElement;
 
-  $effect(() => {
-    downloading ? hls?.stopLoad() : hls?.startLoad();
-  });
+  const setupVideo = (): Hls | null => {
+    let hls: Hls | null = null;
+    if (ext === 'm3u8') {
+      loadPlaylist(videoElement, url)
+      .then((res: Hls | null) => {
+        hls = res;
+      });
+
+      videoElement.addEventListener('ready', () => {
+        loaded = true;
+      });
+
+      if (canDownload) {
+        $effect(() => {
+          (isDownloading && loaded) ? hls?.stopLoad() : hls?.startLoad();
+        });
+      }
+    } else {
+      videoElement.src = url;
+      videoElement.addEventListener('canplaythrough', () => {
+        loaded = true;
+      });
+    }
+    return hls;
+  }
 
   onMount(() => {
-    hls = initHLS(videoElement, videoUrl);
-    if (!hls) notif.error("Video can't be played");
+    const hls = setupVideo();
     return () => {
-      hls?.destroy();
-      hls = null;
+      if (hls) hls.destroy();
     };
   });
 </script>
 
 <div class="absolute h-[75dvh] w-[75dvw] aspect-video rounded-sm
-            drop-shadow-lg/80 flex items-center justify-center"
+  drop-shadow-lg/80 flex items-center justify-center"
 >
   <video
     bind:this={videoElement}
     controls={loaded}
     playsinline
     preload="auto"
-    oncanplaythrough={() => { loaded = true }}
     class="h-full w-auto object-contain rounded-sm"
   >
     <track kind="captions" default />
@@ -55,7 +72,7 @@
     class="absolute flex items-center justify-center bg-black/40"
   >
     <img
-      src={posterUrl}
+      src={thumbnail}
       alt="Clip poster"
       class="object-cover rounded-sm brightness-70 grayscale"
     />
