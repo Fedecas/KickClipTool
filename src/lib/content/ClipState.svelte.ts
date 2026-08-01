@@ -6,7 +6,6 @@ const CLIP_KEY = Symbol('clip');
 
 export class ClipState {
   clips: ClipObject[] = $state([]);
-  downloads: string[] = $state([]);
   sort: SortType = $state('date');
   channel: string = $state('');
   cursor: string = $state('');

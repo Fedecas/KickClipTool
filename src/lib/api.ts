@@ -13,10 +13,6 @@ function cleanChannelQuery(channel: string): string {
     .trim();
 }
 
-function cleanClipQuery(cursor: string): string {
-  return cursor.replace(/[^a-zA-Z0-9_]/g, '');
-}
-
 export async function searchChannels(query: string): Promise<ChannelsResponse> {
   const validQuery = cleanChannelQuery(query);
   let result: ChannelsResponse = [];
@@ -27,15 +23,11 @@ export async function searchChannels(query: string): Promise<ChannelsResponse> {
   const requestUrl = new URL('search', API_ENDPOINT);
   requestUrl.searchParams.append('searched_word', validQuery);
 
-  console.debug('fetching', requestUrl, '...');
-
   try {
     const response = await fetch(requestUrl, {
       headers: { Accept: 'application/json' },
       method: 'GET',
     });
-
-    console.debug(`fetch ended (${response.status}, ${response.statusText})`);
 
     if (response.ok) {
       apiRes = await response.json();
@@ -78,7 +70,6 @@ export async function searchInBatches(
   onClips: (clips: ClipObject[]) => void,
 ): Promise<string> {
   const validChannel = cleanChannelQuery(channel);
-  const validCursor = cleanClipQuery(cursor);
 
   if (validChannel.length < 3) return '';
 
@@ -88,19 +79,22 @@ export async function searchInBatches(
   endUTC.setHours(23, 59, 59, 999);
 
   if (!startDate || !endDate || sort === 'view') {
-    const page = await fetchPage(validChannel, validCursor, sort);
+    const page = await fetchPage(validChannel, cursor, sort);
     const mappedClips = page.clips ? mapClips(page.clips) : [];
     onClips(mappedClips);
     return page.nextCursor ?? '';
   }
 
-  let currentCursor = validCursor;
+  let currentCursor = cursor;
   let reachedStartDate = false;
 
   while (!reachedStartDate) {
     const page = await fetchPage(validChannel, currentCursor, sort);
 
-    if (!page.clips || page.clips.length === 0) break;
+    if (!page.clips || page.clips.length === 0) {
+      currentCursor = '';
+      break;
+    }
 
     const mappedClips = mapClips(page.clips);
 
@@ -109,22 +103,27 @@ export async function searchInBatches(
       onClips(filteredClips);
     }
 
-    currentCursor = page.nextCursor ?? '';
     const oldestClip = mappedClips[mappedClips.length - 1];
+    const nextCursor = page.nextCursor ?? '';
 
-    if (oldestClip.date < startUTC || !currentCursor) {
+    // Once we're past the range's start date, every older page is out of range too:
+    // treat it as exhausted so the caller stops paginating instead of re-fetching forever.
+    if (oldestClip.date < startUTC || !nextCursor) {
       reachedStartDate = true;
+      currentCursor = '';
+    } else {
+      currentCursor = nextCursor;
     }
   }
   return currentCursor;
 }
 
-async function fetchPage(channel: string, validCursor: string, sort: SortType): Promise<ApiClipsResponse> {
+async function fetchPage(channel: string, cursor: string, sort: SortType): Promise<ApiClipsResponse> {
   const requestUrl = new URL(`v2/channels/${channel}/clips`, API_ENDPOINT);
   requestUrl.searchParams.append('sort', sort);
 
-  if (validCursor) {
-    requestUrl.searchParams.append('cursor', validCursor);
+  if (cursor) {
+    requestUrl.searchParams.append('cursor', cursor);
   }
 
   try {
@@ -132,8 +131,6 @@ async function fetchPage(channel: string, validCursor: string, sort: SortType): 
       headers: { Accept: 'application/json' },
       method: 'GET',
     });
-
-    console.debug(`fetch ended (${response.status}, ${response.statusText})`);
 
     if (response.ok) {
       return await response.json();

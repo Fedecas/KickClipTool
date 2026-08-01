@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
+
   import { browser } from '$app/environment';
   import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-svelte';
 
@@ -19,23 +21,27 @@
   }: Props = $props();
 
   let currentMonth = $derived(initialStartDate ? new Date(initialStartDate.getFullYear(), initialStartDate.getMonth()) : new Date());
-  let startDate = $state<Date | undefined>(initialStartDate);
-  let endDate = $state<Date | undefined>(initialEndDate);
+  let startDate = $state<Date | undefined>(untrack(() => initialStartDate));
+  let endDate = $state<Date | undefined>(untrack(() => initialEndDate));
   let showYearPicker = $state(false);
   let showMonthsPicker = $state(false);
 
-  const monthNames = getMonthNames(locale);
-  const dayNames = getDaysInMonth(new Date(startYear, 0))
-    .slice(0, 7)
-    .map((date) => {
-      if (date) {
-        return date.toLocaleDateString(locale, { weekday: 'short' }).charAt(0);
-      }
-      return '';
-    });
+  const monthNames = $derived(getMonthNames(locale));
+  const dayNames = $derived(
+    getDaysInMonth(new Date(startYear, 0))
+      .slice(0, 7)
+      .map((date) => {
+        if (date) {
+          return date.toLocaleDateString(locale, { weekday: 'short' }).charAt(0);
+        }
+        return '';
+      })
+  );
 
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: currentYear - startYear + 1 }, (_, i) => startYear + i).filter((year) => year <= currentYear);
+  const years = $derived(
+    Array.from({ length: currentYear - startYear + 1 }, (_, i) => startYear + i).filter((year) => year <= currentYear)
+  );
 
   function getMonthNames(locale: string) {
     const formatter = new Intl.DateTimeFormat(locale, { month: 'long' });
@@ -177,14 +183,14 @@
     {:else if showMonthsPicker}
       <div class="grid grid-cols-3 gap-2 max-h-[240px] overflow-y-auto">
         {#each monthNames as month, index}
-          {@const Feture = isFuture(new Date(currentMonth.getFullYear(), index))}
+          {@const Future = isFuture(new Date(currentMonth.getFullYear(), index))}
           <button
             onclick={() => {
-              if (Feture) return;
+              if (Future) return;
               currentMonth = new Date(currentMonth.getFullYear(), index);
               showMonthsPicker = false;
             }}
-            disabled={Feture}
+            disabled={Future}
             class="p-2 rounded-lg text-sm transition-all cursor-pointer bg-[var(--date-header-bg)] disabled:bg-none disabled:text-[var(--date-disabled)] disabled:cursor-not-allowed
               {index === currentMonth.getMonth()
               ? 'bg-[var(--primary)] font-bold text-[var(--date-selected-text)]'

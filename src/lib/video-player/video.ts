@@ -3,7 +3,7 @@ import type { HlsConfig } from 'hls.js';
 
 const MAX_ATTEMPTS_TO_RECOVER_VIDEO = 3;
 
-async function mountHLS(ve: HTMLVideoElement, url: string, onReady?: () => void): Promise<Hls | null> {
+async function mountHLS(ve: HTMLVideoElement, url: string): Promise<Hls | null> {
   const { default: Hls, ErrorTypes, Events } = await import('hls.js');
   if (!Hls.isSupported()) return null;
 
@@ -20,20 +20,6 @@ async function mountHLS(ve: HTMLVideoElement, url: string, onReady?: () => void)
 
   hls.attachMedia(ve);
   hls.loadSource(url);
-
-  hls.on(Events.MANIFEST_PARSED, () => {
-    if (!hls || startFailed) return;
-    onReady?.();
-  });
-
-  ve.addEventListener(
-    'canplay',
-    () => {
-      if (!hls || startFailed) return;
-      onReady?.();
-    },
-    { once: true },
-  );
 
   hls.on(Events.BUFFER_CREATED, (_, d) => {
     startFailed = !d.tracks.audio || !d.tracks.video;
@@ -71,19 +57,11 @@ async function mountHLS(ve: HTMLVideoElement, url: string, onReady?: () => void)
   return hls;
 }
 
-export async function loadPlaylist(ve: HTMLVideoElement, url: string, onReady?: () => void): Promise<Hls | null> {
-  let hls: Hls | null = null;
-  hls = await mountHLS(ve, url, onReady);
+export async function loadPlaylist(ve: HTMLVideoElement, url: string): Promise<Hls | null> {
+  const hls = await mountHLS(ve, url);
 
   if (!hls && ve.canPlayType('application/vnd.apple.mpegurl')) {
     ve.src = url;
-    ve.addEventListener(
-      'canplay',
-      () => {
-        onReady?.();
-      },
-      { once: true },
-    );
   } else if (!hls) {
     console.error('HLS not supported!');
   }
