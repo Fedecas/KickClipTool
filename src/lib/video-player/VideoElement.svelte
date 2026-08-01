@@ -29,7 +29,7 @@
     videoElement.addEventListener('loadeddata', markReady, { once: true });
 
     if (ext === 'm3u8') {
-      loadPlaylist(videoElement, url, () => {}).then((res: Hls | null) => {
+      loadPlaylist(videoElement, url).then((res: Hls | null) => {
         hls = res;
       });
 
