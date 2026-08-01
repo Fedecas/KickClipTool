@@ -75,7 +75,7 @@ export async function searchInBatches(
   sort: SortType,
   startDate: Date | undefined,
   endDate: Date | undefined,
-  onClips: (clips: ClipObject[]) => void
+  onClips: (clips: ClipObject[]) => void,
 ): Promise<string> {
   const validChannel = cleanChannelQuery(channel);
   const validCursor = cleanClipQuery(cursor);
@@ -144,12 +144,6 @@ async function fetchPage(channel: string, validCursor: string, sort: SortType): 
     console.error(`Error fetching clips: ${error}`);
   }
   return {};
-}
-
-async function fetchSinglePage(channel: string, cursor: string, sort: SortType): Promise<ClipsResponse> {
-  const apiRes = await fetchPage(channel, cursor, sort);
-  const clips = apiRes.clips ? mapClips(apiRes.clips) : [];
-  return { clips, nextCursor: apiRes.nextCursor ?? '' };
 }
 
 function mapClips(clips: ApiClip[]): ClipObject[] {

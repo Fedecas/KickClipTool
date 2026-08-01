@@ -3,7 +3,7 @@ import type { HlsConfig } from 'hls.js';
 
 const MAX_ATTEMPTS_TO_RECOVER_VIDEO = 3;
 
-async function mountHLS(ve: HTMLVideoElement, url: string): Promise<Hls | null> {
+async function mountHLS(ve: HTMLVideoElement, url: string, onReady?: () => void): Promise<Hls | null> {
   const { default: Hls, ErrorTypes, Events } = await import('hls.js');
   if (!Hls.isSupported()) return null;
 
@@ -21,10 +21,19 @@ async function mountHLS(ve: HTMLVideoElement, url: string): Promise<Hls | null> 
   hls.attachMedia(ve);
   hls.loadSource(url);
 
-  ve.addEventListener('canplaythrough', () => {
+  hls.on(Events.MANIFEST_PARSED, () => {
     if (!hls || startFailed) return;
-    ve.dispatchEvent(new CustomEvent('ready'));
+    onReady?.();
   });
+
+  ve.addEventListener(
+    'canplay',
+    () => {
+      if (!hls || startFailed) return;
+      onReady?.();
+    },
+    { once: true },
+  );
 
   hls.on(Events.BUFFER_CREATED, (_, d) => {
     startFailed = !d.tracks.audio || !d.tracks.video;
@@ -43,7 +52,7 @@ async function mountHLS(ve: HTMLVideoElement, url: string): Promise<Hls | null> 
         console.warn('Media error');
         if (recoveryAttempts < MAX_ATTEMPTS_TO_RECOVER_VIDEO) {
           recoveryAttempts += 1;
-          console.debug('trying to recover... (', recoveryAttempts,')');
+          console.debug('trying to recover... (', recoveryAttempts, ')');
           hls.recoverMediaError();
         } else {
           console.error('There are no more recovery attempts.');
@@ -62,13 +71,22 @@ async function mountHLS(ve: HTMLVideoElement, url: string): Promise<Hls | null> 
   return hls;
 }
 
-export async function loadPlaylist(ve: HTMLVideoElement, url: string): Promise<Hls | null> {
+export async function loadPlaylist(ve: HTMLVideoElement, url: string, onReady?: () => void): Promise<Hls | null> {
   let hls: Hls | null = null;
-  if (ve.canPlayType('application/vnd.apple.mpegurl')) {
+  hls = await mountHLS(ve, url, onReady);
+
+  if (!hls && ve.canPlayType('application/vnd.apple.mpegurl')) {
     ve.src = url;
-  } else {
-    hls = await mountHLS(ve, url);
-    if (!hls) console.error("HLS not supported!");
+    ve.addEventListener(
+      'canplay',
+      () => {
+        onReady?.();
+      },
+      { once: true },
+    );
+  } else if (!hls) {
+    console.error('HLS not supported!');
   }
+
   return hls;
 }
