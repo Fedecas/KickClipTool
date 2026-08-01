@@ -50,7 +50,7 @@
     </div>
     {#if loadedImg}
     <div class="absolute w-[20%] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0
-      group-hover:opacity-80 trasition-opacity duration-500 ease-in-out"
+      group-hover:opacity-80 transition-opacity duration-500 ease-in-out"
     >
       <Play class="text-transparent size-full fill-white/100 aspect-square drop-shadow-md/100" />
     </div>
