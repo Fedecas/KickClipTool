@@ -28,7 +28,7 @@ fn get_current_time(msg: &str) -> f64 {
     let matched = TIME_REGEX.find(msg);
     if let Some(time) = matched {
         let parts: Vec<&str> = time.as_str().split(&[':', '.']).collect();
-        if parts.len() == 4 {
+        if parts.len() >= 3 {
             let minutes: f64 = parts[1].parse().unwrap();
             let seconds: f64 = parts[2].parse().unwrap();
             result = (minutes * 60.0) + seconds;
@@ -67,7 +67,7 @@ async fn handle_sidecar_events(
                 }
             }
             CommandEvent::Terminated(ref payload) => {
-                let code = payload.code.unwrap();
+                let code = payload.code.unwrap_or(-1);
                 log::info!("ffmpeg sidecar terminated with code: {:#?}", code);
                 if code != 0 {
                     return Err(format!("Ffmpeg sidecar terminated with code: {code}"));
