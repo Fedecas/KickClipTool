@@ -6,7 +6,7 @@ authors = ["Fedecas"]
 license = "GPL"
 repository = "https://github.com/Fedecas/KickClipTool"
 edition = "2024"
-rust-version = "1.86.0"
+rust-version = "1.88.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -27,6 +27,11 @@ strip = true # Ensures debug symbols are removed.
 [build-dependencies]
 tauri-build = { version = "2.2.0", features = [] }
 
+# NOTE: RUSTSEC-2024-0429 (glib unsoundness) shows up in Cargo.lock via tauri's
+# Linux GTK/WebKitGTK backend, which pins `gtk = "^0.18"` -> `glib = "^0.18"`.
+# The fix needs glib >=0.20, which no compatible gtk 0.18.x release provides yet.
+# Confirmed as of tauri 2.11.5 (latest 2.x): forcing glib to 0.20 fails to resolve.
+# Nothing to do on our side until tauri-apps/gtk-rs ship a compatible upgrade.
 [dependencies]
 log = "0.4"
 once_cell = "1.21.3"
