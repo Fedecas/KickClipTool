@@ -13,7 +13,6 @@
   }
 
   const { clip, handleClick }: Props = $props();
-  const { title, thumbnail, views, duration, date, creator } = clip;
   let loadedImg: boolean = $state(false);
 
   const onClick = (): void => {
@@ -31,7 +30,7 @@
 >
   <div class="relative flex bg-black/40 w-full">
     <img
-      src={thumbnail}
+      src={clip.thumbnail}
       alt="Clip thumbnail"
       loading="lazy"
       onload={() => { loadedImg = true }}
@@ -41,11 +40,11 @@
         group-hover:brightness-50 group-hover:shadow-md/100"
     />
     <h3 class="absolute bg-black/70 rounded-sm text-sm left-1 top-1 p-1.5">
-      {formatDuration(duration)}
+      {formatDuration(clip.duration)}
     </h3>
     <div class="absolute bg-black/60 rounded-sm right-1 bottom-1 p-1.5 flex flex-row items-center">
       <h3 class="text-sm font-bold">
-        {views}
+        {clip.views}
       </h3>
       <Eye class="ml-1 h-5.5" />
     </div>
@@ -64,19 +63,19 @@
   <h1 class="w-full content-center mt-2 font-medium text-xl
     overflow-hidden leading-6 line-clamp-2"
   >
-    {title}
+    {clip.title}
   </h1>
   <div class="flex flex-col mt-auto w-full">
     <h2 class="text-(--primary) font-medium truncate">
-      {creator}
+      {clip.creator}
     </h2>
     <div class="items-center justify-center flex flex-row">
       <Calendar class="text-(--secondary) mr-1 h-4.5" />
       <h3
-        title={date.toString()}
+        title={clip.date.toString()}
         class="text-(--secondary)"
       >
-        {formatDateDistance(date)}
+        {formatDateDistance(clip.date)}
       </h3>
     </div>
   </div>

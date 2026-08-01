@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
+
   import type { SortType } from '$lib/types';
   import DateRange from '$lib/DateRange.svelte';
 
@@ -18,8 +20,8 @@
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  let selectedStart = $state<Date>(startDate ?? today);
-  let selectedEnd = $state<Date>(endDate ?? today);
+  let selectedStart = $state<Date>(untrack(() => startDate ?? today));
+  let selectedEnd = $state<Date>(untrack(() => endDate ?? today));
   let showDatePicker = $state(false);
 
   const handleDateChange = (startDate: Date | undefined, endDate: Date | undefined) => {

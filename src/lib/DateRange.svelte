@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
+
   import { browser } from '$app/environment';
   import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-svelte';
 
@@ -19,23 +21,27 @@
   }: Props = $props();
 
   let currentMonth = $derived(initialStartDate ? new Date(initialStartDate.getFullYear(), initialStartDate.getMonth()) : new Date());
-  let startDate = $state<Date | undefined>(initialStartDate);
-  let endDate = $state<Date | undefined>(initialEndDate);
+  let startDate = $state<Date | undefined>(untrack(() => initialStartDate));
+  let endDate = $state<Date | undefined>(untrack(() => initialEndDate));
   let showYearPicker = $state(false);
   let showMonthsPicker = $state(false);
 
-  const monthNames = getMonthNames(locale);
-  const dayNames = getDaysInMonth(new Date(startYear, 0))
-    .slice(0, 7)
-    .map((date) => {
-      if (date) {
-        return date.toLocaleDateString(locale, { weekday: 'short' }).charAt(0);
-      }
-      return '';
-    });
+  const monthNames = $derived(getMonthNames(locale));
+  const dayNames = $derived(
+    getDaysInMonth(new Date(startYear, 0))
+      .slice(0, 7)
+      .map((date) => {
+        if (date) {
+          return date.toLocaleDateString(locale, { weekday: 'short' }).charAt(0);
+        }
+        return '';
+      })
+  );
 
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: currentYear - startYear + 1 }, (_, i) => startYear + i).filter((year) => year <= currentYear);
+  const years = $derived(
+    Array.from({ length: currentYear - startYear + 1 }, (_, i) => startYear + i).filter((year) => year <= currentYear)
+  );
 
   function getMonthNames(locale: string) {
     const formatter = new Intl.DateTimeFormat(locale, { month: 'long' });

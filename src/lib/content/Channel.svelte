@@ -14,12 +14,11 @@
   }
 
   const { channel, handleClick }: Props = $props();
-  const { slug, followers, name, avatar, verified } = channel;
-  const validAvatar: string = avatar || randomAvatar();
+  const validAvatar: string = $derived(channel.avatar || randomAvatar());
   let loadedImg: boolean = $state(false);
 
   const onClick = async (): Promise<void> => {
-    await handleClick(slug);
+    await handleClick(channel.slug);
   }
 </script>
 
@@ -34,7 +33,7 @@
   <div class="relative w-full h-64 bg-black/40">
     <img
       src={validAvatar}
-      alt="{name} avatar"
+      alt="{channel.name} avatar"
       loading="lazy"
       onload={() => { loadedImg = true }}
       class="size-full object-cover rounded-sm brightness-70
@@ -49,12 +48,12 @@
     {/if}
   </div>
   <div class="w-full flex flex-row items-center justify-center gap-2">
-    <h1 class="text-2xl mt-1 truncate">{name}</h1>
-    {#if verified}
+    <h1 class="text-2xl mt-1 truncate">{channel.name}</h1>
+    {#if channel.verified}
     <BadgeCheck class="size-6 text-(--primary) mt-1 flex-shrink-0"/>
     {/if}
   </div>
   <h2 class="font-medium text-(--primary) mb-1">
-    {followers} followers
+    {channel.followers} followers
   </h2>
 </button>
