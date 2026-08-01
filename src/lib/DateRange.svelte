@@ -183,14 +183,14 @@
     {:else if showMonthsPicker}
       <div class="grid grid-cols-3 gap-2 max-h-[240px] overflow-y-auto">
         {#each monthNames as month, index}
-          {@const Feture = isFuture(new Date(currentMonth.getFullYear(), index))}
+          {@const Future = isFuture(new Date(currentMonth.getFullYear(), index))}
           <button
             onclick={() => {
-              if (Feture) return;
+              if (Future) return;
               currentMonth = new Date(currentMonth.getFullYear(), index);
               showMonthsPicker = false;
             }}
-            disabled={Feture}
+            disabled={Future}
             class="p-2 rounded-lg text-sm transition-all cursor-pointer bg-[var(--date-header-bg)] disabled:bg-none disabled:text-[var(--date-disabled)] disabled:cursor-not-allowed
               {index === currentMonth.getMonth()
               ? 'bg-[var(--primary)] font-bold text-[var(--date-selected-text)]'
